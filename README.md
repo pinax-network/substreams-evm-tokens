@@ -1,6 +1,6 @@
-# ERC-20 Substreams
+# Substreams: `EVM Tokens`
 
-> All Substreams for ERC-20 tokens.
+> ERC-20 Token events
 
 ## Quickstart
 
@@ -40,7 +40,6 @@ graph TD;
   supply:db_out --> db_out;
   contracts:db_out --> db_out;
   balances:balance_changes:db_out --> db_out;
-
 ```
 
 Here is a quick link to see the graph:

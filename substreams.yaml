@@ -1,31 +1,29 @@
 specVersion: v0.1.0
 package:
-  name: erc20_substreams
-  version: v0.0.2
-  url: https://github.com/pinax-network/substreams-erc20-substreams
-  doc: ERC-20
+  name: evm_tokens
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-evm-tokens
 
 imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
-  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.3.1/substreams-database-change-v1.3.1.spkg
-  transfers: https://github.com/pinax-network/substreams-erc20-transfers/releases/download/v0.1.4/erc20Transfers-v0.1.4.spkg
-  supply: https://github.com/pinax-network/substreams-erc20-supply/releases/download/v0.1.8/erc20-supply-v0.1.8.spkg
-  contracts: https://github.com/pinax-network/substreams-erc20-contracts/releases/download/v0.1.7/erc20-contracts-v0.1.7.spkg
-  balance_changes: https://github.com/pinax-network/substreams-erc20-balance-changes/releases/download/v1.3/erc20-balance-changes-v1.3.spkg
+  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
+  balance_changes: https://github.com/streamingfast/substreams-erc20-balance-changes/releases/download/v1.4.0/erc20-balance-changes-v1.4.0.spkg
+  # transfers: https://github.com/pinax-network/substreams-erc20-transfers/releases/download/v0.1.4/erc20Transfers-v0.1.4.spkg
+  # supply: https://github.com/pinax-network/substreams-erc20-supply/releases/download/v0.1.8/erc20-supply-v0.1.8.spkg
+  # contracts: https://github.com/pinax-network/substreams-erc20-contracts/releases/download/v0.1.7/erc20-contracts-v0.1.7.spkg
 binaries:
   default:
     type: wasm/rust-v1
-    file: ./target/wasm32-unknown-unknown/release/erc20_substreams.wasm
+    file: ./target/wasm32-unknown-unknown/release/evm_tokens.wasm
 
 modules:
   - name: db_out
     kind: map
-    initialBlock: 1
     inputs:
-      - map: transfers:db_out
-      - map: supply:db_out
-      - map: contracts:db_out
       - map: balance_changes:db_out
+      # - map: transfers:db_out
+      # - map: supply:db_out
+      # - map: contracts:db_out
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 
