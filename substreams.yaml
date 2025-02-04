@@ -16,11 +16,21 @@ binaries:
     type: wasm/rust-v1
     file: ./target/wasm32-unknown-unknown/release/evm_tokens.wasm
 
+protobuf:
+  # files:
+  #   - eosio.token.proto
+  # importPaths:
+  #   - ./proto/v1
+  excludePaths:
+    - sf/substreams
+    - google
+
 modules:
   - name: db_out
     kind: map
     inputs:
-      - map: balance_changes:db_out
+      - source: sf.substreams.v1.Clock
+      - map: balance_changes:map_balance_changes
       # - map: transfers:db_out
       # - map: supply:db_out
       # - map: contracts:db_out

@@ -5,8 +5,8 @@
 ## Quickstart
 
 ```
-$ gh repo clone pinax-network/erc20-substreams
-$ cd erc20-substreams
+$ gh repo clone pinax-network/substreams-evm-tokens
+$ cd substreams-evm-tokens
 $ make
 $ make gui
 ```
