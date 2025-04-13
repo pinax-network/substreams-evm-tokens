@@ -1,6 +1,13 @@
 // @generated
 pub mod evm {
     pub mod tokens {
+        pub mod allowances {
+            // @@protoc_insertion_point(attribute:evm.tokens.allowances.v1)
+            pub mod v1 {
+                include!("evm.tokens.allowances.v1.rs");
+                // @@protoc_insertion_point(evm.tokens.allowances.v1)
+            }
+        }
         pub mod balances {
             // @@protoc_insertion_point(attribute:evm.tokens.balances.v1)
             pub mod v1 {

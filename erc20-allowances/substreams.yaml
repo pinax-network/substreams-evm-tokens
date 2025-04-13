@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: evm_erc20_allowances
-  version: v1.11.0
+  version: v1.12.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC20 allowances
   image: ../image.png
@@ -23,6 +23,6 @@ modules:
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:evm.tokens.balances.v1.Events
+      type: proto:evm.tokens.allowances.v1.Events
 
 network: mainnet

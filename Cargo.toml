@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "erc20-allowances",
   "erc20-balances",
   "erc20-balances-rpc",
   "erc20-contracts",
