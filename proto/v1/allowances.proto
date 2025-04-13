@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package evm.tokens.balances.v1;
+import "v1/ethereum.proto";
+
+message Events {
+  repeated Allowance allowances = 1;
+
+  // -- debug --
+  repeated ApprovalEvent approvals_events = 2;
+  repeated TransferFromFunction transfer_from_functions = 3;
+  repeated AllowanceFunction allowance_functions = 4;
+}
+
+enum Algorithm {
+  ALGORITHM_UNSPECIFIED = 0;
+  ALGORITHM_APPROVAL = 1; // approval event
+  ALGORITHM_TRANSFER_FROM = 2; // transfer_from event
+  ALGORITHM_ALLOWANCE = 3; // allowance event
+  ALGORITHM_PERMIT = 4; // permit event
+}
+
+message Allowance {
+  // -- transaction --
+  bytes transaction_id = 5;
+
+  // -- allowance --
+  bytes contract = 20; // log.address
+  bytes owner = 21;
+  bytes spender = 22;
+  string value = 23;
+
+  // -- debug --
+  Algorithm algorithm = 100;
+}
+
+message AllowanceFunction {
+  // -- transaction --
+  bytes transaction_id = 5;
+
+  // -- call --
+  bytes caller = 8;
+  uint64 begin_ordinal = 10;
+  uint64 end_ordinal = 11;
+  uint64 index = 12;
+
+  // -- transfer --
+  bytes contract = 20; // log.address
+  bytes owner = 21;
+  bytes spender = 22;
+  string value = 23;
+}
+
+message ApprovalEvent {
+  // -- transaction --
+  bytes transaction_id = 5;
+
+  // -- call --
+  bytes caller = 8; // call.caller
+
+  // -- ordinal --
+  uint64 ordinal = 10; // log.ordinal
+
+  // -- approval --
+  bytes contract = 20; // log.address
+  bytes owner = 21;
+  bytes spender = 22;
+  string value = 23;
+}
+
+message TransferFromFunction {
+  // -- transaction --
+  bytes transaction_id = 5;
+
+  // -- call --
+  bytes caller = 8;
+  uint64 begin_ordinal = 10;
+  uint64 end_ordinal = 11;
+  uint64 index = 12;
+
+  // -- transfer from --
+  bytes contract = 20; // log.address
+  bytes from = 21;
+  bytes to = 22;
+  string value = 23;
+}

@@ -1,0 +1,28 @@
+specVersion: v0.1.0
+package:
+  name: evm_erc20_allowances
+  version: v1.11.0
+  url: https://github.com/pinax-network/substreams-evm-tokens
+  description: ERC20 allowances
+  image: ../image.png
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/erc20_allowances.wasm
+
+protobuf:
+  files:
+    - v1/allowances.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:evm.tokens.balances.v1.Events
+
+network: mainnet
