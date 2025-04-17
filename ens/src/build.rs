@@ -1,28 +1,50 @@
-use std::io::Write;
-use std::path::Path;
 use std::process::Command;
-use std::{env, fs};
-use substreams_ethereum::Abigen;
 
-fn main() -> Result<(), anyhow::Error> {
-    let out_dir = env::var_os("OUT_DIR").unwrap();
-    let dest_path = Path::new(&out_dir).join("abi.rs");
+fn main() {
+    println!("cargo:rerun-if-changed=../abi/ENSRegistry.json");
+    println!("cargo:rerun-if-changed=../abi/PublicResolver.json");
+    println!("cargo:rerun-if-changed=../abi/ReverseRegistrar.json");
+
+    // Generate Rust code from ABI files
+    generate_abi_code("ENSRegistry", "../abi/ENSRegistry.json", "registry");
+    generate_abi_code("PublicResolver", "../abi/PublicResolver.json", "resolver");
+    generate_abi_code("ReverseRegistrar", "../abi/ReverseRegistrar.json", "reverse_registrar");
+}
+
+fn generate_abi_code(contract_name: &str, abi_path: &str, module_name: &str) {
+    println!("Generating Rust code for {}", contract_name);
     
-    // Generate bindings for the ENS Public Resolver contract
-    Abigen::new("resolver", "abi/PublicResolver.json")?
-        .generate()?
-        .write_to_file("src/abi/resolver.rs")?;
-
-    // Generate bindings for the ENS Reverse Registrar contract
-    Abigen::new("reverse_registrar", "abi/ReverseRegistrar.json")?
-        .generate()?
-        .write_to_file("src/abi/reverse_registrar.rs")?;
-
-    // Generate bindings for the ENS Registry contract
-    Abigen::new("registry", "abi/ENSRegistry.json")?
-        .generate()?
-        .write_to_file("src/abi/registry.rs")?;
-
-    Ok(())
-}mkdir -p ens/abi
-mkdir -p ens/src/abi
+    // Create the output directory if it doesn't exist
+    std::fs::create_dir_all("src/abi").unwrap();
+    
+    // Generate the Rust code using substreams-ethereum-abigen
+    let output = Command::new("substreams")
+        .args(&[
+            "protogen",
+            "--exclude-paths=sf/substreams,google",
+            &format!("--output-file=src/abi/{}.rs", module_name),
+            abi_path,
+        ])
+        .output()
+        .expect(&format!("Failed to generate Rust code for {}", contract_name));
+    
+    if !output.status.success() {
+        panic!(
+            "Failed to generate Rust code for {}: {}",
+            contract_name,
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    
+    // Create a mod.rs file if it doesn't exist
+    let mod_path = "src/abi/mod.rs";
+    if !std::path::Path::new(mod_path).exists() {
+        let mut mod_content = String::new();
+        mod_content.push_str("// Generated code - do not modify\n\n");
+        mod_content.push_str("pub mod registry;\n");
+        mod_content.push_str("pub mod resolver;\n");
+        mod_content.push_str("pub mod reverse_registrar;\n");
+        
+        std::fs::write(mod_path, mod_content).unwrap();
+    }
+}
