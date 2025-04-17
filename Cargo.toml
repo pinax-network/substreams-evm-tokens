@@ -10,7 +10,8 @@ members = [
   "uniswap-v3",
   "proto",
   "common",
-  "clickhouse"
+  "clickhouse",
+  "ens"
 ]
 resolver = "2"
 
