@@ -1,0 +1,20 @@
+[package]
+name = "substreams-ens"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "substreams"  # This is important - output binary name
+crate-type = ["cdylib"]  # Compile as a dynamic library
+
+[dependencies]
+substreams = "0.5.0"
+substreams-ethereum = "0.9.0"
+prost = "0.11"
+ethabi = "18.0.0"
+hex = "0.4.3"
+hex-literal = "0.4.1"
+tiny-keccak = { version = "2.0", features = ["keccak"] }
+
+[build-dependencies]
+substreams-ethereum = "0.9.0"
