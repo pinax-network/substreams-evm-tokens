@@ -17,7 +17,7 @@
 - [x] EVM Token Prices
   - [x] Uniswap V2 factories
 - [x] ERC-20 Circulating Supply
-- [ ] ENS Reverse Resolution
+- [x] ENS Reverse Resolution
 
 ## Substreams Graph
 
@@ -29,4 +29,5 @@ graph TD;
   Block --> native --> db_out;
   Block --> contracts[contracts + RPC] --> db_out;
   Block --> prices --> db_out;
+  Block --> ens[ENS] --> db_out_ens;
 ```

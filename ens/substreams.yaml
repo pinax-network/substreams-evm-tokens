@@ -4,7 +4,7 @@ package:
   version: v0.1.0
 
 imports:
-  eth: https://github.com/streamingfast/substreams-eth-block-meta/releases/download/v0.4.0/substreams-eth-block-meta-v0.4.0.spkg
+  ethereum: https://github.com/streamingfast/substreams-ethereum/releases/download/v0.10.4/substreams-ethereum-v0.10.4.spkg
 
 protobuf:
   files:
@@ -15,7 +15,7 @@ protobuf:
 binaries:
   default:
     type: wasm/rust-v1
-    file: target/wasm32-unknown-unknown/release/substreams.wasm
+    file: ../target/wasm32-unknown-unknown/release/substreams_ens.wasm
 
 modules:
   - name: map_events
@@ -24,29 +24,40 @@ modules:
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:ens.v1.ENSEvents
+      type: proto:ens.v1.EnsEvents
 
   - name: store_ens_names
     kind: store
     updatePolicy: set
-    valueType: proto:ens.v1.ENSName
+    valueType: proto:ens.v1.EnsName
+    inputs:
+      - map: map_events
+
+  - name: store_ens_names_delta
+    kind: store
+    updatePolicy: set
+    valueType: proto:ens.v1.EnsName
     inputs:
       - map: map_events
 
   - name: resolve_ens_name
     kind: map
-    initialBlock: 3327417
+    initialBlock: 15900000  # Changed to be closer to test block
     inputs:
-      - params: string
-      - store: store_ens_names
+      - params: string  # Moved to first position
+      - source: sf.ethereum.type.v2.Block
+      - store: store_ens_names_delta
+        mode: deltas
     output:
-      type: string
+      type: proto:ens.v1.StringMessage
 
   - name: reverse_resolve
     kind: map
-    initialBlock: 3327417
+    initialBlock: 15900000  # Changed to be closer to test block
     inputs:
-      - params: string
-      - store: store_ens_names
+      - params: string  # Moved to first position
+      - source: sf.ethereum.type.v2.Block
+      - store: store_ens_names_delta
+        mode: deltas
     output:
-      type: string
+      type: proto:ens.v1.StringMessage

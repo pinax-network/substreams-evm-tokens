@@ -1,14 +1,19 @@
 use std::process::Command;
+use std::path::Path;
 
 fn main() {
     println!("cargo:rerun-if-changed=../abi/ENSRegistry.json");
     println!("cargo:rerun-if-changed=../abi/PublicResolver.json");
     println!("cargo:rerun-if-changed=../abi/ReverseRegistrar.json");
+    println!("cargo:rerun-if-changed=../ens.proto");
 
     // Generate Rust code from ABI files
     generate_abi_code("ENSRegistry", "../abi/ENSRegistry.json", "registry");
     generate_abi_code("PublicResolver", "../abi/PublicResolver.json", "resolver");
     generate_abi_code("ReverseRegistrar", "../abi/ReverseRegistrar.json", "reverse_registrar");
+    
+    // Compile proto files using prost-build
+    compile_protos();
 }
 
 fn generate_abi_code(contract_name: &str, abi_path: &str, module_name: &str) {
@@ -47,4 +52,19 @@ fn generate_abi_code(contract_name: &str, abi_path: &str, module_name: &str) {
         
         std::fs::write(mod_path, mod_content).unwrap();
     }
+}
+
+fn compile_protos() {
+    println!("Compiling proto files...");
+    
+    // Create the output directory if it doesn't exist
+    std::fs::create_dir_all("src/pb/ens").unwrap();
+    
+    // Path to the proto file
+    let proto_file = Path::new("../ens.proto");
+    
+    // Compile the proto file
+    prost_build::compile_protos(&[proto_file], &[Path::new("..")]).expect("Failed to compile proto files");
+    
+    println!("Proto compilation complete");
 }

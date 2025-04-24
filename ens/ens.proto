@@ -2,124 +2,120 @@ syntax = "proto3";
 
 package ens.v1;
 
-// ENSEvents represents all ENS-related events captured in a block
-message ENSEvents {
-  repeated NameRegistered name_registered = 1;
-  repeated NameRenewed name_renewed = 2;
-  repeated NameTransferred name_transferred = 3;
-  repeated NewOwner new_owner = 4;
-  repeated NewResolver new_resolver = 5;
-  repeated NewTTL new_ttl = 6;
-  repeated Transfer transfer = 7;
-  repeated AddrChanged addr_changed = 8;
-  repeated NameChanged name_changed = 9;
-  repeated ContenthashChanged contenthash_changed = 10;
-  repeated TextChanged text_changed = 11;
+message EnsName {
+    string node = 1;
+    string label = 2;
+    string name = 3;
+    string owner = 4;
+    string resolver = 5;
+    uint64 ttl = 6;
+    uint64 expiry = 7;
+    string addr = 8;
+    string contenthash = 9;
+    map<string, string> text_records = 10;
+    uint64 created_at = 11;
+    uint64 updated_at = 12;
 }
-
-// ENSName represents a single ENS name and its metadata
-message ENSName {
-  string name = 1;
-  string label = 2;
-  string node = 3;
-  string owner = 4;
-  string resolver = 5;
-  uint64 ttl = 6;
-  uint64 expiry = 7;
-  string addr = 8;
-  string contenthash = 9;
-  map<string, string> text_records = 10;
-  uint64 created_at = 11;
-  uint64 updated_at = 12;
-}
-
-// Events from ENS Registry
 
 message NewOwner {
-  string node = 1;
-  string label = 2;
-  string owner = 3;
-  uint64 timestamp = 4;
-  string transaction_hash = 5;
+    string node = 1;
+    string label = 2;
+    string owner = 3;
+    uint64 timestamp = 4;
+    string transaction_hash = 5;
 }
 
 message Transfer {
-  string node = 1;
-  string owner = 2;
-  uint64 timestamp = 3;
-  string transaction_hash = 4;
+    string node = 1;
+    string owner = 2;
+    uint64 timestamp = 3;
+    string transaction_hash = 4;
 }
 
 message NewResolver {
-  string node = 1;
-  string resolver = 2;
-  uint64 timestamp = 3;
-  string transaction_hash = 4;
+    string node = 1;
+    string resolver = 2;
+    uint64 timestamp = 3;
+    string transaction_hash = 4;
 }
 
 message NewTTL {
-  string node = 1;
-  uint64 ttl = 2;
-  uint64 timestamp = 3;
-  string transaction_hash = 4;
+    string node = 1;
+    uint64 ttl = 2;
+    uint64 timestamp = 3;
+    string transaction_hash = 4;
 }
 
-// Events from ENS Registrar
-
 message NameRegistered {
-  string name = 1;
-  string label = 2;
-  string owner = 3;
-  uint64 cost = 4;
-  uint64 expires = 5;
-  uint64 timestamp = 6;
-  string transaction_hash = 7;
+    string name = 1;
+    string label = 2;
+    string owner = 3;
+    uint64 cost = 4;
+    uint64 expires = 5;
+    uint64 timestamp = 6;
+    string transaction_hash = 7;
 }
 
 message NameRenewed {
-  string name = 1;
-  string label = 2;
-  uint64 cost = 3;
-  uint64 expires = 4;
-  uint64 timestamp = 5;
-  string transaction_hash = 6;
+    string name = 1;
+    string label = 2;
+    uint64 cost = 3;
+    uint64 expires = 4;
+    uint64 timestamp = 5;
+    string transaction_hash = 6;
 }
 
 message NameTransferred {
-  string name = 1;
-  string label = 2;
-  string owner = 3;
-  uint64 timestamp = 4;
-  string transaction_hash = 5;
+    string name = 1;
+    string label = 2;
+    string owner = 3;
+    uint64 timestamp = 4;
+    string transaction_hash = 5;
 }
 
-// Events from ENS Resolver
-
 message AddrChanged {
-  string node = 1;
-  string addr = 2;
-  uint64 timestamp = 3;
-  string transaction_hash = 4;
+    string node = 1;
+    string address = 2;
+    uint64 timestamp = 3;
+    string transaction_hash = 4;
 }
 
 message NameChanged {
-  string node = 1;
-  string name = 2;
-  uint64 timestamp = 3;
-  string transaction_hash = 4;
+    string node = 1;
+    string name = 2;
+    uint64 timestamp = 3;
+    string transaction_hash = 4;
 }
 
 message ContenthashChanged {
-  string node = 1;
-  string hash = 2;
-  uint64 timestamp = 3;
-  string transaction_hash = 4;
+    string node = 1;
+    string hash = 2;
+    uint64 timestamp = 3;
+    string transaction_hash = 4;
 }
 
 message TextChanged {
-  string node = 1;
-  string key = 2;
-  string value = 3;
-  uint64 timestamp = 4;
-  string transaction_hash = 5;
+    string node = 1;
+    string key = 2;
+    string value = 3;
+    uint64 timestamp = 4;
+    string transaction_hash = 5;
+}
+
+message EnsEvents {
+    repeated NameRegistered name_registered = 1;
+    repeated NameRenewed name_renewed = 2;
+    repeated NameTransferred name_transferred = 3;
+    repeated NewOwner new_owner = 4;
+    repeated NewResolver new_resolver = 5;
+    repeated NewTTL new_ttl = 6;
+    repeated Transfer transfer = 7;
+    repeated AddrChanged addr_changed = 8;
+    repeated NameChanged name_changed = 9;
+    repeated ContenthashChanged contenthash_changed = 10;
+    repeated TextChanged text_changed = 11;
+}
+
+message StringMessage {
+    string value = 1;
 }

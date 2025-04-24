@@ -1,99 +1,229 @@
-mod pb;
-mod abi;
+// Re-export the generated protobuf types from substreams-ens-pb
+pub use substreams_ens_pb::ens::v1::{
+    AddrChanged,
+    ContenthashChanged,
+    EnsEvents,
+    EnsName,
+    NameChanged,
+    NameRegistered,
+    NameRenewed,
+    NameTransferred,
+    NewOwner,
+    NewResolver,
+    NewTtl,
+    StringMessage,
+    TextChanged,
+    Transfer,
+};
 
-use substreams::Hex;
-use substreams_ethereum::{pb::eth::v2 as eth};
-use std::collections::HashMap;
-use std::fmt::Write;
-use substreams::prelude::StoreSetProto;
+// Import modules
+pub mod abi;
+pub mod events;
 
-// Import the generated protobuf code
-use crate::pb::v1;
+use substreams::{store::{StoreGet, StoreNew, StoreSet}, Hex};
+use substreams::prelude::{StoreGetProto, StoreSetProto};
+use substreams_ethereum::{pb::eth::v2 as eth, Event};
 
-// ENS Registry contract address on Ethereum mainnet
+// Contract addresses
 const ENS_REGISTRY_ADDRESS: &str = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+const PUBLIC_RESOLVER_ADDRESS: &str = "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63";
+const PUBLIC_RESOLVER2_ADDRESS: &str = "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41";
+const REVERSE_REGISTRAR_ADDRESS: &str = "0xa58E81fe9b61B5c3fE2AFD33CF304c454AbFc7Cb";
+const ETH_REGISTRAR_CONTROLLER_ADDRESS: &str = "0x253553366da8546fc250f225fe3d25d0c782303b";
+const ETH_REGISTRAR_CONTROLLER_OLD_ADDRESS: &str = "0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5";
+#[allow(dead_code)]
+const NAME_WRAPPER_ADDRESS: &str = "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401";
 
-// Namehash for .eth
-const ETH_NODE: &str = "0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae";
+// Helper function to convert bytes32 to hex string
+fn bytes32_to_hex(bytes: &[u8]) -> String {
+    format!("0x{}", Hex(bytes))
+}
+
+// Helper function to normalize Ethereum address
+fn normalize_address(address: &str) -> String {
+    if address.starts_with("0x") {
+        address.to_lowercase()
+    } else {
+        format!("0x{}", address.to_lowercase())
+    }
+}
+
+// Helper function to get timestamp from block header
+fn get_timestamp(block: &eth::Block) -> u64 {
+    block.header.as_ref()
+        .and_then(|h| h.timestamp.as_ref())
+        .map(|ts| ts.seconds as u64)
+        .unwrap_or(0)
+}
 
 #[substreams::handlers::map]
-fn map_events(block: eth::Block) -> Result<v1::ENSEvents, substreams::errors::Error> {
-    let mut events = v1::ENSEvents {
-        name_registered: Vec::new(),
-        name_renewed: Vec::new(),
-        name_transferred: Vec::new(),
-        new_owner: Vec::new(),
-        new_resolver: Vec::new(),
-        new_ttl: Vec::new(),
-        transfer: Vec::new(),
-        addr_changed: Vec::new(),
-        name_changed: Vec::new(),
-        contenthash_changed: Vec::new(),
-        text_changed: Vec::new(),
-    };
+fn map_events(block: eth::Block) -> Result<EnsEvents, substreams::errors::Error> {
+    let timestamp = get_timestamp(&block);
+    let mut events = EnsEvents::default();
 
-    for log in block.logs() {
-        let tx_hash = Hex(&log.receipt.transaction.hash).to_string();
-        let timestamp = block.timestamp_seconds();
+    for trx in block.transactions() {
+        let tx_hash = bytes32_to_hex(trx.hash.as_ref());
 
-        // Process ENS Registry events
-        if Hex(&log.address()).to_string().to_lowercase() == ENS_REGISTRY_ADDRESS.to_lowercase() {
-            // In a real implementation, we would decode the events here
-            // For now, we'll just add placeholder logic
-            
-            // Example for NewOwner event (simplified)
-            if log.topics().len() >= 3 && log.topics()[0] == hex::decode("ce0457fe73731f824cc272376169235128c118b49d344817417c6d108d155e82").unwrap() {
-                events.new_owner.push(v1::NewOwner {
-                    node: Hex(&log.topics()[1]).to_string(),
-                    label: Hex(&log.topics()[2]).to_string(),
-                    owner: Hex(&log.data()).to_string(),
-                    timestamp,
-                    transaction_hash: tx_hash.clone(),
-                });
-            }
-            
-            // Example for Transfer event (simplified)
-            if log.topics().len() >= 2 && log.topics()[0] == hex::decode("d4735d920b0f87494915f556dd9b54c8f309026070caea5c737245152564d266").unwrap() {
-                events.transfer.push(v1::Transfer {
-                    node: Hex(&log.topics()[1]).to_string(),
-                    owner: Hex(&log.data()).to_string(),
-                    timestamp,
-                    transaction_hash: tx_hash.clone(),
-                });
-            }
-            
-            // Example for NewResolver event (simplified)
-            if log.topics().len() >= 2 && log.topics()[0] == hex::decode("335721b01866dc23fbee8b6b2c7b1e14d6f05c28cd35a2c934239f94095602a0").unwrap() {
-                events.new_resolver.push(v1::NewResolver {
-                    node: Hex(&log.topics()[1]).to_string(),
-                    resolver: Hex(&log.data()).to_string(),
-                    timestamp,
-                    transaction_hash: tx_hash.clone(),
-                });
-            }
-        }
+        // Process logs for each transaction
+        for log in &trx.receipt.as_ref().map_or(Vec::new(), |r| r.logs.clone()) {
+            let address = normalize_address(&format!("0x{}", Hex(&log.address)));
 
-        // Process PublicResolver events (simplified examples)
-        if log.topics().len() >= 2 {
-            // Example for AddrChanged event
-            if log.topics()[0] == hex::decode("65412c0b4f88a82b0e0d4a04ad1f4452dfbf25e4a4c8c8b6e5c24988a3f7a3e9").unwrap() {
-                events.addr_changed.push(v1::AddrChanged {
-                    node: Hex(&log.topics()[1]).to_string(),
-                    addr: Hex(&log.data()).to_string(),
-                    timestamp,
-                    transaction_hash: tx_hash.clone(),
-                });
+            // ENS Registry events
+            if address == ENS_REGISTRY_ADDRESS.to_lowercase() {
+                // NewOwner event
+                if let Some(event) = events::NewOwner::match_and_decode(log) {
+                    let node = event.node;
+                    let label = event.label;
+                    let owner = event.owner;
+                    events.new_owner.push(NewOwner {
+                        node: bytes32_to_hex(&node),
+                        label: bytes32_to_hex(&label),
+                        owner: normalize_address(&owner),
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+
+                // Transfer event
+                if let Some(event) = events::Transfer::match_and_decode(log) {
+                    let node = event.node;
+                    let owner = event.owner;
+                    events.transfer.push(Transfer {
+                        node: bytes32_to_hex(&node),
+                        owner: normalize_address(&owner),
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+
+                // NewResolver event
+                if let Some(event) = events::NewResolver::match_and_decode(log) {
+                    let node = event.node;
+                    let resolver = event.resolver;
+                    events.new_resolver.push(NewResolver {
+                        node: bytes32_to_hex(&node),
+                        resolver: normalize_address(&resolver),
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+
+                // NewTTL event
+                if let Some(event) = events::NewTTL::match_and_decode(log) {
+                    let node = event.node;
+                    let ttl = event.ttl;
+                    events.new_ttl.push(NewTtl {
+                        node: bytes32_to_hex(&node),
+                        ttl,
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
             }
-            
-            // Example for NameChanged event
-            if log.topics()[0] == hex::decode("b7d29e911041e8d9b843369e890bcb72c9388692ba48b65ac54e9569c9d6b957").unwrap() {
-                // In a real implementation, we would decode the name from the data
-                events.name_changed.push(v1::NameChanged {
-                    node: Hex(&log.topics()[1]).to_string(),
-                    name: "example.eth".to_string(), // Placeholder
-                    timestamp,
-                    transaction_hash: tx_hash.clone(),
-                });
+
+            // Public Resolver events
+            if address == PUBLIC_RESOLVER_ADDRESS.to_lowercase() || address == PUBLIC_RESOLVER2_ADDRESS.to_lowercase() {
+                // AddrChanged event
+                if let Some(event) = events::AddrChanged::match_and_decode(log) {
+                    let node = event.node;
+                    let addr = event.address;
+                    events.addr_changed.push(AddrChanged {
+                        node: bytes32_to_hex(&node),
+                        address: normalize_address(&addr),
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+
+                // NameChanged event
+                if let Some(event) = events::NameChanged::match_and_decode(log) {
+                    let node = event.node;
+                    let name = event.name;
+                    events.name_changed.push(NameChanged {
+                        node: bytes32_to_hex(&node),
+                        name,
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+
+                // ContenthashChanged event
+                if let Some(event) = events::ContenthashChanged::match_and_decode(log) {
+                    let node = event.node;
+                    let hash = event.hash;
+                    events.contenthash_changed.push(ContenthashChanged {
+                        node: bytes32_to_hex(&node),
+                        hash: bytes32_to_hex(&hash),
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+
+                // TextChanged event
+                if let Some(event) = events::TextChanged::match_and_decode(log) {
+                    let node = event.node;
+                    let key = event.key;
+                    let value = event.value;
+                    events.text_changed.push(TextChanged {
+                        node: bytes32_to_hex(&node),
+                        key,
+                        value,
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+            }
+
+            // ETH Registrar Controller events
+            if address == ETH_REGISTRAR_CONTROLLER_ADDRESS.to_lowercase() || address == ETH_REGISTRAR_CONTROLLER_OLD_ADDRESS.to_lowercase() {
+                // NameRegistered event
+                if let Some(event) = events::NameRegistered::match_and_decode(log) {
+                    let name = event.name;
+                    let label = event.label;
+                    let owner = event.owner;
+                    let cost = event.cost;
+                    let expires = event.expires;
+                    events.name_registered.push(NameRegistered {
+                        name: name.clone(),
+                        label: bytes32_to_hex(&label),
+                        owner: normalize_address(&owner),
+                        cost,
+                        expires,
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+
+                // NameRenewed event
+                if let Some(event) = events::NameRenewed::match_and_decode(log) {
+                    let name = event.name;
+                    let label = event.label;
+                    let cost = event.cost;
+                    let expires = event.expires;
+                    events.name_renewed.push(NameRenewed {
+                        name: name.clone(),
+                        label: bytes32_to_hex(&label),
+                        cost,
+                        expires,
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
+            }
+
+            // Reverse Registrar events
+            if address == REVERSE_REGISTRAR_ADDRESS.to_lowercase() {
+                // ReverseClaimed event
+                if let Some(event) = events::ReverseClaimed::match_and_decode(log) {
+                    let addr = event.addr;
+                    let node = event.node;
+                    events.name_changed.push(NameChanged {
+                        node: bytes32_to_hex(&node),
+                        name: format!("{}.addr.reverse", normalize_address(&addr)),
+                        timestamp,
+                        transaction_hash: tx_hash.clone(),
+                    });
+                }
             }
         }
     }
@@ -102,205 +232,183 @@ fn map_events(block: eth::Block) -> Result<v1::ENSEvents, substreams::errors::Er
 }
 
 #[substreams::handlers::store]
-fn store_ens_names(events: v1::ENSEvents, store: StoreSetProto<v1::ENSName>) {
-    // Process new resolver events
-    for event in events.new_resolver {
-        let node = event.node.clone();
-        let resolver_address = event.resolver.clone();
+fn store_ens_names(events: EnsEvents, store_get: StoreGetProto<EnsName>, store_set: StoreSetProto<EnsName>) {
+    // Process name registrations
+    for event in events.name_registered {
+        let name = format!("{}.eth", event.name);
+        let node_key = format!("name:{}", name);
         
-        // Store the resolver address for the node
-        let mut ens_name = get_or_create_ens_name(&store, &node);
-        ens_name.resolver = resolver_address;
-        ens_name.updated_at = event.timestamp;
+        // Create or update ENS name record
+        let ens_name = EnsName {
+            node: node_key.clone(),
+            label: event.label,
+            name: name.clone(),
+            owner: event.owner,
+            created_at: event.timestamp,
+            updated_at: event.timestamp,
+            expiry: event.expires,
+            ..Default::default()
+        };
         
-        store.set(node.clone(), &ens_name);
+        store_set.set(0, node_key, &ens_name);
+        
+        // Also store by address for reverse lookup once we have the address
+        if !ens_name.addr.is_empty() {
+            let addr_key = format!("addr:{}", ens_name.addr);
+            store_set.set(0, addr_key, &ens_name);
+        }
     }
-
+    
     // Process address changes
     for event in events.addr_changed {
-        let node = event.node.clone();
-        let addr = event.addr.clone();
+        let node_key = format!("node:{}", event.node);
         
-        // Store the address for the node
-        let mut ens_name = get_or_create_ens_name(&store, &node);
-        ens_name.addr = addr;
-        ens_name.updated_at = event.timestamp;
-        
-        store.set(node.clone(), &ens_name);
+        if let Some(mut ens_name) = store_get.get_last(node_key.clone()) {
+            // Update the address
+            ens_name.addr = event.address.clone();
+            ens_name.updated_at = event.timestamp;
+            
+            // Update the record
+            store_set.set(0, node_key, &ens_name);
+            
+            // Also update or create the reverse mapping
+            let addr_key = format!("addr:{}", event.address);
+            store_set.set(0, addr_key, &ens_name);
+        }
     }
-
+    
     // Process name changes
     for event in events.name_changed {
-        let node = event.node.clone();
-        let name = event.name.clone();
+        let node_key = format!("node:{}", event.node);
         
-        // Store the name for the node
-        let mut ens_name = get_or_create_ens_name(&store, &node);
-        ens_name.name = name;
-        ens_name.updated_at = event.timestamp;
-        
-        store.set(node.clone(), &ens_name);
+        if let Some(mut ens_name) = store_get.get_last(node_key.clone()) {
+            // Update the name
+            ens_name.name = event.name;
+            ens_name.updated_at = event.timestamp;
+            
+            // Update the record
+            store_set.set(0, node_key, &ens_name);
+            
+            // Also update the reverse mapping if we have an address
+            if !ens_name.addr.is_empty() {
+                let addr_key = format!("addr:{}", ens_name.addr);
+                store_set.set(0, addr_key, &ens_name);
+            }
+        }
     }
-
-    // Process ownership changes
+    
+    // Process text record changes
+    for event in events.text_changed {
+        let node_key = format!("node:{}", event.node);
+        
+        if let Some(mut ens_name) = store_get.get_last(node_key.clone()) {
+            // Update the text record
+            ens_name.text_records.insert(event.key, event.value);
+            ens_name.updated_at = event.timestamp;
+            
+            // Update the record
+            store_set.set(0, node_key, &ens_name);
+        }
+    }
+    
+    // Process ownership transfers
     for event in events.transfer {
-        let node = event.node.clone();
-        let owner = event.owner.clone();
+        let node_key = format!("node:{}", event.node);
         
-        // Store the owner for the node
-        let mut ens_name = get_or_create_ens_name(&store, &node);
-        ens_name.owner = owner;
-        ens_name.updated_at = event.timestamp;
-        
-        store.set(node.clone(), &ens_name);
+        if let Some(mut ens_name) = store_get.get_last(node_key.clone()) {
+            // Update the owner
+            ens_name.owner = event.owner;
+            ens_name.updated_at = event.timestamp;
+            
+            // Update the record
+            store_set.set(0, node_key, &ens_name);
+        }
     }
-
-    // Process new owner events (for subdomains)
+    
+    // Process new owners (subdomains)
     for event in events.new_owner {
-        let node = event.node.clone();
-        let label = event.label.clone();
-        let owner = event.owner.clone();
+        let parent_node_key = format!("node:{}", event.node);
         
-        // Create the full node hash for the subdomain
-        let node_bytes = hex::decode(&node[2..]).unwrap_or_default();
-        let label_bytes = hex::decode(&label[2..]).unwrap_or_default();
-        let mut combined = Vec::new();
-        combined.extend_from_slice(&node_bytes);
-        combined.extend_from_slice(&label_bytes);
-        
-        let hash = keccak256(&combined);
-        let mut subdomain_node = String::with_capacity(66); // 0x + 64 hex chars
-        write!(&mut subdomain_node, "0x").unwrap();
-        for byte in hash.iter() {
-            write!(&mut subdomain_node, "{:02x}", byte).unwrap();
+        // If we have the parent node, we can create the subdomain
+        if let Some(parent) = store_get.get_last(parent_node_key) {
+            let subdomain = if parent.name.ends_with(".eth") {
+                format!("{}.{}", event.label, parent.name)
+            } else {
+                format!("{}.{}.eth", event.label, parent.name)
+            };
+            
+            let node_key = format!("name:{}", subdomain);
+            
+            // Create or update the subdomain record
+            let ens_name = EnsName {
+                node: node_key.clone(),
+                label: event.label,
+                name: subdomain,
+                owner: event.owner,
+                created_at: event.timestamp,
+                updated_at: event.timestamp,
+                ..Default::default()
+            };
+            
+            store_set.set(0, node_key, &ens_name);
         }
-        
-        // Store the owner for the subdomain
-        let mut ens_name = get_or_create_ens_name(&store, &subdomain_node);
-        ens_name.owner = owner;
-        ens_name.label = label;
-        ens_name.node = node;
-        ens_name.created_at = event.timestamp;
-        ens_name.updated_at = event.timestamp;
-        
-        store.set(subdomain_node, &ens_name);
     }
-}
-
-// Helper function to get an existing ENS name or create a new one
-fn get_or_create_ens_name(store: &StoreSetProto<v1::ENSName>, node: &str) -> v1::ENSName {
-    match store.get_last(node) {
-        Some(ens_name) => ens_name,
-        None => v1::ENSName {
-            name: String::new(),
-            label: String::new(),
-            node: node.to_string(),
-            owner: String::new(),
-            resolver: String::new(),
-            ttl: 0,
-            expiry: 0,
-            addr: String::new(),
-            contenthash: String::new(),
-            text_records: HashMap::new(),
-            created_at: 0,
-            updated_at: 0,
+    
+    // Process resolver changes
+    for event in events.new_resolver {
+        let node_key = format!("node:{}", event.node);
+        
+        if let Some(mut ens_name) = store_get.get_last(node_key.clone()) {
+            // Update the resolver
+            ens_name.resolver = event.resolver;
+            ens_name.updated_at = event.timestamp;
+            
+            // Update the record
+            store_set.set(0, node_key, &ens_name);
         }
     }
 }
 
-// Helper function to compute keccak256 hash
-fn keccak256(data: &[u8]) -> [u8; 32] {
-    use tiny_keccak::{Hasher, Keccak};
-    let mut output = [0u8; 32];
-    let mut hasher = Keccak::v256();
-    hasher.update(data);
-    hasher.finalize(&mut output);
-    output
-}
-
-// RPC module for resolving ENS names to addresses
 #[substreams::handlers::map]
-fn resolve_ens_name(
-    params: String,
-    store: substreams::store::StoreGetProto<v1::ENSName>,
-) -> Result<String, substreams::errors::Error> {
-    // Parse the ENS name from the parameters
-    let ens_name = params.trim();
+fn resolve_ens_name(params: String, store: StoreGetProto<EnsName>) -> Result<StringMessage, substreams::errors::Error> {
+    // Normalize the input name
+    let name = if params.ends_with(".eth") {
+        params
+    } else {
+        format!("{}.eth", params)
+    };
     
-    // Check if the name ends with .eth
-    if !ens_name.ends_with(".eth") {
-        return Err(substreams::errors::Error::Unexpected(format!("Invalid ENS name: {}", ens_name)));
-    }
+    // Look up the name in the store
+    let name_key = format!("name:{}", name);
     
-    // Compute the namehash for the ENS name
-    let namehash = compute_namehash(ens_name);
-    
-    // Look up the ENS name in the store
-    if let Some(ens_record) = store.get_last(&namehash) {
-        if !ens_record.addr.is_empty() {
-            return Ok(ens_record.addr);
+    let result = if let Some(ens_name) = store.get_last(name_key) {
+        if !ens_name.addr.is_empty() {
+            ens_name.addr
+        } else {
+            "".to_string()
         }
-    }
+    } else {
+        // If we couldn't find the name or it doesn't have an address, return an empty string
+        "".to_string()
+    };
     
-    // If not found in the store, return an error
-    Err(substreams::errors::Error::Unexpected(format!("ENS name not found: {}", ens_name)))
+    Ok(StringMessage { value: result })
 }
 
-// Helper function to compute namehash for an ENS name
-fn compute_namehash(name: &str) -> String {
-    let mut node = [0u8; 32];
-    
-    if name.is_empty() {
-        return format!("0x{}", hex::encode(node));
-    }
-    
-    let labels: Vec<&str> = name.split('.').collect();
-    
-    for label in labels.iter().rev() {
-        let mut data = node.to_vec();
-        data.extend_from_slice(&keccak256(label.as_bytes()));
-        node = keccak256(&data);
-    }
-    
-    format!("0x{}", hex::encode(node))
-}
-
-// RPC module for reverse resolution (address to ENS name)
 #[substreams::handlers::map]
-fn reverse_resolve(
-    params: String,
-    store: substreams::store::StoreGetProto<v1::ENSName>,
-) -> Result<String, substreams::errors::Error> {
-    // Parse the Ethereum address from the parameters
-    let address = params.trim();
+fn reverse_resolve(params: String, store: StoreGetProto<EnsName>) -> Result<StringMessage, substreams::errors::Error> {
+    // Normalize the input address
+    let address = normalize_address(&params);
     
-    // Validate the address format
-    if !address.starts_with("0x") || address.len() != 42 {
-        return Err(substreams::errors::Error::Unexpected(format!("Invalid Ethereum address: {}", address)));
-    }
+    // Look up the address in the store
+    let addr_key = format!("addr:{}", address);
     
-    // Compute the reverse node for the address
-    let reverse_node = compute_reverse_node(address);
+    let result = if let Some(ens_name) = store.get_last(addr_key) {
+        ens_name.name
+    } else {
+        // If we couldn't find the address, return an empty string
+        "".to_string()
+    };
     
-    // Look up the reverse record in the store
-    if let Some(ens_record) = store.get_last(&reverse_node) {
-        if !ens_record.name.is_empty() {
-            return Ok(ens_record.name);
-        }
-    }
-    
-    // If not found in the store, return an error
-    Err(substreams::errors::Error::Unexpected(format!("No ENS name found for address: {}", address)))
-}
-
-// Helper function to compute the reverse node for an Ethereum address
-fn compute_reverse_node(address: &str) -> String {
-    // Remove the 0x prefix and convert to lowercase
-    let addr = address[2..].to_lowercase();
-    
-    // Construct the reverse name (address.addr.reverse)
-    let reverse_name = format!("{}.addr.reverse", addr);
-    
-    // Compute the namehash for the reverse name
-    compute_namehash(&reverse_name)
+    Ok(StringMessage { value: result })
 }

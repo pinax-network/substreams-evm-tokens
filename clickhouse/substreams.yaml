@@ -20,6 +20,9 @@ imports:
   erc20_contracts_rpc: ../erc20-contracts-rpc/substreams.yaml
   uniswap_v2: ../uniswap-v2/substreams.yaml
   uniswap_v3: ../uniswap-v3/substreams.yaml
+  
+  # ENS Substreams
+  ens: ../ens/substreams.yaml
 
 binaries:
   default:
@@ -43,12 +46,20 @@ modules:
       - map: uniswap_v3:map_events
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+      
+  - name: db_out_ens
+    kind: map
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - map: ens:map_events
+    output:
+      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 
 sink:
-  module: db_out
+  module: db_out_ens
   type: sf.substreams.sink.sql.v1.Service
   config:
-    schema: "./schema.sql"
+    schema: "./schema.ens.sql"
     engine: clickhouse
     postgraphile_frontend:
       enabled: false

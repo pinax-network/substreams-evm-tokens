@@ -1,20 +1,24 @@
 [package]
 name = "substreams-ens"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
-
-[lib]
-name = "substreams"  # This is important - output binary name
-crate-type = ["cdylib"]  # Compile as a dynamic library
+description = "ENS Substreams implementation"
 
 [dependencies]
-substreams = { workspace = true }
-substreams-ethereum = { workspace = true }
-prost = "0.11"
+prost = "=0.13.5"
+prost-types = "=0.13.5"
+substreams.workspace = true
+substreams-ethereum.workspace = true
+substreams-ens-pb = { path = "./substreams-ens-pb" }
 ethabi = "18.0.0"
-hex = "0.4.3"
-hex-literal = "0.4.1"
-tiny-keccak = { version = "2.0", features = ["keccak"] }
+hex = "0.4"
 
 [build-dependencies]
-substreams-ethereum = { workspace = true }
+prost-build = "=0.13.5"
+substreams-ethereum.workspace = true
+anyhow = "1.0"
+
+[lib]
+name = "substreams_ens"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]

@@ -1,10 +1,12 @@
 .PHONY: build
 build:
 	cargo build --target wasm32-unknown-unknown --release
+	mkdir -p target/wasm32-unknown-unknown/release
+	# No need to copy, we'll update substreams.yaml to point to the correct file
 
 .PHONY: codegen
 codegen:
-	substreams protogen ./substreams.yaml --exclude-paths="sf/substreams,google"
+	@echo "Using protobuf definitions from substreams-ens-pb crate"
 
 .PHONY: package
 package: build
@@ -38,3 +40,4 @@ info:
 clean:
 	cargo clean
 	rm -rf target/
+	rm -rf src/pb/

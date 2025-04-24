@@ -1,0 +1,52 @@
+specVersion: v0.1.0
+package:
+  name: ens_resolver
+  version: v0.1.0
+
+imports:
+  ethereum: https://github.com/streamingfast/sf-ethereum/releases/download/v0.10.2/ethereum-v0.10.2.spkg
+
+protobuf:
+  files:
+    - ens.proto
+  importPaths:
+    - ./
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: target/wasm32-unknown-unknown/release/substreams_ens.wasm
+
+modules:
+  - name: map_events
+    kind: map
+    initialBlock: 3327417 # ENS Registry deployment block
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:ens.v1.EnsEvents
+
+  - name: store_ens_names
+    kind: store
+    updatePolicy: set
+    valueType: proto:ens.v1.EnsName
+    inputs:
+      - map: map_events
+
+  - name: resolve_ens_name
+    kind: map
+    initialBlock: 3327417
+    inputs:
+      - params: string
+      - store: store_ens_names
+    output:
+      type: proto:ens.v1.StringMessage
+
+  - name: reverse_resolve
+    kind: map
+    initialBlock: 3327417
+    inputs:
+      - params: string
+      - store: store_ens_names
+    output:
+      type: proto:ens.v1.StringMessage
