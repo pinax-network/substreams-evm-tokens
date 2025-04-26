@@ -12,6 +12,8 @@ members = [
   "common",
   "clickhouse",
   "ens"
+  "erc721",
+  "erc1155"
 ]
 resolver = "2"
 
@@ -22,13 +24,5 @@ version = "0.0.0"
 
 [workspace.dependencies]
 substreams = "0.6.1"
-substreams-abis = "0.2.2"
+substreams-abis = "0.3.0"
 substreams-ethereum = "0.10.4"
-prost = "=0.13.5"
-prost-types = "=0.13.5"
-prost-build = "=0.13.5"
-
-[patch.crates-io]
-prost = { git = "https://github.com/tokio-rs/prost", tag = "v0.13.5" }
-prost-types = { git = "https://github.com/tokio-rs/prost", tag = "v0.13.5" }
-prost-build = { git = "https://github.com/tokio-rs/prost", tag = "v0.13.5" }

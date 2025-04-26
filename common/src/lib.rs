@@ -14,24 +14,15 @@ pub fn update_genesis_clock(mut clock: Clock) -> Clock {
     }
     // ETH Mainnet
     if clock.id == "d4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3" {
-        clock.timestamp = Some(Timestamp {
-            seconds: 1438269973,
-            nanos: 0,
-        });
+        clock.timestamp = Some(Timestamp { seconds: 1438269973, nanos: 0 });
         return clock;
     // Arbitrum One
     } else if clock.id == "7ee576b35482195fc49205cec9af72ce14f003b9ae69f6ba0faef4514be8b442" {
-        clock.timestamp = Some(Timestamp {
-            seconds: 1622240000,
-            nanos: 0,
-        });
+        clock.timestamp = Some(Timestamp { seconds: 1622240000, nanos: 0 });
         return clock;
     // Arbitrum Nova
     } else if clock.id == "2ad24e03026118f9b3a48626f0636e38c93660e90a6812e853a99aa8c5371561" {
-        clock.timestamp = Some(Timestamp {
-            seconds: 1656120000,
-            nanos: 0,
-        });
+        clock.timestamp = Some(Timestamp { seconds: 1656120000, nanos: 0 });
         return clock;
     // Boba
     } else if clock.id == "dcd9e6a8f9973eaa62da2874959cb152faeb4fd6929177bd6335a1a16074ef9c" {
@@ -103,4 +94,8 @@ pub fn clock_to_date(clock: &Clock) -> String {
         Some(date) => date.to_string(),
         _ => "".to_string(),
     }
+}
+
+pub fn is_zero_address<T: AsRef<[u8]>>(addr: T) -> bool {
+    addr.as_ref() == NULL_ADDRESS
 }
