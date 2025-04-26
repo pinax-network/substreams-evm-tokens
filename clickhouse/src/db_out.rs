@@ -5,10 +5,8 @@ use proto::pb::evm::tokens::uniswap::v2::Events as EventsPricesUniswapV2;
 use proto::pb::evm::tokens::uniswap::v3::Events as EventsPricesUniswapV3;
 use substreams::{errors::Error, pb::substreams::Clock};
 use substreams_database_change::pb::database::DatabaseChanges;
-use substreams_ethereum::pb::eth::v2::Block;
-use substreams_ens::EnsEvents;
 
-use crate::{balances::process_balances, contracts::process_contracts, uniswap_v2, uniswap_v3, ens};
+use crate::{balances::process_balances, contracts::process_contracts, uniswap_v2, uniswap_v3};
 
 #[substreams::handlers::map]
 pub fn db_out(mut clock: Clock,
@@ -21,8 +19,7 @@ pub fn db_out(mut clock: Clock,
     uniswap_v3: EventsPricesUniswapV3
 ) -> Result<DatabaseChanges, Error> {
     let mut tables = substreams_database_change::tables::Tables::new();
-    let temp_clock: substreams::pb::substreams::Clock = update_genesis_clock(clock);
-    clock = temp_clock;
+    clock = update_genesis_clock(clock);
 
     // -- Balances/Transfers --
     let mut index = 0;
@@ -39,9 +36,4 @@ pub fn db_out(mut clock: Clock,
     uniswap_v3::process_uniswap_v3(&mut tables, &clock, uniswap_v3, index);
 
     Ok(tables.to_database_changes())
-}
-
-#[substreams::handlers::map]
-pub fn db_out_ens(block: Block, events: EnsEvents) -> Result<DatabaseChanges, Error> {
-    ens::db_out(&block, &events)
 }
