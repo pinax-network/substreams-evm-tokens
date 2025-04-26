@@ -1,23 +1,14 @@
 [package]
 name = "clickhouse"
-version = "0.0.0"
-edition = "2021"
+description = { workspace = true }
+edition = { workspace = true }
+version = { workspace = true }
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-# Pin specific versions
-substreams = "=0.5.10"  # Use exact version with =
-substreams-database-change = "=2.0.0"  # Use exact version with =
-substreams-ethereum = "=0.9.5"  # Use exact version with =
-prost = "=0.11.9"  # Pin exact version of prost
-prost-types = "=0.11.9"  # Pin exact version of prost-types
-
-# Local dependencies
+substreams = { workspace = true }
+substreams-database-change = "2.0"
 proto = { path = "../proto" }
 common = { path = "../common" }
-substreams-ens = { path = "../ens" }
-
-# Other dependencies
-chrono = { version = "0.4", default-features = false, features = ["std"] }
