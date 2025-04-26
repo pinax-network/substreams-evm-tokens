@@ -11,7 +11,7 @@ members = [
   "proto",
   "common",
   "clickhouse",
-  "ens"
+  "ens",
   "erc721",
   "erc1155"
 ]
