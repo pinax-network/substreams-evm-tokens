@@ -454,6 +454,26 @@ SELECT
    IF (decimals = '', Null, CAST(decimals AS UInt8)) AS decimals
 FROM contract_changes;
 
+-- one time INSERT to populate Native contract --
+INSERT INTO contracts (
+   block_num,
+   timestamp,
+   global_sequence,
+   address,
+   name,
+   symbol,
+   decimals
+)
+VALUES (
+   0,
+   toDateTime(0, 'UTC'),
+   0,
+   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+   'Native',
+   'Native',
+   18
+);
+
 -- Pools Created for Uniswap V2 & V3 --
 CREATE TABLE IF NOT EXISTS pools (
    -- block --
