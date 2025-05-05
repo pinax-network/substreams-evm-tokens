@@ -1,9 +1,9 @@
 specVersion: v0.1.0
 package:
   name: erc721
-  version: v0.3.0
+  version: v0.4.0
   url: https://github.com/pinax-network/substreams-evm-tokens
-  description: ERC721 events substreams package
+  description: ERC721 events
   image: ../image.png
 
 protobuf:
@@ -11,10 +11,6 @@ protobuf:
     - erc721.proto
   importPaths:
     - ../proto/v1
-
-imports:
-  erc721_rpc: ../erc721-rpc/erc721-rpc-v0.3.0.spkg
-  # erc721_rpc: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.2.0/erc721-rpc-v0.2.0.spkg
 
 binaries:
   default:
@@ -24,9 +20,7 @@ binaries:
 modules:
   - name: map_events
     kind: map
-    initialBlock: 0
     inputs:
       - source: sf.ethereum.type.v2.Block
-      - map: erc721_rpc:map_mints
     output:
-      type: proto:evm.erc721.events.v1.Events
+      type: proto:evm.erc721.v1.Events

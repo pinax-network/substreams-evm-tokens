@@ -11,3 +11,4 @@ buf.gen.yaml
 substreams-sink-sql
 cluster*
 data
+!__cache__/*.spkg

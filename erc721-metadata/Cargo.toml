@@ -1,6 +1,6 @@
 [package]
-name = "erc721-rpc"
-description = "ERC721 mints substreams package"
+name = "erc721-metadata"
+description = "ERC721 metadata"
 version = { workspace = true }
 edition = { workspace = true }
 license = { workspace = true }

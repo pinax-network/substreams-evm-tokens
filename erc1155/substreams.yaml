@@ -20,10 +20,9 @@ binaries:
 modules:
   - name: map_events
     kind: map
-    initialBlock: 0
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:evm.erc1155.events.v1.Events
+      type: proto:evm.erc1155.v1.Events
 
 network: mainnet

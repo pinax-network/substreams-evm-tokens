@@ -1,51 +1,96 @@
 syntax = "proto3";
 
-package evm.erc1155.events.v1;
+package evm.erc1155.v1;
 
 message Events {
-  repeated Transfer transfers = 2;
-  repeated Token tokens = 3;
+  repeated TransferSingle transfers_single = 1;
+  repeated TransferBatch transfers_batch = 2;
+  repeated ApprovalForAll approvals_for_all = 3;
+  repeated URI uris = 4;
 }
 
-message Transfer {
-  // Block number for the transfer event
-  uint64 block_num = 2;
-
-  // The transaction hash that generated that transfer.
-  bytes tx_hash = 3;
-
-  // The index of the log within the transaction's receipts of the block.
-  uint64 log_index = 4;
-
-  // The contract address of the token.
-  bytes contract = 5;
-
-  // The person that authorized the transfer.
-  bytes operator = 6;
-
-  // The person that sent the transfer.
-  bytes from = 7;
-
-  // The person that received the transfer.
-  bytes to = 8;
-
-  // TokenID the identifier of the token for which the transfer is happening.
-  string token_id = 9;
-
-  // Amount of tokens transferred.
-  string amount = 10;
-
-  // URI of the token
-  optional string uri = 11;
-
+message EventsMetadata {
+  repeated Metadata metadatas = 1;
 }
 
-message Token {
-  uint64 block_num = 1;
-  bytes tx_hash = 2;
-  uint64 log_index = 3;
-  bytes contract = 4;
-  string token_id = 5;
-  string uri = 6;
+message Metadata {
+  bytes contract = 1; // log.address
+  string token_id = 2; // uint256
+
+  // ERC1155 Metadata
+  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol
+  string uri = 3; // uri(uint256 id) -> string
 }
 
+message TransferSingle {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- caller --
+  optional bytes caller = 2; // call.caller (only available in Extended blocks)
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes operator = 10; // address
+  bytes from = 11; // address
+  bytes to = 12; // address
+  string id = 13; // uint256
+  string value = 14; // uint256
+}
+
+message TransferBatch {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- caller --
+  optional bytes caller = 2; // call.caller (only available in Extended blocks)
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes operator = 10; // address
+  bytes from = 11; // address
+  bytes to = 12; // address
+  repeated string ids = 13; // uint256[]
+  repeated string values = 14; // uint256[]
+}
+
+message ApprovalForAll {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- caller --
+  optional bytes caller = 2; // call.caller (only available in Extended blocks)
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes account = 10; // address
+  bytes operator = 11; // address
+  bool approved = 12; // true/false
+}
+
+// ERC1155 Metadata
+// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol
+message URI {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- caller --
+  optional bytes caller = 2; // call.caller (only available in Extended blocks)
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  string value = 10;
+  string id = 11; // uint256
+}

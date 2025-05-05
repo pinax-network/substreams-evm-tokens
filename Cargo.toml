@@ -12,7 +12,7 @@ members = [
   "common",
   "ens",
   "erc721",
-  "erc721-rpc",
+  "erc721-metadata",
   "erc1155",
   "clickhouse",
   "clickhouse-nfts",

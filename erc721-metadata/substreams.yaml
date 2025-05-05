@@ -1,0 +1,30 @@
+specVersion: v0.1.0
+package:
+  name: erc721_metadata
+  version: v0.4.0
+  url: https://github.com/pinax-network/substreams-evm-tokens
+  description: ERC721 token metadata
+  image: ../image.png
+
+imports:
+  erc721: ../erc721/substreams.yaml
+
+# protobuf:
+#   files:
+#     - erc721.proto
+#   importPaths:
+#     - ../proto/v1
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/erc721_metadata.wasm
+
+modules:
+  - name: map_events
+    kind: map
+    initialBlock: 0
+    inputs:
+      - map: erc721:map_events
+    output:
+      type: proto:evm.erc721.v1.EventsMetadata

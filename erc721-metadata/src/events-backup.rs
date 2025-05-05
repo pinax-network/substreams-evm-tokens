@@ -1,5 +1,5 @@
 use common::is_zero_address;
-use proto::pb::evm::erc721::events::v1::Token;
+use proto::pb::evm::erc721::v1::Token;
 use substreams_abis::evm::token::erc721;
 use substreams_ethereum::pb::eth::v2 as eth;
 use substreams_ethereum::Event as _;

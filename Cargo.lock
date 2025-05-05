@@ -306,7 +306,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "erc721-rpc"
+name = "erc721-metadata"
 version = "0.0.0"
 dependencies = [
  "common",
