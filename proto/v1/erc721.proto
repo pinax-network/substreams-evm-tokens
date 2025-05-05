@@ -18,9 +18,11 @@ message Metadata {
 
   // ERC721 Metadata
   // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/IERC721Metadata.sol
-  optional string uri = 3; // tokenURI(uint256 tokenId) -> string
-  optional string symbol = 4; // symbol() -> string
-  optional string name = 5; // name() -> string
+  optional string uri = 3; // 0xc87b56dd: tokenURI(uint256 tokenId) -> string
+  optional string symbol = 4; // 0x95d89b41: symbol() -> string
+  optional string name = 5; // 0x61a4422b: name() -> string
+  optional string base_uri = 6; // 0x6c0360eb: baseURI() -> string
+  optional string total_supply = 7; // 0x18160ddd: totalSupply() -> uint256
 }
 
 message Transfer {

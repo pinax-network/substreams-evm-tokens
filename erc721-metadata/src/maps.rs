@@ -1,11 +1,10 @@
-
 use std::collections::{HashMap, HashSet};
 
 use common::{is_zero_address, Address};
 use proto::pb::evm::erc721::v1::{Events as ERC721Transfers, Transfer};
 use proto::pb::evm::erc721::v1::{EventsMetadata, Metadata};
 
-use crate::calls::{batch_token_collection_name, batch_token_collection_symbol, batch_token_uri};
+use crate::calls::{batch_token_base_uri, batch_token_collection_name, batch_token_collection_symbol, batch_token_uri};
 
 #[substreams::handlers::map]
 fn map_events(erc721_transfers: ERC721Transfers) -> Result<EventsMetadata, substreams::errors::Error> {
@@ -23,13 +22,11 @@ fn map_events(erc721_transfers: ERC721Transfers) -> Result<EventsMetadata, subst
 
     // Fetch RPC calls for tokens
     let contract_vec: Vec<Address> = contracts.iter().cloned().collect();
+    let contract_by_token_id_vec: Vec<(Address, String)> = contracts_by_token_id.iter().cloned().collect();
     let symbols: HashMap<Address, String> = batch_token_collection_symbol(contract_vec.clone());
-    let names: HashMap<Address, String> = batch_token_collection_name(contract_vec);
-    let uris: HashMap<(Address, String), String> = batch_token_uri(
-        contracts_by_token_id.into_iter()
-            .map(|(contract, token_id)| (contract, token_id))
-            .collect()
-    );
+    let names: HashMap<Address, String> = batch_token_collection_name(contract_vec.clone());
+    let base_uris: HashMap<Address, String> = batch_token_base_uri(contract_vec);
+    let uris: HashMap<(Address, String), String> = batch_token_uri(contract_by_token_id_vec);
 
     for transfer in mints {
         let uri = match uris.get(&(transfer.contract.clone(), transfer.token_id.clone())) {
@@ -44,10 +41,10 @@ fn map_events(erc721_transfers: ERC721Transfers) -> Result<EventsMetadata, subst
             Some(name) => Some(name.to_string()),
             None => None,
         };
-        // ignore if no metadata
-        if uri.is_none() && symbol.is_none() && name.is_none() {
-            continue;
-        }
+        let base_uri = match base_uris.get(&transfer.contract) {
+            Some(name) => Some(name.to_string()),
+            None => None,
+        };
         // Add metadata to the events
         events.metadatas.push(Metadata {
             contract: transfer.contract.to_vec(),
@@ -55,6 +52,7 @@ fn map_events(erc721_transfers: ERC721Transfers) -> Result<EventsMetadata, subst
             uri,
             symbol,
             name,
+            base_uri,
         });
     }
 
@@ -62,7 +60,5 @@ fn map_events(erc721_transfers: ERC721Transfers) -> Result<EventsMetadata, subst
 }
 
 pub fn get_mints<'a>(erc721_transfers: Vec<Transfer>) -> impl Iterator<Item = Transfer> + 'a {
-    erc721_transfers.into_iter().filter(|transfer| {
-        !is_zero_address(transfer.from.to_vec())
-    })
+    erc721_transfers.into_iter().filter(|transfer| !is_zero_address(transfer.from.to_vec()))
 }
