@@ -10,20 +10,10 @@ build:
 pack: build
 	substreams pack
 
-.PHONY: run
-run: build
-	substreams run -e $(ENDPOINT) substreams.yaml map_events -s 10000000 -t +100
+.PHONY: noop
+noop: build
+	substreams run -e $(ENDPOINT) substreams.yaml map_events -s 0 -t 0 --limit-processed-blocks 0 --production-mode --noop-mode
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 20000000 -t +100 --limit-processed-blocks 0
-
-.PHONY: mints
-mints: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_mints -s 10000000 -t +100
-
-
-.PHONY: db_out
-db_out: build
-	substreams gui -e $(ENDPOINT) substreams.yaml db_out -s 10000000 -t +100
-
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 10000000
