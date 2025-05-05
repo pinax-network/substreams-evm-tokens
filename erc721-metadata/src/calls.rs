@@ -61,7 +61,9 @@ pub fn batch_token_uri(token_ids: Vec<(Address, String)>) -> HashMap<(Address, S
         let responses = batch.execute().expect("failed to execute erc721::functions::TokenUri batch").responses;
         for (i, (address, token_id)) in chunk.iter().enumerate() {
             if let Some(uri) = RpcBatch::decode::<String, erc721::functions::TokenUri>(&responses[i]) {
-                results.insert((address.to_vec(), token_id.to_string()), uri.trim_end_matches('\0').to_string());
+                if !uri.is_empty() {
+                    results.insert((address.to_vec(), token_id.to_string()), parse_uri(&uri));
+                }
             } else {
                 substreams::log::info!("Failed to decode TokenUri for address={:?} token_id={:?}", Hex::encode(address), token_id);
             }
@@ -82,14 +84,18 @@ pub fn batch_base_uri(contracts: Vec<Address>) -> HashMap<Address, String> {
         let responses = batch.execute().expect("failed to execute functions::BaseUri RpcBatch").responses;
         for (i, address) in chunks.iter().enumerate() {
             // baseUri
-            if let Some(name) = RpcBatch::decode::<String, nfts::boredapeyachtclub::functions::BaseUri>(&responses[i * 2]) {
-                results.insert(address.to_vec(), name);
+            if let Some(value) = RpcBatch::decode::<String, nfts::boredapeyachtclub::functions::BaseUri>(&responses[i * 2]) {
+                if !value.is_empty() {
+                    results.insert(address.to_vec(), parse_uri(&value));
+                }
             } else {
                 substreams::log::info!("Failed to decode functions::BaseUri for address={:?}", Hex::encode(address));
             }
             // baseTokenUri
-            if let Some(name) = RpcBatch::decode::<String, nfts::pudgypenguins::functions::BaseTokenUri>(&responses[i * 2 + 1]) {
-                results.insert(address.to_vec(), name);
+            if let Some(value) = RpcBatch::decode::<String, nfts::pudgypenguins::functions::BaseTokenUri>(&responses[i * 2 + 1]) {
+                if !value.is_empty() {
+                    results.insert(address.to_vec(), parse_uri(&value));
+                }
             } else {
                 substreams::log::info!("Failed to decode functions::BaseTokenUri for address={:?}", Hex::encode(address));
             }
@@ -115,4 +121,8 @@ pub fn batch_total_supply(contracts: Vec<Address>) -> HashMap<Address, BigInt> {
         }
     }
     results
+}
+
+pub fn parse_uri(uri: &str) -> String {
+    uri.trim_end_matches('\0').to_string()
 }

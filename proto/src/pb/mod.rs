@@ -15,6 +15,13 @@ pub mod evm {
         }
     }
     pub mod erc721 {
+        pub mod metadata {
+            // @@protoc_insertion_point(attribute:evm.erc721.metadata.v1)
+            pub mod v1 {
+                include!("evm.erc721.metadata.v1.rs");
+                // @@protoc_insertion_point(evm.erc721.metadata.v1)
+            }
+        }
         // @@protoc_insertion_point(attribute:evm.erc721.v1)
         pub mod v1 {
             include!("evm.erc721.v1.rs");

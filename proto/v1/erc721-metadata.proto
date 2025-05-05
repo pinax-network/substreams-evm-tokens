@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package evm.erc721.metadata.v1;
+
+// ERC721 Metadata
+// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/IERC721Metadata.sol
+message Events {
+  repeated MetadataByContract metadata_by_contracts = 1;
+  repeated MetadataByToken metadata_by_tokens = 2;
+}
+
+message MetadataByContract {
+  bytes contract = 1; // log.address
+  optional string symbol = 4; // 0x95d89b41: symbol() -> string
+  optional string name = 5; // 0x61a4422b: name() -> string
+  optional string base_uri = 6; // 0x6c0360eb: baseURI() -> string
+  optional string total_supply = 7; // 0x18160ddd: totalSupply() -> uint256
+}
+
+message MetadataByToken {
+  bytes contract = 1; // log.address
+  string token_id = 2; // uint256
+  optional string uri = 3; // 0xc87b56dd: tokenURI(uint256 tokenId) -> string
+}

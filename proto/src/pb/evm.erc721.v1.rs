@@ -12,40 +12,6 @@ pub struct Events {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventsMetadata {
-    #[prost(message, repeated, tag="1")]
-    pub metadatas: ::prost::alloc::vec::Vec<Metadata>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Metadata {
-    /// log.address
-    #[prost(bytes="vec", tag="1")]
-    pub contract: ::prost::alloc::vec::Vec<u8>,
-    /// uint256
-    #[prost(string, tag="2")]
-    pub token_id: ::prost::alloc::string::String,
-    /// ERC721 Metadata
-    /// <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/IERC721Metadata.sol>
-    ///
-    /// 0xc87b56dd: tokenURI(uint256 tokenId) -> string
-    #[prost(string, optional, tag="3")]
-    pub uri: ::core::option::Option<::prost::alloc::string::String>,
-    /// 0x95d89b41: symbol() -> string
-    #[prost(string, optional, tag="4")]
-    pub symbol: ::core::option::Option<::prost::alloc::string::String>,
-    /// 0x61a4422b: name() -> string
-    #[prost(string, optional, tag="5")]
-    pub name: ::core::option::Option<::prost::alloc::string::String>,
-    /// 0x6c0360eb: baseURI() -> string
-    #[prost(string, optional, tag="6")]
-    pub base_uri: ::core::option::Option<::prost::alloc::string::String>,
-    /// 0x18160ddd: totalSupply() -> uint256
-    #[prost(string, optional, tag="7")]
-    pub total_supply: ::core::option::Option<::prost::alloc::string::String>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transfer {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]

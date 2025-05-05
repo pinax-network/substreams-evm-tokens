@@ -9,11 +9,11 @@ package:
 imports:
   erc721: ../erc721/substreams.yaml
 
-# protobuf:
-#   files:
-#     - erc721.proto
-#   importPaths:
-#     - ../proto/v1
+protobuf:
+  files:
+    - erc721-metadata.proto
+  importPaths:
+    - ../proto/v1
 
 binaries:
   default:
@@ -23,8 +23,7 @@ binaries:
 modules:
   - name: map_events
     kind: map
-    initialBlock: 0
     inputs:
       - map: erc721:map_events
     output:
-      type: proto:evm.erc721.v1.EventsMetadata
+      type: proto:evm.erc721.metadata.v1.Events
