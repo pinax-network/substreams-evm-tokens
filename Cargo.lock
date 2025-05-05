@@ -151,6 +151,7 @@ dependencies = [
  "prost-types 0.13.5",
  "substreams",
  "substreams-database-change",
+ "substreams-ethereum",
 ]
 
 [[package]]

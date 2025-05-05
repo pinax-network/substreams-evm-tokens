@@ -1,6 +1,7 @@
 pub mod clickhouse;
 use prost_types::Timestamp;
 use substreams::{hex, log, pb::substreams::Clock, scalar::BigInt, Hex};
+use substreams_ethereum::pb::eth::v2::{block::DetailLevel, Block, Log, TransactionTrace};
 
 pub type Address = Vec<u8>;
 pub type Hash = Vec<u8>;
@@ -118,4 +119,20 @@ pub fn clock_to_date(clock: &Clock) -> String {
 
 pub fn is_zero_address<T: AsRef<[u8]>>(addr: T) -> bool {
     addr.as_ref() == NULL_ADDRESS
+}
+
+pub fn logs_with_caller<'a>(block: &'a Block, trx: &'a TransactionTrace) -> Vec<(&'a Log, Option<Address>)> {
+    let mut results = vec![];
+
+    if block.detail_level() == DetailLevel::DetaillevelExtended {
+        for (log, call_view) in trx.logs_with_calls() {
+            results.push((log, Some(call_view.call.caller.to_vec())));
+        }
+    } else {
+        for log in trx.receipt().logs() {
+            results.push((log.log, None));
+        }
+    }
+
+    results
 }

@@ -1,6 +1,7 @@
-use substreams_ethereum::pb::eth::v2::Block;
-use proto::pb::evm::erc721::v1::{Transfer, Approval, ApprovalForAll, Events};
+use common::logs_with_caller;
+use proto::pb::evm::erc721::v1::{Approval, ApprovalForAll, Events, Transfer};
 use substreams_abis::evm::token::erc721::events as erc721;
+use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::Event;
 
 #[substreams::handlers::map]
@@ -8,9 +9,7 @@ fn map_events(block: Block) -> Result<Events, substreams::errors::Error> {
     let mut events = Events::default();
 
     for trx in block.transactions() {
-        for (log, call_view) in trx.logs_with_calls() {
-            let call = call_view.call;
-
+        for (log, caller) in logs_with_caller(&block, trx) {
             // -- Transfer --
             if let Some(event) = erc721::Transfer::match_and_decode(log) {
                 events.transfers.push(Transfer {
@@ -18,7 +17,7 @@ fn map_events(block: Block) -> Result<Events, substreams::errors::Error> {
                     tx_hash: trx.hash.to_vec(),
 
                     // -- call --
-                    caller: Some(call.caller.to_vec()),
+                    caller: caller.clone(),
 
                     // -- log --
                     ordinal: log.ordinal,
@@ -27,7 +26,7 @@ fn map_events(block: Block) -> Result<Events, substreams::errors::Error> {
                     // -- event --
                     from: event.from.to_vec(),
                     to: event.to.to_vec(),
-                    token_id: event.token_id.to_string()
+                    token_id: event.token_id.to_string(),
                 });
             }
 
@@ -38,7 +37,7 @@ fn map_events(block: Block) -> Result<Events, substreams::errors::Error> {
                     tx_hash: trx.hash.to_vec(),
 
                     // -- call --
-                    caller: Some(call.caller.to_vec()),
+                    caller: caller.clone(),
 
                     // -- log --
                     ordinal: log.ordinal,
@@ -47,7 +46,7 @@ fn map_events(block: Block) -> Result<Events, substreams::errors::Error> {
                     // -- event --
                     owner: event.owner.to_vec(),
                     approved: event.approved.to_vec(),
-                    token_id: event.token_id.to_string()
+                    token_id: event.token_id.to_string(),
                 });
             }
 
@@ -58,7 +57,7 @@ fn map_events(block: Block) -> Result<Events, substreams::errors::Error> {
                     tx_hash: trx.hash.to_vec(),
 
                     // -- call --
-                    caller: Some(call.caller.to_vec()),
+                    caller,
 
                     // -- log --
                     ordinal: log.ordinal,

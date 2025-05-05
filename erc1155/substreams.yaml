@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: erc1155
-  version: v0.3.0
+  version: v0.4.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC1155 events substreams package
   image: ../image.png
