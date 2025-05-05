@@ -23,12 +23,13 @@ fn map_events(erc721_transfers: ERC721Transfers) -> Result<EventsMetadata, subst
 
     // Fetch RPC calls for tokens
     let contract_vec: Vec<Address> = contracts.iter().cloned().collect();
-    let contract_uri_vec: Vec<(Address, String)> = contracts_by_token_id.into_iter()
-        .map(|(contract, token_id)| (contract, token_id))
-        .collect();
     let symbols: HashMap<Address, String> = batch_token_collection_symbol(contract_vec.clone());
     let names: HashMap<Address, String> = batch_token_collection_name(contract_vec);
-    let uris: HashMap<(Address, String), String> = batch_token_uri(contract_uri_vec);
+    let uris: HashMap<(Address, String), String> = batch_token_uri(
+        contracts_by_token_id.into_iter()
+            .map(|(contract, token_id)| (contract, token_id))
+            .collect()
+    );
 
     for transfer in mints {
         let uri = match uris.get(&(transfer.contract.clone(), transfer.token_id.clone())) {
@@ -43,6 +44,11 @@ fn map_events(erc721_transfers: ERC721Transfers) -> Result<EventsMetadata, subst
             Some(name) => Some(name.to_string()),
             None => None,
         };
+        // ignore if no metadata
+        if uri.is_none() && symbol.is_none() && name.is_none() {
+            continue;
+        }
+        // Add metadata to the events
         events.metadatas.push(Metadata {
             contract: transfer.contract.to_vec(),
             token_id: transfer.token_id.to_string(),
