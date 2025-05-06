@@ -1,0 +1,37 @@
+specVersion: v0.1.0
+package:
+  name: eas_attestations
+  version: v0.2.5
+  url: https://github.com/pinax-network/substreams-evm-tokens
+  description: EAS attestations
+  image: ../image.png
+
+imports:
+  # SQL Sink Substreams
+  database_changes: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
+  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
+  eas: https://github.com/pinax-network/eas-substreams/releases/download/v0.2.5/eas-v0.2.5.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/clickhouse_eas.wasm
+
+modules:
+  - name: db_out
+    kind: map
+    inputs:
+      - map: eas:map_events
+    output:
+      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+
+sink:
+  module: db_out
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    schema: "./schema.sql"
+    engine: clickhouse
+    postgraphile_frontend:
+      enabled: false
+
+network: mainnet

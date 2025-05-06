@@ -14,12 +14,13 @@ members = [
   "erc721",
   "erc721-metadata",
   "erc1155",
+  "seaport",
   "clickhouse",
   "clickhouse-nfts",
   "clickhouse-ens",
   "clickhouse-transactions",
   "clickhouse-contracts",
-  "seaport",
+  "clickhouse-eas"
 ]
 resolver = "2"
 

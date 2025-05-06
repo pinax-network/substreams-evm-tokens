@@ -1,6 +1,10 @@
-.PHONY: all
+.PHONY: deps
 all:
-	make build
+	@echo "Building dependencies..."
+	@for dir in $(shell find $(shell dirname $(CURDIR)) -type f -name "substreams.yaml" | grep -v "$(shell basename $(CURDIR))" | xargs dirname | xargs basename); do \
+		echo "Building $$dir..."; \
+		(cd $(shell dirname $(CURDIR))/$$dir && cargo build --target wasm32-unknown-unknown --release && substreams pack); \
+	done
 
 .PHONY: build
 build:
@@ -17,8 +21,8 @@ noop: build
 
 .PHONY: dev
 dev: build
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e eth.substreams.pinax.network:443 22211598: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/tokens substreams.yaml -e eth.substreams.pinax.network:443 22211598: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1
 
 .PHONY: setup
 setup: build
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/default substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/tokens substreams.yaml
