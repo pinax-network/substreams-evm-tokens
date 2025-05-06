@@ -27,7 +27,10 @@ pub fn db_out(
             .set("contract", bytes_to_hex(&event.contract))
             .set("token_id", &event.token_id)
             .set("from", bytes_to_hex(&event.from))
-            .set("to", bytes_to_hex(&event.to));
+            .set("to", bytes_to_hex(&event.to))
+            // to be compatible with ERC1155 table schema
+            .set("operator", "".to_string())
+            .set("amount", 1);
 
         set_caller(event.caller, row);
         set_ordering(index, Some(event.ordinal), &clock, row);
@@ -43,10 +46,10 @@ pub fn db_out(
             .create_row("erc1155_transfers", key)
             .set("contract", bytes_to_hex(&event.contract))
             .set("operator", bytes_to_hex(&event.operator))
-            .set("id", &event.id)
+            .set("token_id", &event.id)
             .set("from", bytes_to_hex(&event.from))
             .set("to", bytes_to_hex(&event.to))
-            .set("value", &event.value);
+            .set("amount", &event.value);
 
         set_caller(event.caller, row);
         set_ordering(index, Some(event.ordinal), &clock, row);
@@ -65,8 +68,8 @@ pub fn db_out(
                 .set("operator", bytes_to_hex(&event.operator))
                 .set("from", bytes_to_hex(&event.from))
                 .set("to", bytes_to_hex(&event.to))
-                .set("id", id)
-                .set("value", &event.values[i]);
+                .set("token_id", id)
+                .set("amount", &event.values[i]);
 
             set_caller(event.caller.clone(), row);
             set_ordering(index, Some(event.ordinal), &clock, row);
@@ -78,7 +81,11 @@ pub fn db_out(
 
     // ERC721 Metadata by Tokens
     for event in erc721_metadata.metadata_by_tokens {
-        let key = common_key(&clock, index);
+        let key = [("contract", bytes_to_hex(&event.contract)), ("token_id", event.token_id.to_string())];
+        // Skip if URI is not set
+        if event.uri.is_none() {
+            continue; // INCLUDE for testing purposes
+        }
 
         let row = tables
             .create_row("erc721_metadata_by_token", key)
@@ -90,49 +97,59 @@ pub fn db_out(
         index += 1;
     }
 
+    // ERC1155 Metadata by Tokens
+    for event in erc1155.uris {
+        let key = [("contract", bytes_to_hex(&event.contract)), ("token_id", event.id.to_string())];
+        // Skip if URI is not set
+        if event.value.len() == 0 {
+            continue; // INCLUDE for testing purposes
+        }
+
+        let row = tables
+            .create_row("erc1155_metadata_by_token", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("token_id", &event.id)
+            .set("uri", event.value);
+
+        set_clock(&clock, row);
+        index += 1;
+    }
+
     // ERC721 Metadata by Contract
-    for event in erc721_metadata.metadata_by_contracts {
-        let key = common_key(&clock, index);
+    for event in erc721_metadata.metadata_by_contracts.iter() {
+        let key = [("contract", bytes_to_hex(&event.contract))];
+        // Skip if name and symbol and base_uri is not set
+        if event.name.is_none() && event.symbol.is_none() && event.base_uri.is_none() {
+            continue; // INCLUDE for testing purposes
+        }
 
         let row = tables
             .create_row("erc721_metadata_by_contract", key)
             .set("contract", bytes_to_hex(&event.contract))
             .set("name", event.name())
             .set("symbol", event.symbol())
-            .set("total_supply", event.total_supply())
             .set("base_uri", event.base_uri());
 
         set_clock(&clock, row);
         index += 1;
     }
 
-    // for token in erc721_events.tokens {
-    //     i += 1;
-    //     let row = tables.create_row("nft_tokens", [("contract", bytes_to_hex(&token.contract)), ("token_id", token.token_id)]);
-    //     row.set("global_sequence", to_global_sequence(&clock, i))
-    //         .set("block_num", clock.number.to_string())
-    //         .set("tx_hash", bytes_to_hex(&token.tx_hash))
-    //         .set("evt_index", token.log_index.to_string())
-    //         .set("timestamp", clock.timestamp.unwrap().seconds)
-    //         .set("token_standard", TokenStandard::ERC721.to_string())
-    //         .set("uri", token.uri.as_deref().unwrap_or(""))
-    //         .set("symbol", token.symbol.as_deref().unwrap_or(""))
-    //         .set("name", token.name.as_deref().unwrap_or(""));
-    // }
+    // ERC721 Total Supply by Contract
+    for event in erc721_metadata.metadata_by_contracts {
+        let key = [("contract", bytes_to_hex(&event.contract))];
+        // Skip if total supply is not set
+        if event.total_supply.is_none() {
+            // continue; // INCLUDE for testing purposes
+        }
 
-    // for token in erc1155_events.tokens {
-    //     i += 1;
-    //     let row = tables.create_row("nft_tokens", [("contract", bytes_to_hex(&token.contract)), ("token_id", token.token_id)]);
-    //     row.set("global_sequence", to_global_sequence(&clock, i))
-    //         .set("block_num", clock.number.to_string())
-    //         .set("tx_hash", bytes_to_hex(&token.tx_hash))
-    //         .set("evt_index", token.log_index.to_string())
-    //         .set("timestamp", clock.timestamp.unwrap().seconds)
-    //         .set("token_standard", TokenStandard::ERC1155.to_string())
-    //         .set("uri", token.uri)
-    //         .set("symbol", "")
-    //         .set("name", "");
-    // }
+        let row = tables
+            .create_row("erc721_total_supply", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("total_supply", event.total_supply());
+
+        set_clock(&clock, row);
+        index += 1;
+    }
 
     Ok(tables.to_database_changes())
 }
