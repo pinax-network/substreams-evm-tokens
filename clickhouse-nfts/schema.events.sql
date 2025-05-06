@@ -1,16 +1,3 @@
--- This file is generated. Do not edit.
-
-CREATE TABLE IF NOT EXISTS cursors
-(
-    id        String,
-    cursor    String,
-    block_num Int64,
-    block_id  String
-)
-    ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (id)
-        ORDER BY (id);
-
 -- ERC721 Transfer --
 CREATE TABLE IF NOT EXISTS erc721_transfers (
     -- block --
@@ -138,5 +125,3 @@ CREATE TABLE IF NOT EXISTS erc721_metadata_by_token (
 ) ENGINE = ReplacingMergeTree
 PRIMARY KEY (timestamp, block_num, contract, token_id)
 ORDER BY (timestamp, block_num, contract, token_id);
-
-

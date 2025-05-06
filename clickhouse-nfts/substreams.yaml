@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: evm_nft_tokens
-  version: v0.3.0
+  version: v0.4.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: NFT tokens for EVM blockchains.
   image: ../image.png
@@ -12,8 +12,10 @@ imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # NFT Substreams
-  erc721: ../erc721/substreams.yaml
-  erc1155: ../erc1155/substreams.yaml
+  erc721: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc721-v0.4.0.spkg
+  erc721_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc721-metadata-v0.4.0.spkg
+  erc1155: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc1155-v0.4.0.spkg
+  seaport: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/seaport-v0.4.0.spkg
 
 binaries:
   default:
@@ -26,7 +28,9 @@ modules:
     inputs:
       - source: sf.substreams.v1.Clock
       - map: erc721:map_events
+      - map: erc721_metadata:map_events
       - map: erc1155:map_events
+      - map: seaport:map_events
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 

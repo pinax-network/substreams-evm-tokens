@@ -122,7 +122,6 @@ CREATE TABLE IF NOT EXISTS reverse_claimed (
     address              FixedString(42),
 )
 ENGINE = ReplacingMergeTree
-PRIMARY KEY (timestamp, block_num, `index`)
 ORDER BY (timestamp, block_num, `index`);
 
 CREATE TABLE IF NOT EXISTS name_changed (

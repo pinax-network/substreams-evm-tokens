@@ -4,7 +4,7 @@ all:
 
 .PHONY: build
 build:
-	cargo build --target wasm32-unknown-unknown --release
-	substreams pack ./clickhouse
-	substreams pack ./clickhouse-ens
-	substreams pack ./clickhouse-nfts
+	make pack -C ./erc721-metadata
+	make pack -C ./erc1155
+	make pack -C ./erc721
+	make pack -C ./seaport
