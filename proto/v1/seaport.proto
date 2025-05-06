@@ -10,14 +10,14 @@ message Events {
 
 message OrderFulfilled {
     // -- transaction --
-    bytes transaction_hash = 1;
+    bytes tx_hash = 1;
 
     // -- call --
-    bytes caller = 2;
+    optional bytes caller = 2;
 
     // -- log --
-    uint64 ordinal = 3; // log.ordinal
-    bytes contract = 4; // log.address
+    bytes contract = 3; // log.address
+    uint64 ordinal = 4; // log.ordinal
 
     // -- event --
     bytes order_hash = 10; // hash
@@ -30,14 +30,14 @@ message OrderFulfilled {
 
 message OrdersMatched {
     // -- transaction --
-    bytes transaction_hash = 1;
+    bytes tx_hash = 1;
 
     // -- call --
-    bytes caller = 2;
+    optional bytes caller = 2;
 
     // -- log --
-    uint64 ordinal = 3; // log.ordinal
-    bytes contract = 4; // log.address
+    bytes contract = 3; // log.address
+    uint64 ordinal = 4; // log.ordinal
 
     // -- event --
     repeated bytes order_hashes = 10; // hash[]
@@ -60,14 +60,14 @@ message Consideration {
 
 message OrderCancelled {
     // -- transaction --
-    bytes transaction_hash = 1;
+    bytes tx_hash = 1;
 
     // -- call --
-    bytes caller = 2;
+    optional bytes caller = 2;
 
     // -- log --
-    uint64 ordinal = 3; // log.ordinal
-    bytes contract = 4; // log.address
+    bytes contract = 3; // log.address
+    uint64 ordinal = 4; // log.ordinal
 
     // -- event --
     bytes order_hash = 10; // hash

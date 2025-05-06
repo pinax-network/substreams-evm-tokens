@@ -15,18 +15,18 @@ pub struct Events {
 pub struct OrderFulfilled {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub transaction_hash: ::prost::alloc::vec::Vec<u8>,
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
-    #[prost(bytes="vec", tag="2")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// -- log --
     ///
-    /// log.ordinal
-    #[prost(uint64, tag="3")]
-    pub ordinal: u64,
     /// log.address
-    #[prost(bytes="vec", tag="4")]
+    #[prost(bytes="vec", tag="3")]
     pub contract: ::prost::alloc::vec::Vec<u8>,
+    /// log.ordinal
+    #[prost(uint64, tag="4")]
+    pub ordinal: u64,
     /// -- event --
     ///
     /// hash
@@ -53,18 +53,18 @@ pub struct OrderFulfilled {
 pub struct OrdersMatched {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub transaction_hash: ::prost::alloc::vec::Vec<u8>,
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
-    #[prost(bytes="vec", tag="2")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// -- log --
     ///
-    /// log.ordinal
-    #[prost(uint64, tag="3")]
-    pub ordinal: u64,
     /// log.address
-    #[prost(bytes="vec", tag="4")]
+    #[prost(bytes="vec", tag="3")]
     pub contract: ::prost::alloc::vec::Vec<u8>,
+    /// log.ordinal
+    #[prost(uint64, tag="4")]
+    pub ordinal: u64,
     /// -- event --
     ///
     /// hash\[\]
@@ -111,18 +111,18 @@ pub struct Consideration {
 pub struct OrderCancelled {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub transaction_hash: ::prost::alloc::vec::Vec<u8>,
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
-    #[prost(bytes="vec", tag="2")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// -- log --
     ///
-    /// log.ordinal
-    #[prost(uint64, tag="3")]
-    pub ordinal: u64,
     /// log.address
-    #[prost(bytes="vec", tag="4")]
+    #[prost(bytes="vec", tag="3")]
     pub contract: ::prost::alloc::vec::Vec<u8>,
+    /// log.ordinal
+    #[prost(uint64, tag="4")]
+    pub ordinal: u64,
     /// -- event --
     ///
     /// hash
