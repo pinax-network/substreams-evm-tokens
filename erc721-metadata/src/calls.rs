@@ -6,7 +6,7 @@ use substreams_abis::evm::nfts;
 use substreams_abis::evm::token::erc721;
 use substreams_ethereum::rpc::RpcBatch;
 
-static CHUNK_SIZE: usize = 50;
+static CHUNK_SIZE: usize = 100;
 
 // Returns the token collection name.
 pub fn batch_name(contracts: Vec<Address>) -> HashMap<Address, String> {
@@ -75,7 +75,7 @@ pub fn batch_token_uri(token_ids: Vec<(Address, String)>) -> HashMap<(Address, S
 // Returns the token collection name.
 pub fn batch_base_uri(contracts: Vec<Address>) -> HashMap<Address, String> {
     let mut results: HashMap<Address, String> = HashMap::new();
-    for chunks in contracts.chunks(CHUNK_SIZE) {
+    for chunks in contracts.chunks(CHUNK_SIZE / 2) {
         let batch = chunks.iter().fold(RpcBatch::new(), |batch, address| {
             batch
                 .add(nfts::boredapeyachtclub::functions::BaseUri {}, address.to_vec())
