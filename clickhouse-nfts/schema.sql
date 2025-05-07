@@ -224,6 +224,7 @@ CREATE TABLE IF NOT EXISTS seaport_order_fulfilled (
     ordinal              UInt64, -- log.ordinal
     `index`              UInt64, -- relative index
     global_sequence      UInt64, -- latest global sequence (block_num << 32 + index)
+    global_sequence_reverse  UInt64 MATERIALIZED global_sequence * -1,
 
     -- transaction --
     tx_hash              FixedString(66),
@@ -258,7 +259,6 @@ CREATE TABLE IF NOT EXISTS seaport_order_fulfilled (
             JSONExtractArrayRaw(offer_raw)
         )
     ),
-
     consideration_raw       String, -- JSON object as string
     consideration Array(Tuple(
         UInt8,         -- item_type
@@ -279,17 +279,21 @@ CREATE TABLE IF NOT EXISTS seaport_order_fulfilled (
         )
     ),
 
-    -- indexes --
+    -- indexes (block) --
+    INDEX idx_timestamp            (timestamp)              TYPE minmax GRANULARITY 4,
+    INDEX idx_block_num            (block_num)              TYPE minmax GRANULARITY 4,
+
+    -- indexes (transaction) --
     INDEX idx_tx_hash            (tx_hash)                  TYPE bloom_filter GRANULARITY 4,
     INDEX idx_caller             (caller)                   TYPE bloom_filter GRANULARITY 4,
     INDEX idx_contract           (contract)                 TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_order_hash         (order_hash)               TYPE bloom_filter GRANULARITY 4,
+
+    -- indexes (event) --
     INDEX idx_offerer            (offerer)                  TYPE bloom_filter GRANULARITY 4,
     INDEX idx_zone               (zone)                     TYPE bloom_filter GRANULARITY 4,
     INDEX idx_recipient          (recipient)                TYPE bloom_filter GRANULARITY 4
-) ENGINE = ReplacingMergeTree
-PRIMARY KEY (timestamp, block_num, `index`)
-ORDER BY (timestamp, block_num, `index`);
+) ENGINE = ReplacingMergeTree(global_sequence_reverse) -- only keep first event --
+ORDER BY (order_hash); -- contains duplicates --
 
 -- Seaport Orders Matched --
 CREATE TABLE IF NOT EXISTS seaport_orders_matched (
@@ -316,13 +320,12 @@ CREATE TABLE IF NOT EXISTS seaport_orders_matched (
     order_hashes_raw       String, -- as comma separated list
     order_hashes           Array(FixedString(66)) MATERIALIZED splitByChar(',', order_hashes_raw),
 
-    -- indexes --
+    -- indexes (transaction) --
     INDEX idx_tx_hash            (tx_hash)                  TYPE bloom_filter GRANULARITY 4,
     INDEX idx_caller             (caller)                   TYPE bloom_filter GRANULARITY 4,
     INDEX idx_contract           (contract)                 TYPE bloom_filter GRANULARITY 4
 
-) ENGINE = ReplacingMergeTree
-PRIMARY KEY (timestamp, block_num, `index`)
+) ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Seaport Order Cancelled --
@@ -336,6 +339,7 @@ CREATE TABLE IF NOT EXISTS seaport_order_cancelled (
     ordinal              UInt64, -- log.ordinal
     `index`              UInt64, -- relative index
     global_sequence      UInt64, -- latest global sequence (block_num << 32 + index)
+    global_sequence_reverse  UInt64 MATERIALIZED global_sequence * -1,
 
     -- transaction --
     tx_hash              FixedString(66),
@@ -351,17 +355,21 @@ CREATE TABLE IF NOT EXISTS seaport_order_cancelled (
     offerer              FixedString(42),
     zone                 FixedString(42),
 
-    -- indexes --
+    -- indexes (block) --
+    INDEX idx_timestamp            (timestamp)              TYPE minmax GRANULARITY 4,
+    INDEX idx_block_num            (block_num)              TYPE minmax GRANULARITY 4,
+
+    -- indexes (transaction) --
     INDEX idx_tx_hash            (tx_hash)                  TYPE bloom_filter GRANULARITY 4,
     INDEX idx_caller             (caller)                   TYPE bloom_filter GRANULARITY 4,
     INDEX idx_contract           (contract)                 TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_order_hash         (order_hash)               TYPE bloom_filter GRANULARITY 4,
+
+    -- indexes (event) --
     INDEX idx_offerer            (offerer)                  TYPE bloom_filter GRANULARITY 4,
     INDEX idx_zone               (zone)                     TYPE bloom_filter GRANULARITY 4
 
-) ENGINE = ReplacingMergeTree
-PRIMARY KEY (timestamp, block_num, `index`)
-ORDER BY (timestamp, block_num, `index`);
+) ENGINE = ReplacingMergeTree(global_sequence_reverse) -- only keep first event --
+ORDER BY (order_hash); -- contains duplicates --
 
 
 -- Offchain Metadata
@@ -423,5 +431,7 @@ CREATE TABLE IF NOT EXISTS spam_scoring (
 ) ENGINE = ReplacingMergeTree(timestamp)
 PRIMARY KEY (contract)
 ORDER BY (contract);
+
+
 
 
