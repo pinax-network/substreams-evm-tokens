@@ -20,5 +20,5 @@ dev:
 	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e eth.substreams.pinax.network:443 22211598: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1 --development-mode
 
 .PHONY: setup
-setup:
+setup: build
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/default substreams.yaml

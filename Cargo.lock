@@ -141,6 +141,8 @@ version = "0.0.0"
 dependencies = [
  "common",
  "proto",
+ "serde",
+ "serde_json",
  "substreams",
  "substreams-database-change",
 ]

@@ -1,4 +1,5 @@
 mod enums;
+mod to_json;
 use crate::enums::{TokenStandard, TransferType};
 use common::bytes_to_hex;
 use common::clickhouse::{common_key, set_caller, set_clock, set_ordering, set_tx_hash};
@@ -9,6 +10,7 @@ use proto::pb::evm::seaport::v1 as seaport;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::DatabaseChanges;
 use substreams_database_change::tables::Tables;
+use to_json::{considerations_to_json, offers_to_json};
 
 #[substreams::handlers::map]
 pub fn db_out(
@@ -200,7 +202,7 @@ pub fn db_out(
         let key = [("contract", bytes_to_hex(&event.contract))];
         // Skip if total supply is not set
         if event.total_supply.is_none() {
-            // continue; // INCLUDE for testing purposes
+            continue; // INCLUDE for testing purposes
         }
 
         let row = tables
@@ -208,6 +210,60 @@ pub fn db_out(
             .set("contract", bytes_to_hex(&event.contract))
             .set("total_supply", event.total_supply());
 
+        set_clock(&clock, row);
+        index += 1;
+    }
+
+    // Seaport Order Fufilled
+    for event in seaport.order_fulfilled {
+        let key = common_key(&clock, index);
+        let row = tables
+            .create_row("seaport_order_fulfilled", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("order_hash", bytes_to_hex(&event.order_hash))
+            .set("offerer", bytes_to_hex(&event.offerer))
+            .set("zone", bytes_to_hex(&event.zone))
+            .set("recipient", bytes_to_hex(&event.recipient))
+            .set("offer_raw", offers_to_json(event.offer).to_string())
+            .set("consideration_raw", considerations_to_json(event.consideration).to_string());
+
+        set_caller(event.caller, row);
+        set_ordering(index, Some(event.ordinal), &clock, row);
+        set_tx_hash(Some(event.tx_hash), row);
+        set_clock(&clock, row);
+        index += 1;
+    }
+
+    // Seaport Orders Matched
+    for event in seaport.orders_matched {
+        let key = common_key(&clock, index);
+        // convert as String
+        let order_hashes_raw = event.order_hashes.iter().map(|h| bytes_to_hex(h)).collect::<Vec<String>>().join(",");
+        let row = tables
+            .create_row("seaport_orders_matched", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("order_hashes_raw", order_hashes_raw);
+
+        set_caller(event.caller, row);
+        set_ordering(index, Some(event.ordinal), &clock, row);
+        set_tx_hash(Some(event.tx_hash), row);
+        set_clock(&clock, row);
+        index += 1;
+    }
+
+    // Seaport Order Cancelled
+    for event in seaport.order_cancelled {
+        let key = common_key(&clock, index);
+        let row = tables
+            .create_row("seaport_order_cancelled", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("order_hash", bytes_to_hex(&event.order_hash))
+            .set("offerer", bytes_to_hex(&event.offerer))
+            .set("zone", bytes_to_hex(&event.zone));
+
+        set_caller(event.caller, row);
+        set_ordering(index, Some(event.ordinal), &clock, row);
+        set_tx_hash(Some(event.tx_hash), row);
         set_clock(&clock, row);
         index += 1;
     }
