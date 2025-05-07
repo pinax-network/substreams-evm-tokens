@@ -1,3 +1,5 @@
+mod enums;
+use crate::enums::{TokenStandard, TransferType};
 use common::bytes_to_hex;
 use common::clickhouse::{common_key, set_caller, set_clock, set_ordering, set_tx_hash};
 use proto::pb::evm::erc1155::v1 as erc1155;
@@ -30,7 +32,44 @@ pub fn db_out(
             .set("to", bytes_to_hex(&event.to))
             // to be compatible with ERC1155 table schema
             .set("operator", "".to_string())
-            .set("amount", 1);
+            .set("amount", 1)
+            .set("transfer_type", TransferType::Single.to_string()) // Enum8('Single' = 1, 'Batch' = 2)
+            .set("token_standard", TokenStandard::ERC721.to_string()); // Enum8('ERC721' = 1, 'ERC1155' = 2)
+
+        set_caller(event.caller, row);
+        set_ordering(index, Some(event.ordinal), &clock, row);
+        set_tx_hash(Some(event.tx_hash), row);
+        set_clock(&clock, row);
+        index += 1;
+    }
+
+    // ERC721 Approvals
+    for event in erc721.approvals {
+        let key = common_key(&clock, index);
+        let row = tables
+            .create_row("erc721_approvals", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("owner", bytes_to_hex(&event.owner))
+            .set("approved", bytes_to_hex(&event.approved))
+            .set("token_id", &event.token_id);
+
+        set_caller(event.caller, row);
+        set_ordering(index, Some(event.ordinal), &clock, row);
+        set_tx_hash(Some(event.tx_hash), row);
+        set_clock(&clock, row);
+        index += 1;
+    }
+
+    // ERC721 Approvals For All
+    for event in erc721.approvals_for_all {
+        let key = common_key(&clock, index);
+        let row = tables
+            .create_row("erc721_approvals_for_all", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("owner", bytes_to_hex(&event.owner))
+            .set("operator", bytes_to_hex(&event.operator))
+            .set("approved", &event.approved.to_string())
+            .set("token_standard", TokenStandard::ERC721.to_string()); // Enum8('ERC721' = 1, 'ERC1155' = 2);
 
         set_caller(event.caller, row);
         set_ordering(index, Some(event.ordinal), &clock, row);
@@ -49,7 +88,9 @@ pub fn db_out(
             .set("token_id", &event.id)
             .set("from", bytes_to_hex(&event.from))
             .set("to", bytes_to_hex(&event.to))
-            .set("amount", &event.value);
+            .set("amount", &event.value)
+            .set("transfer_type", TransferType::Single.to_string()) // Enum8('Single' = 1, 'Batch' = 2)
+            .set("token_standard", TokenStandard::ERC1155.to_string()); // Enum8('ERC721' = 1, 'ERC1155' = 2)
 
         set_caller(event.caller, row);
         set_ordering(index, Some(event.ordinal), &clock, row);
@@ -69,7 +110,9 @@ pub fn db_out(
                 .set("from", bytes_to_hex(&event.from))
                 .set("to", bytes_to_hex(&event.to))
                 .set("token_id", id)
-                .set("amount", &event.values[i]);
+                .set("amount", &event.values[i])
+                .set("transfer_type", TransferType::Batch.to_string()) // Enum8('Single' = 1, 'Batch' = 2)
+                .set("token_standard", TokenStandard::ERC1155.to_string()); // Enum8('ERC721' = 1, 'ERC1155' = 2)
 
             set_caller(event.caller.clone(), row);
             set_ordering(index, Some(event.ordinal), &clock, row);
@@ -77,6 +120,24 @@ pub fn db_out(
             set_clock(&clock, row);
             index += 1;
         });
+    }
+
+    // ERC1155 Approvals For All
+    for event in erc1155.approvals_for_all {
+        let key = common_key(&clock, index);
+        let row = tables
+            .create_row("erc1155_approvals_for_all", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("owner", bytes_to_hex(&event.account))
+            .set("operator", bytes_to_hex(&event.operator))
+            .set("approved", &event.approved.to_string())
+            .set("token_standard", TokenStandard::ERC1155.to_string()); // Enum8('ERC721' = 1, 'ERC1155' = 2);
+
+        set_caller(event.caller, row);
+        set_ordering(index, Some(event.ordinal), &clock, row);
+        set_tx_hash(Some(event.tx_hash), row);
+        set_clock(&clock, row);
+        index += 1;
     }
 
     // ERC721 Metadata by Tokens
