@@ -1,5 +1,7 @@
 -- populate --
 INSERT INTO erc1155_transfers SELECT * FROM erc1155_transfers;
+INSERT INTO erc1155_transfers SELECT * FROM erc1155_transfers;
+OPTIMIZE TABLE erc1155_transfers FINAL;
 
 -- Statistics for ERC-1155 balances --
 SELECT

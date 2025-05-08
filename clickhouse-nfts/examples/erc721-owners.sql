@@ -1,5 +1,6 @@
 -- populate --
 INSERT INTO erc721_transfers SELECT * FROM erc721_transfers;
+OPTIMIZE TABLE erc721_transfers FINAL;
 
 -- Owners by ERC721 Token contract --
 SELECT
