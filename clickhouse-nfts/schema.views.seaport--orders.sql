@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS seaport_orders (
 
     -- indexes (consideration) --
     INDEX idx_consideration_item_type   (consideration_item_type) TYPE minmax GRANULARITY 4,
-    INDEX idx_consideration_token_id    (consideration_token_id) TYPE minmax GRANULARITY 4,
-    INDEX idx_consideration_amount      (consideration_amount)   TYPE minmax GRANULARITY 4,
+    INDEX idx_consideration_token_id    (consideration_token_id)  TYPE minmax GRANULARITY 4,
+    INDEX idx_consideration_amount      (consideration_amount)    TYPE minmax GRANULARITY 4,
     INDEX idx_consideration_token       (consideration_token)     TYPE bloom_filter GRANULARITY 4,
     INDEX idx_consideration_recipient   (consideration_recipient) TYPE bloom_filter GRANULARITY 4
 )

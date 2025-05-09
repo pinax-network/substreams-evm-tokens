@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS seaport_ohlc_prices (
+CREATE TABLE IF NOT EXISTS seaport_orders_ohlc (
     -- beginning of the 1-hour bar (UTC) --
     timestamp               DateTime(0, 'UTC'),
 
@@ -25,7 +25,6 @@ CREATE TABLE IF NOT EXISTS seaport_ohlc_prices (
 ENGINE = AggregatingMergeTree
 ORDER BY (offer_token, offer_token_id, consideration_token, timestamp);
 
-
 /* one-time DDL -----------------------------------------------------------*/
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_orders_ohlc
 TO seaport_orders_ohlc
@@ -40,13 +39,13 @@ SELECT
     consideration_token,
 
     /* price per **single** NFT unit (ERC-1155 amount handled) ----------*/
-    argMinState(price_unit, block_num)                        AS open,
-    quantileDeterministicState(price_unit, block_num)         AS quantile,
-    argMaxState(price_unit, block_num)                        AS close,
+    argMinState(price_unit_wei, block_num)                     AS open,
+    quantileDeterministicState(price_unit_wei, block_num)      AS quantile,
+    argMaxState(price_unit_wei, block_num)                     AS close,
 
     /* gross volume in native token units -------------------------------*/
-    sum(offer_amount)                                           AS offer_volume,
-    sum(consideration_amount)                                   AS consideration_volume,
+    sum(offer_amount)                                          AS offer_volume,
+    sum(consideration_amount)                                  AS consideration_volume,
 
     /* unique wallets in bar  (recipient side — adjust if you add maker) */
     uniqState(offerer)                                        AS uaw,
@@ -55,23 +54,22 @@ SELECT
     sum(1)                                                    AS transactions
 FROM
 (
-    /* compute per-unit price */
+    /* compute per-unit price per unique orders */
     SELECT
-        block_num,
-        timestamp,
-        tx_hash,
+        any(block_num) as block_num,
+        any(timestamp) as timestamp,
+        any(tx_hash) as tx_hash,
         order_hash,
         offer_token,
         offer_token_id,
         sum(offer_amount) / count() AS offer_amount, -- includes duplicate `offer_amount`, need to divide by total considerations
-        offerer,
+        any(offerer) as offerer,
         consideration_token,
         sum(consideration_amount) AS consideration_amount,
         /* price_unit = consideration_amount / offer_amount (float) */
-        CAST(consideration_amount / pow(10, 18), 'Float64') / greatest(CAST(offer_amount, 'Float64'), 1.0) AS price_unit -- stored as Wei
+        CAST(consideration_amount / pow(10, 18), 'Float64') / greatest(CAST(offer_amount, 'Float64'), 1.0) AS price_unit_wei -- Price of Unit as Wei
     FROM seaport_orders
-    WHERE tx_hash = '0x9ba074d7261acc12b9870f1951a65ab48c6b70805bbfb74e960c1b670f131234'
-    GROUP BY block_num, timestamp, tx_hash, order_hash, offer_token, offer_token_id, offerer, consideration_token
+    GROUP BY order_hash, offer_token, offer_token_id, consideration_token
 )
 GROUP BY
     offer_token,
