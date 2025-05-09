@@ -29,12 +29,30 @@ SELECT
     recipient,
     offer,
     consideration
-FROM seaport_order_fulfilled AS f
-WHERE f.order_hash IN
+FROM seaport_order_fulfilled
+WHERE order_hash IN
 (
     SELECT DISTINCT order_hash
     FROM seaport_considerations
     WHERE token = '0x56cc0dc0275442892fbedd408393e079f837ebba'
 )
 ORDER BY timestamp DESC
+LIMIT 10;
+
+-- Seaport Top Tokens by Sales --
+SELECT
+    s.offer_token as token,
+    count() AS total_sales,
+    any(m.name) AS name,
+    floor(sum(consideration_amount) / pow(10, 18), 2) AS sales_in_ETH
+FROM seaport_sales as s
+JOIN erc721_metadata_by_contract AS m ON s.offer_token = m.contract
+WHERE
+    offer_item_type = 2 AND -- ERC-721
+    consideration_token IN (
+        '0x0000000000000000000000000000000000000000',
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+    ) -- ETH and WETH
+GROUP BY offer_token
+ORDER BY sales_in_ETH DESC
 LIMIT 10;

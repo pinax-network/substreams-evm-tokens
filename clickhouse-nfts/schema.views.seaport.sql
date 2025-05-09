@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS seaport_offers (
     -- offer --
     item_type  UInt8                COMMENT 'The type of asset (NFT, FT, ETH, etc.)',
     token      FixedString(42)      COMMENT 'The contract address of the offered asset',
-    identifier UInt256              COMMENT 'The token ID for NFTs or 0 for FTs and ETH',
+    token_id   UInt256              COMMENT 'The token ID for NFTs or 0 for FTs and ETH',
     amount     UInt256              COMMENT 'The amount of the offered asset',
 
     -- indexes (block) --
@@ -33,11 +33,11 @@ CREATE TABLE IF NOT EXISTS seaport_offers (
 
     -- indexes (offer) --
     INDEX idx_item_type   (item_type)   TYPE minmax       GRANULARITY 1,
-    INDEX idx_identifier  (identifier)  TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_token_id    (token_id)    TYPE bloom_filter GRANULARITY 4,
     INDEX idx_amount      (amount)      TYPE minmax       GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree()
-ORDER BY (token, identifier, order_hash, offer_idx);   -- cluster by the fields people filter on
+ORDER BY (token, token_id, order_hash, offer_idx);   -- cluster by the fields people filter on
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_offers
 TO seaport_offers
@@ -52,7 +52,7 @@ SELECT
     row_number() OVER (PARTITION BY order_hash ORDER BY tupleElement(o, 2)) AS offer_idx,
     tupleElement(o, 1) AS item_type,
     tupleElement(o, 2) AS token,
-    tupleElement(o, 3) AS identifier,
+    tupleElement(o, 3) AS token_id,
     tupleElement(o, 4) AS amount
 FROM seaport_order_fulfilled
 ARRAY JOIN offer AS o;   -- explode one row per tuple
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS seaport_considerations (
     -- consideration --
     item_type  UInt8                COMMENT 'The type of asset (NFT, FT, ETH, etc.)',
     token      FixedString(42)      COMMENT 'The contract address of the offered asset',
-    identifier UInt256              COMMENT 'The token ID for NFTs or 0 for FTs and ETH',
+    token_id   UInt256              COMMENT 'The token ID for NFTs or 0 for FTs and ETH',
     amount     UInt256              COMMENT 'The amount of the offered asset',
     recipient  FixedString(42)      COMMENT 'The address that should receive the consideration',
 
@@ -94,12 +94,12 @@ CREATE TABLE IF NOT EXISTS seaport_considerations (
 
     -- indexes (consideration) --
     INDEX idx_item_type     (item_type)    TYPE minmax GRANULARITY 4,
-    INDEX idx_identifier    (identifier)   TYPE minmax GRANULARITY 4,
+    INDEX idx_token_id      (token_id)     TYPE minmax GRANULARITY 4,
     INDEX idx_amount        (amount)       TYPE minmax GRANULARITY 4,
     INDEX idx_recipient     (recipient)    TYPE bloom_filter GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree()
-ORDER BY (token, identifier, order_hash, consideration_idx);
+ORDER BY (token, token_id, order_hash, consideration_idx);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_considerations
 TO seaport_considerations
@@ -113,7 +113,7 @@ SELECT
     row_number() OVER (PARTITION BY order_hash ORDER BY tupleElement(c, 2)) AS consideration_idx,
     tupleElement(c, 1) AS item_type,
     tupleElement(c, 2) AS token,
-    tupleElement(c, 3) AS identifier,
+    tupleElement(c, 3) AS token_id,
     tupleElement(c, 4) AS amount,
     tupleElement(c, 5) AS recipient
 FROM seaport_order_fulfilled
