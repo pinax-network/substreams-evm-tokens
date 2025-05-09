@@ -495,7 +495,7 @@ CREATE TABLE IF NOT EXISTS erc721_owners (
 ) ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (contract, token_id);
 
-CREATE MATERIALIZED VIEW mv_erc721_owners
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_erc721_owners
 TO erc721_owners
 AS
 SELECT
@@ -564,7 +564,7 @@ CREATE TABLE IF NOT EXISTS seaport_sales (
 ENGINE = ReplacingMergeTree()
 ORDER BY (offer_token, offer_token_id, order_hash);
 
-CREATE MATERIALIZED VIEW mv_seaport_sales
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_sales
 TO seaport_sales
 AS
 SELECT
@@ -592,8 +592,8 @@ SELECT
     toUInt256(tupleElement(c,4)) AS consideration_amount,
     tupleElement(c,5)            AS consideration_recipient
 FROM seaport_order_fulfilled AS f
-ARRAY JOIN f.offer AS o
-ARRAY JOIN f.consideration AS c; -- independent explode → no size-mismatch
+LEFT ARRAY JOIN f.offer AS o
+LEFT ARRAY JOIN f.consideration AS c;
 
 
 -- Seaport Offers --
@@ -653,8 +653,7 @@ SELECT
     tupleElement(o, 3) AS token_id,
     tupleElement(o, 4) AS amount
 FROM seaport_order_fulfilled
-ARRAY JOIN offer AS o;   -- explode one row per tuple
-
+LEFT ARRAY JOIN offer AS o;
 
 -- Seaport Considerations --
 -- A consideration is what the offerer expects in return for their offer. It’s essentially the "payment" they expect to receive, which can also be:
@@ -715,6 +714,6 @@ SELECT
     tupleElement(c, 4) AS amount,
     tupleElement(c, 5) AS recipient
 FROM seaport_order_fulfilled
-ARRAY JOIN consideration AS c;
+LEFT ARRAY JOIN consideration AS c;
 
 

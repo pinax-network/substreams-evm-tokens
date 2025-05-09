@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS erc721_owners (
 ) ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (contract, token_id);
 
-CREATE MATERIALIZED VIEW mv_erc721_owners
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_erc721_owners
 TO erc721_owners
 AS
 SELECT

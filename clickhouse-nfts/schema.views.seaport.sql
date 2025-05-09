@@ -55,8 +55,7 @@ SELECT
     tupleElement(o, 3) AS token_id,
     tupleElement(o, 4) AS amount
 FROM seaport_order_fulfilled
-ARRAY JOIN offer AS o;   -- explode one row per tuple
-
+LEFT ARRAY JOIN offer AS o;
 
 -- Seaport Considerations --
 -- A consideration is what the offerer expects in return for their offer. It’s essentially the "payment" they expect to receive, which can also be:
@@ -117,4 +116,4 @@ SELECT
     tupleElement(c, 4) AS amount,
     tupleElement(c, 5) AS recipient
 FROM seaport_order_fulfilled
-ARRAY JOIN consideration AS c;
+LEFT ARRAY JOIN consideration AS c;

@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS seaport_sales (
 ENGINE = ReplacingMergeTree()
 ORDER BY (offer_token, offer_token_id, order_hash);
 
-CREATE MATERIALIZED VIEW mv_seaport_sales
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_sales
 TO seaport_sales
 AS
 SELECT
@@ -77,5 +77,5 @@ SELECT
     toUInt256(tupleElement(c,4)) AS consideration_amount,
     tupleElement(c,5)            AS consideration_recipient
 FROM seaport_order_fulfilled AS f
-ARRAY JOIN f.offer AS o
-ARRAY JOIN f.consideration AS c; -- independent explode → no size-mismatch
+LEFT ARRAY JOIN f.offer AS o
+LEFT ARRAY JOIN f.consideration AS c;

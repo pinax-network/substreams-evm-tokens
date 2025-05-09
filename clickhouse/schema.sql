@@ -771,5 +771,3 @@ SELECT
    sum(1) AS transactions
 FROM swaps
 GROUP BY pool, timestamp;
-
-

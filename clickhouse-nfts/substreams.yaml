@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: evm_nft_tokens
-  version: v0.4.0
+  version: v0.4.1
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: NFT tokens for EVM blockchains.
   image: ../image.png
