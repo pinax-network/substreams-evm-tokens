@@ -513,87 +513,66 @@ SELECT
 FROM erc721_transfers;
 
 
-CREATE TABLE IF NOT EXISTS seaport_sales (
+-- Seaport Considerations --
+-- A consideration is what the offerer expects in return for their offer. It’s essentially the "payment" they expect to receive, which can also be:
+-- NFTs (ERC-721, ERC-1155)
+-- FTs (ERC-20)
+-- Native cryptocurrency (ETH, MATIC, etc.)
+CREATE TABLE IF NOT EXISTS seaport_considerations (
     -- block --
-    block_num           UInt32,
-    timestamp           DateTime(0, 'UTC'),
+    block_num  UInt32,
+    timestamp  DateTime(0, 'UTC'),
 
     -- transaction --
-    tx_hash             FixedString(66),
+    tx_hash    FixedString(66),
 
     -- order fulfilled --
-    order_hash                  FixedString(66),
-
-    -- offer --
-    offer_index                 UInt16,
-    offer_item_type             UInt8,
-    offer_token                 FixedString(42),
-    offer_token_id              UInt256,
-    offer_amount                UInt256,
+    order_hash FixedString(66),
+    consideration_idx UInt16,
 
     -- consideration --
-    consideration_item_type     UInt8,
-    consideration_token         FixedString(42),
-    consideration_token_id      UInt256,
-    consideration_amount        UInt256,
-    consideration_recipient     FixedString(42),
+    item_type  UInt8                COMMENT 'The type of asset (NFT, FT, ETH, etc.)',
+    token      FixedString(42)      COMMENT 'The contract address of the offered asset',
+    token_id   UInt256              COMMENT 'The token ID for NFTs or 0 for FTs and ETH',
+    amount     UInt256              COMMENT 'The amount of the offered asset',
+    recipient  FixedString(42)      COMMENT 'The address that should receive the consideration',
 
     -- indexes (block) --
-    INDEX idx_block_num         (block_num)         TYPE minmax GRANULARITY 4,
-    INDEX idx_timestamp         (timestamp)         TYPE minmax GRANULARITY 4,
+    INDEX idx_block_num     (block_num)    TYPE minmax       GRANULARITY 4,
+    INDEX idx_timestamp     (timestamp)    TYPE minmax       GRANULARITY 4,
 
     -- indexes (transaction) --
-    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_tx_hash       (tx_hash)      TYPE bloom_filter GRANULARITY 4,
 
     -- indexes (order) --
-    INDEX idx_order_hash        (order_hash)        TYPE bloom_filter GRANULARITY 4,
-
-    -- indexes (offer) --
-    INDEX idx_offer_item_type   (offer_item_type)   TYPE minmax GRANULARITY 4,
-    INDEX idx_offer_token_id    (offer_token_id)    TYPE minmax GRANULARITY 4,
-    INDEX idx_offer_amount      (offer_amount)      TYPE minmax GRANULARITY 4,
-    INDEX idx_offer_token       (offer_token)       TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_order_hash    (order_hash)   TYPE bloom_filter GRANULARITY 4,
 
     -- indexes (consideration) --
-    INDEX idx_consideration_item_type (consideration_item_type) TYPE minmax GRANULARITY 4,
-    INDEX idx_consideration_token_id   (consideration_token_id) TYPE minmax GRANULARITY 4,
-    INDEX idx_consideration_amount     (consideration_amount)   TYPE minmax GRANULARITY 4,
-    INDEX idx_consideration_token       (consideration_token)     TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_consideration_recipient   (consideration_recipient) TYPE bloom_filter GRANULARITY 4
+    INDEX idx_item_type     (item_type)    TYPE minmax GRANULARITY 4,
+    INDEX idx_token_id      (token_id)     TYPE minmax GRANULARITY 4,
+    INDEX idx_amount        (amount)       TYPE minmax GRANULARITY 4,
+    INDEX idx_recipient     (recipient)    TYPE bloom_filter GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree()
-ORDER BY (offer_token, offer_token_id, order_hash);
+ORDER BY (token, token_id, order_hash, consideration_idx);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_sales
-TO seaport_sales
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_considerations
+TO seaport_considerations
 AS
 SELECT
-    -- block --
-    f.block_num,
-    f.timestamp,
+    order_hash,
+    tx_hash,
+    block_num,
+    timestamp,
 
-    -- transaction --
-    f.tx_hash,
-
-    -- order fulfilled --
-    f.order_hash,
-
-    -- offer --
-    row_number() OVER (PARTITION BY f.order_hash ORDER BY tupleElement(o,2)) AS offer_index,
-    tupleElement(o,1)  AS offer_item_type,
-    tupleElement(o,2)  AS offer_token,
-    tupleElement(o,3)  AS offer_token_id,
-    toUInt256(tupleElement(o,4)) AS offer_amount,
-
-    -- consideration --
-    tupleElement(c,1)            AS consideration_item_type,
-    tupleElement(c,2)            AS consideration_token,
-    tupleElement(c,3)            AS consideration_token_id,
-    toUInt256(tupleElement(c,4)) AS consideration_amount,
-    tupleElement(c,5)            AS consideration_recipient
-FROM seaport_order_fulfilled AS f
-LEFT ARRAY JOIN f.offer AS o
-LEFT ARRAY JOIN f.consideration AS c;
+    row_number() OVER (PARTITION BY order_hash ORDER BY tupleElement(c, 2)) AS consideration_idx,
+    tupleElement(c, 1) AS item_type,
+    tupleElement(c, 2) AS token,
+    tupleElement(c, 3) AS token_id,
+    tupleElement(c, 4) AS amount,
+    tupleElement(c, 5) AS recipient
+FROM seaport_order_fulfilled
+LEFT ARRAY JOIN consideration AS c;
 
 
 -- Seaport Offers --
@@ -655,65 +634,99 @@ SELECT
 FROM seaport_order_fulfilled
 LEFT ARRAY JOIN offer AS o;
 
--- Seaport Considerations --
--- A consideration is what the offerer expects in return for their offer. It’s essentially the "payment" they expect to receive, which can also be:
--- NFTs (ERC-721, ERC-1155)
--- FTs (ERC-20)
--- Native cryptocurrency (ETH, MATIC, etc.)
-CREATE TABLE IF NOT EXISTS seaport_considerations (
+
+CREATE TABLE IF NOT EXISTS seaport_orders (
     -- block --
-    block_num  UInt32,
-    timestamp  DateTime(0, 'UTC'),
+    block_num           UInt32,
+    timestamp           DateTime(0, 'UTC'),
 
     -- transaction --
-    tx_hash    FixedString(66),
+    tx_hash             FixedString(66),
 
     -- order fulfilled --
-    order_hash FixedString(66),
-    consideration_idx UInt16,
+    order_hash                  FixedString(66),
+    offerer                     FixedString(42),
+    zone                        FixedString(42),
+    recipient                   FixedString(42),
+
+    -- offer --
+    offer_index                 UInt16,
+    offer_item_type             UInt8,
+    offer_token                 FixedString(42),
+    offer_token_id              UInt256,
+    offer_amount                UInt256,
 
     -- consideration --
-    item_type  UInt8                COMMENT 'The type of asset (NFT, FT, ETH, etc.)',
-    token      FixedString(42)      COMMENT 'The contract address of the offered asset',
-    token_id   UInt256              COMMENT 'The token ID for NFTs or 0 for FTs and ETH',
-    amount     UInt256              COMMENT 'The amount of the offered asset',
-    recipient  FixedString(42)      COMMENT 'The address that should receive the consideration',
+    consideration_item_type     UInt8,
+    consideration_token         FixedString(42),
+    consideration_token_id      UInt256,
+    consideration_amount        UInt256,
+    consideration_recipient     FixedString(42),
 
     -- indexes (block) --
-    INDEX idx_block_num     (block_num)    TYPE minmax       GRANULARITY 4,
-    INDEX idx_timestamp     (timestamp)    TYPE minmax       GRANULARITY 4,
+    INDEX idx_block_num         (block_num)         TYPE minmax GRANULARITY 4,
+    INDEX idx_timestamp         (timestamp)         TYPE minmax GRANULARITY 4,
 
     -- indexes (transaction) --
-    INDEX idx_tx_hash       (tx_hash)      TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
 
     -- indexes (order) --
-    INDEX idx_order_hash    (order_hash)   TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_order_hash        (order_hash)        TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_offerer           (offerer)           TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_zone              (zone)              TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_recipient         (recipient)         TYPE bloom_filter GRANULARITY 4,
+
+    -- indexes (offer) --
+    INDEX idx_offer_item_type   (offer_item_type)   TYPE minmax GRANULARITY 4,
+    INDEX idx_offer_token_id    (offer_token_id)    TYPE minmax GRANULARITY 4,
+    INDEX idx_offer_amount      (offer_amount)      TYPE minmax GRANULARITY 4,
+    INDEX idx_offer_token       (offer_token)       TYPE bloom_filter GRANULARITY 4,
 
     -- indexes (consideration) --
-    INDEX idx_item_type     (item_type)    TYPE minmax GRANULARITY 4,
-    INDEX idx_token_id      (token_id)     TYPE minmax GRANULARITY 4,
-    INDEX idx_amount        (amount)       TYPE minmax GRANULARITY 4,
-    INDEX idx_recipient     (recipient)    TYPE bloom_filter GRANULARITY 4
+    INDEX idx_consideration_item_type   (consideration_item_type) TYPE minmax GRANULARITY 4,
+    INDEX idx_consideration_token_id    (consideration_token_id) TYPE minmax GRANULARITY 4,
+    INDEX idx_consideration_amount      (consideration_amount)   TYPE minmax GRANULARITY 4,
+    INDEX idx_consideration_token       (consideration_token)     TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_consideration_recipient   (consideration_recipient) TYPE bloom_filter GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree()
-ORDER BY (token, token_id, order_hash, consideration_idx);
+ORDER BY (offer_token, offer_token_id, order_hash, offer_index);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_considerations
-TO seaport_considerations
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_orders
+TO seaport_orders
 AS
 SELECT
-    order_hash,
-    tx_hash,
-    block_num,
-    timestamp,
+    -- block --
+    f.block_num,
+    f.timestamp,
 
-    row_number() OVER (PARTITION BY order_hash ORDER BY tupleElement(c, 2)) AS consideration_idx,
-    tupleElement(c, 1) AS item_type,
-    tupleElement(c, 2) AS token,
-    tupleElement(c, 3) AS token_id,
-    tupleElement(c, 4) AS amount,
-    tupleElement(c, 5) AS recipient
-FROM seaport_order_fulfilled
-LEFT ARRAY JOIN consideration AS c;
+    -- transaction --
+    f.tx_hash,
+
+    -- order fulfilled --
+    f.order_hash,
+    f.offerer,
+    f.zone,
+    f.recipient,
+
+    -- offer --
+    row_number() OVER (PARTITION BY f.order_hash ORDER BY tupleElement(o,2)) AS offer_index,
+    tupleElement(o,1)  AS offer_item_type,
+    tupleElement(o,2)  AS offer_token,
+    tupleElement(o,3)  AS offer_token_id,
+    toUInt256(tupleElement(o,4)) AS offer_amount,
+
+    -- consideration --
+    tupleElement(c,1)            AS consideration_item_type,
+    tupleElement(c,2)            AS consideration_token,
+    tupleElement(c,3)            AS consideration_token_id,
+    toUInt256(tupleElement(c,4)) AS consideration_amount,
+    tupleElement(c,5)            AS consideration_recipient
+
+FROM seaport_order_fulfilled AS f
+LEFT ARRAY JOIN f.offer AS o
+LEFT ARRAY JOIN f.consideration AS c
+-- ERC721 and ERC1155 --
+WHERE offer_item_type IN (2, 3);
 
 

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS seaport_sales (
+CREATE TABLE IF NOT EXISTS seaport_orders (
     -- block --
     block_num           UInt32,
     timestamp           DateTime(0, 'UTC'),
@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS seaport_sales (
 
     -- order fulfilled --
     order_hash                  FixedString(66),
+    offerer                     FixedString(42),
+    zone                        FixedString(42),
+    recipient                   FixedString(42),
 
     -- offer --
     offer_index                 UInt16,
@@ -32,6 +35,9 @@ CREATE TABLE IF NOT EXISTS seaport_sales (
 
     -- indexes (order) --
     INDEX idx_order_hash        (order_hash)        TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_offerer           (offerer)           TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_zone              (zone)              TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_recipient         (recipient)         TYPE bloom_filter GRANULARITY 4,
 
     -- indexes (offer) --
     INDEX idx_offer_item_type   (offer_item_type)   TYPE minmax GRANULARITY 4,
@@ -40,17 +46,17 @@ CREATE TABLE IF NOT EXISTS seaport_sales (
     INDEX idx_offer_token       (offer_token)       TYPE bloom_filter GRANULARITY 4,
 
     -- indexes (consideration) --
-    INDEX idx_consideration_item_type (consideration_item_type) TYPE minmax GRANULARITY 4,
-    INDEX idx_consideration_token_id   (consideration_token_id) TYPE minmax GRANULARITY 4,
-    INDEX idx_consideration_amount     (consideration_amount)   TYPE minmax GRANULARITY 4,
+    INDEX idx_consideration_item_type   (consideration_item_type) TYPE minmax GRANULARITY 4,
+    INDEX idx_consideration_token_id    (consideration_token_id) TYPE minmax GRANULARITY 4,
+    INDEX idx_consideration_amount      (consideration_amount)   TYPE minmax GRANULARITY 4,
     INDEX idx_consideration_token       (consideration_token)     TYPE bloom_filter GRANULARITY 4,
     INDEX idx_consideration_recipient   (consideration_recipient) TYPE bloom_filter GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree()
-ORDER BY (offer_token, offer_token_id, order_hash);
+ORDER BY (offer_token, offer_token_id, order_hash, offer_index);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_sales
-TO seaport_sales
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_seaport_orders
+TO seaport_orders
 AS
 SELECT
     -- block --
@@ -62,6 +68,9 @@ SELECT
 
     -- order fulfilled --
     f.order_hash,
+    f.offerer,
+    f.zone,
+    f.recipient,
 
     -- offer --
     row_number() OVER (PARTITION BY f.order_hash ORDER BY tupleElement(o,2)) AS offer_index,
@@ -76,6 +85,9 @@ SELECT
     tupleElement(c,3)            AS consideration_token_id,
     toUInt256(tupleElement(c,4)) AS consideration_amount,
     tupleElement(c,5)            AS consideration_recipient
+
 FROM seaport_order_fulfilled AS f
 LEFT ARRAY JOIN f.offer AS o
-LEFT ARRAY JOIN f.consideration AS c;
+LEFT ARRAY JOIN f.consideration AS c
+-- ERC721 and ERC1155 --
+WHERE offer_item_type IN (2, 3);
