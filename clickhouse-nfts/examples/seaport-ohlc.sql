@@ -6,7 +6,7 @@ WITH (
     4 AS precision
 )
 SELECT
-    timestamp                                               AS timestamp,
+    toStartOfDay(timestamp)                                 AS timestamp,
     floor(argMinMerge(open), precision)                     AS open,
     floor(quantileDeterministicMerge(0.01)(quantile), precision)       AS low,
     floor(quantileDeterministicMerge(0.99)(quantile), precision)       AS high,
