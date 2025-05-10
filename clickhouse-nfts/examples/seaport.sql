@@ -17,6 +17,16 @@ GROUP BY token
 ORDER BY count() DESC
 LIMIT 10;
 
+-- Seaport Top Tokens by Considerations --
+SELECT
+    token,
+    count(),
+    CONCAT(floor(count() / ( SELECT count() FROM seaport_considerations)* 100, 2), '%') as percentage
+FROM seaport_considerations WHERE item_type IN (0, 1) AND token != ''
+GROUP BY token
+ORDER BY count() DESC
+LIMIT 10;
+
 -- Seaport unique Offers by Token --
 SELECT DISTINCT order_hash
 FROM seaport_offers

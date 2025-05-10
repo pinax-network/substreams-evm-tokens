@@ -788,7 +788,6 @@ SELECT
     sum(1)                                                    AS transactions
 FROM
 (
-    /* compute per-unit price per unique orders */
     SELECT
         any(block_num) as block_num,
         any(timestamp) as timestamp,
@@ -800,8 +799,7 @@ FROM
         any(offerer) as offerer,
         consideration_token,
         sum(consideration_amount) AS consideration_amount,
-        /* price_unit = consideration_amount / offer_amount (float) */
-        CAST(consideration_amount / pow(10, 18), 'Float64') / greatest(CAST(offer_amount, 'Float64'), 1.0) AS price_unit_wei -- Price of Unit as Wei
+        toFloat64(consideration_amount / 10e18) / toFloat64(offer_amount) AS price_unit_wei -- Price of Unit as Wei
     FROM seaport_orders
     GROUP BY order_hash, offer_token, offer_token_id, consideration_token
 )
