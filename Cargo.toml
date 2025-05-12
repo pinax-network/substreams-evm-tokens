@@ -1,5 +1,7 @@
 [workspace]
 members = [
+  "erc20",
+  "erc20-metadata",
   "erc20-balances",
   "erc20-balances-rpc",
   "erc20-contracts",
@@ -20,7 +22,7 @@ members = [
   "clickhouse-ens",
   "clickhouse-transactions",
   "clickhouse-contracts",
-  "clickhouse-eas"
+  "clickhouse-eas",
 ]
 resolver = "2"
 

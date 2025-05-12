@@ -1,0 +1,16 @@
+[package]
+name = "erc20"
+description = "ERC20"
+edition = { workspace = true }
+version = { workspace = true }
+authors = ["Denis <denis@pinax.network>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-ethereum = { workspace = true }
+substreams-abis = { workspace = true }
+proto = { path = "../proto" }
+common = { path = "../common" }

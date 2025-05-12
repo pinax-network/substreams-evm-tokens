@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package evm.erc20.metadata.v1;
+
+message Events {
+  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e34251682bac9c3252af30e91e999f13dd098b9f/contracts/token/ERC20/IERC20.sol#L32
+  repeated BalanceByOwner balance_by_owners = 4;
+
+  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/IERC20Metadata.sol
+  repeated MetadataByContract metadata_by_contracts = 1;
+
+  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/IERC20Permit.sol
+  repeated PermitByOwner permit_by_owners = 2;
+
+  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e34251682bac9c3252af30e91e999f13dd098b9f/contracts/token/ERC20/IERC20.sol#L50
+  repeated AllowanceByOwnerSpender allowance_by_owner_spenders = 3;
+
+  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e34251682bac9c3252af30e91e999f13dd098b9f/contracts/token/ERC20/IERC20.sol#L27
+  repeated TotalSupplyByContract total_supply_by_contracts = 5;
+}
+
+message BalanceByOwner {
+  bytes contract = 1; // log.address
+  bytes owner = 2;
+  string balance_of = 3; // balanceOf(address account) -> uint256
+}
+
+message MetadataByContract {
+  bytes contract = 1; // log.address
+  optional string symbol = 4; // symbol() -> string
+  optional string name = 5; // name() -> string
+  optional int32 decimals = 6; // decimals() -> uint8
+}
+
+message TotalSupplyByContract {
+  bytes contract = 1; // log.address
+  string total_supply = 2; // totalSupply() -> uint256
+}
+
+message PermitByOwner {
+  bytes contract = 1; // log.address
+  bytes owner = 2;
+  string nonces = 3; // nonces(address owner) -> uint256
+}
+
+message AllowanceByOwnerSpender {
+  bytes contract = 1; // log.address
+  bytes owner = 2;
+  bytes spender = 3;
+  string allowance = 4; // allowance(address owner, address spender) -> uint256
+}

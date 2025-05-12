@@ -1,0 +1,29 @@
+specVersion: v0.1.0
+package:
+  name: erc20_metadata
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-evm-tokens
+  description: ERC20 token metadata
+  image: ../image.png
+
+imports:
+  erc20: ../erc20/substreams.yaml
+
+protobuf:
+  files:
+    - erc20-metadata.proto
+  importPaths:
+    - ../proto/v1
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/erc20_metadata.wasm
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: erc20:map_events
+    output:
+      type: proto:evm.erc20.metadata.v1.Events

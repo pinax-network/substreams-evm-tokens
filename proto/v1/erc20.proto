@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package evm.erc20.v1;
+
+message Events {
+  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol
+  repeated Transfer transfers = 1;
+  repeated Approval approvals = 2;
+}
+
+message Transfer {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes from = 10;
+  bytes to = 11;
+  string value = 12;
+}
+
+
+message Approval {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes owner = 10;
+  bytes spender = 11;
+  string value = 12;
+}

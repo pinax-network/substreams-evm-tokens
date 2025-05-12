@@ -12,6 +12,8 @@ protobuf:
     - v1/ethereum.proto
     - v1/ens.proto
     - v1/seaport.proto
+    - v1/erc20.proto
+    - v1/erc20-metadata.proto
     - v1/erc721.proto
     - v1/erc721-metadata.proto
     - v1/erc1155.proto
