@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package evm.erc20.stores.v1;
+
+message Events {
+  repeated TransfersByContract transfers_by_contracts = 1;
+}
+
+message TransfersByContract {
+  bytes contract = 1;
+  uint64 old_value = 2;
+  uint64 new_value = 3;
+}

@@ -332,6 +332,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "erc20-stores"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+]
+
+[[package]]
 name = "erc721"
 version = "0.0.0"
 dependencies = [

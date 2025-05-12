@@ -1,0 +1,39 @@
+specVersion: v0.1.0
+package:
+  name: evm_erc20_stores
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-evm-tokens
+  description: ERC20 stores
+  image: ../image.png
+
+imports:
+  erc20: ../erc20/evm-erc20-v0.1.0.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/erc20_stores.wasm
+
+protobuf:
+  files:
+    - v1/erc20-stores.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - store: store_erc20_transfers
+        mode: deltas
+    output:
+      type: proto:evm.erc20.stores.v1.Events
+
+  - name: store_erc20_transfers
+    kind: store
+    updatePolicy: add
+    valueType: bigint
+    inputs:
+      - map: erc20:map_events
+
+network: mainnet
