@@ -4,6 +4,7 @@ members = [
   "erc20-metadata",
   "erc20-stores",
   "erc20-balances",
+  "erc20-supply",
   "erc20-balances-rpc",
   "erc20-contracts",
   "erc20-contracts-rpc",

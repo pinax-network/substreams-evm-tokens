@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package evm.erc20.supply.v1;
+
+message Events {
+  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e34251682bac9c3252af30e91e999f13dd098b9f/contracts/token/ERC20/IERC20.sol#L27
+  repeated TotalSupplyByContract total_supply_by_contracts = 2;
+}
+
+message TotalSupplyByContract {
+  bytes contract = 1; // log.address
+  string total_supply = 2; // totalSupply() -> uint256
+}

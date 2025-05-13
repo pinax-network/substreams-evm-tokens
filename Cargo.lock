@@ -341,6 +341,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "erc20-supply"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-abis",
+ "substreams-ethereum",
+]
+
+[[package]]
 name = "erc721"
 version = "0.0.0"
 dependencies = [

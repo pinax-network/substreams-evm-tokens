@@ -29,6 +29,13 @@ pub mod evm {
                 // @@protoc_insertion_point(evm.erc20.stores.v1)
             }
         }
+        pub mod supply {
+            // @@protoc_insertion_point(attribute:evm.erc20.supply.v1)
+            pub mod v1 {
+                include!("evm.erc20.supply.v1.rs");
+                // @@protoc_insertion_point(evm.erc20.supply.v1)
+            }
+        }
         // @@protoc_insertion_point(attribute:evm.erc20.v1)
         pub mod v1 {
             include!("evm.erc20.v1.rs");

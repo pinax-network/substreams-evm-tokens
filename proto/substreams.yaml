@@ -14,6 +14,7 @@ protobuf:
     - v1/seaport.proto
     - v1/erc20.proto
     - v1/erc20-metadata.proto
+    - v1/erc20-supply.proto
     - v1/erc20-stores.proto
     - v1/erc721.proto
     - v1/erc721-metadata.proto

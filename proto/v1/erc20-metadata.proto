@@ -5,9 +5,6 @@ package evm.erc20.metadata.v1;
 message Events {
   // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/IERC20Metadata.sol
   repeated MetadataByContract metadata_by_contracts = 1;
-
-  // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e34251682bac9c3252af30e91e999f13dd098b9f/contracts/token/ERC20/IERC20.sol#L27
-  repeated TotalSupplyByContract total_supply_by_contracts = 2;
 }
 
 message MetadataByContract {
@@ -15,9 +12,4 @@ message MetadataByContract {
   int32 decimals = 2; // decimals() -> uint8 (REQUIRED)
   optional string symbol = 3; // symbol() -> string
   optional string name = 4; // name() -> string
-}
-
-message TotalSupplyByContract {
-  bytes contract = 1; // log.address
-  string total_supply = 2; // totalSupply() -> uint256
 }
