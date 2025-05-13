@@ -1,4 +1,4 @@
-use proto::pb::evm::erc20::stores::v1::{Events, TransfersByContract};
+use proto::pb::evm::erc20::stores::v1::{Events, FirstTransferByContract};
 use proto::pb::evm::erc20::v1::Events as ERC20Transfers;
 use std::collections::HashSet;
 use substreams::scalar::BigInt;
@@ -11,12 +11,12 @@ fn map_events(store_erc20_transfers: Deltas<DeltaBigInt>) -> Result<Events, subs
     let mut events = Events::default();
 
     for delta in store_erc20_transfers.deltas {
+        // only include first transfer
+        if delta.old_value != BigInt::zero() {
+            continue;
+        }
         if let Ok(contract) = Hex::decode(&delta.key) {
-            events.transfers_by_contracts.push(TransfersByContract {
-                contract,
-                old_value: delta.old_value.to_u64(),
-                new_value: delta.new_value.to_u64(),
-            });
+            events.first_transfer_by_contract.push(FirstTransferByContract { contract });
         }
     }
     Ok(events)
