@@ -4,12 +4,32 @@ package evm.erc20.metadata.v1;
 
 message Events {
   // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/IERC20Metadata.sol
-  repeated MetadataByContract metadata_by_contracts = 1;
+  repeated MetadataInitialize metadata_initialize = 1;
+
+  // post-contract creation metadata changes
+  repeated MetadataChanges metadata_changes = 2;
 }
 
-message MetadataByContract {
-  bytes contract = 1; // log.address
-  int32 decimals = 2; // decimals() -> uint8 (REQUIRED)
+// From RPC calls
+message MetadataInitialize {
+  bytes address = 1; // log.address
+  int32 decimals = 2; // decimals() -> uint8
   optional string symbol = 3; // symbol() -> string
   optional string name = 4; // name() -> string
+}
+
+// Pulls data from calls (only available in Extended blocks)
+message MetadataChanges {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  bytes caller = 2; // call.caller
+  bytes address = 3; // call.address
+  uint64 begin_ordinal = 4; // call.begin_ordinal
+  uint64 end_ordinal = 5; // call.begin_ordinal
+
+  // -- function --
+  optional string name = 10;
+  optional string symbol = 11;
 }

@@ -1,4 +1,4 @@
-# `ERC20` Token Metadata via `RPC`
+# `ERC20` Token Metadata via `functions`
 
 ## Includes
 

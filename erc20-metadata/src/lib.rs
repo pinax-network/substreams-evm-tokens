@@ -1,7 +1,7 @@
 mod calls;
 
 use common::Address;
-use proto::pb::evm::erc20::metadata::v1::{Events, MetadataByContract};
+use proto::pb::evm::erc20::metadata::v1::{Events, MetadataInitialize};
 use proto::pb::evm::erc20::stores::v1::Events as ERC20FirstTransfer;
 
 use crate::calls::{batch_decimals, batch_name, batch_symbol};
@@ -33,9 +33,9 @@ fn map_events(erc20: ERC20FirstTransfer) -> Result<Events, substreams::errors::E
         // Metadata by Contract
         // decimals is REQUIRED
         if let Some(decimals) = decimals {
-            events.metadata_by_contracts.push(MetadataByContract {
-                contract: contract.to_vec(),
-                decimals,
+            events.metadata_initialize.push(MetadataInitialize {
+                address: contract.to_vec(),
+                decimals, // decimals is REQUIRED for initialization
                 symbol,
                 name,
             });

@@ -1,12 +1,12 @@
 [package]
-name = "erc20-contracts-rpc"
+name = "erc20-metadata-functions"
 description = { workspace = true }
 edition = { workspace = true }
 version = { workspace = true }
 authors = [
     "Denis <denis@pinax.network>",
     "Etienne Donneger <etienne.d@pinax.network>",
-    "MathieuLefebvre <mathieu@pinax.network>"
+    "MathieuLefebvre <mathieu@pinax.network>",
 ]
 
 [lib]
@@ -17,5 +17,13 @@ substreams = { workspace = true }
 substreams-ethereum = { workspace = true }
 substreams-abis = { workspace = true }
 proto = { path = "../proto" }
-erc20-balances = { path = "../erc20-balances" }
 common = { path = "../common" }
+ethabi = "18.0"
+prost = { workspace = true }
+prost-types = { workspace = true }
+num-bigint = { version = "0.4", features = ["serde"] }
+
+[build-dependencies]
+prost-build = "0.13"
+anyhow = "1"
+substreams-ethereum = "0.10"

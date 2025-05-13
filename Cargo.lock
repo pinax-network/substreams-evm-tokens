@@ -292,7 +292,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "erc20-contracts"
+name = "erc20-metadata"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-abis",
+ "substreams-ethereum",
+]
+
+[[package]]
+name = "erc20-metadata-functions"
 version = "0.0.0"
 dependencies = [
  "anyhow",
@@ -302,29 +313,6 @@ dependencies = [
  "prost 0.13.5",
  "prost-build 0.13.5",
  "prost-types 0.13.5",
- "proto",
- "substreams",
- "substreams-abis",
- "substreams-ethereum",
-]
-
-[[package]]
-name = "erc20-contracts-rpc"
-version = "0.0.0"
-dependencies = [
- "common",
- "erc20-balances",
- "proto",
- "substreams",
- "substreams-abis",
- "substreams-ethereum",
-]
-
-[[package]]
-name = "erc20-metadata"
-version = "0.0.0"
-dependencies = [
- "common",
  "proto",
  "substreams",
  "substreams-abis",

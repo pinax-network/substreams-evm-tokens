@@ -1,19 +1,19 @@
 specVersion: v0.1.0
 package:
-  name: evm_erc20_contracts
+  name: evm_erc20_metadata_functions
   version: v1.11.0
   url: https://githubcom/pinax-network/substreams-evm-tokens
-  description: EVM Token contracts
+  description: ERC20 Token Metadata via Functions
   image: ../image.png
 
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/erc20_contracts.wasm
+    file: ../target/wasm32-unknown-unknown/release/erc20_metadata_functions.wasm
 
 protobuf:
   files:
-    - v1/contracts.proto
+    - v1/erc20-metadata.proto
   importPaths:
     - ../proto
 
@@ -23,6 +23,6 @@ modules:
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:evm.tokens.contracts.v1.Events
+      type: proto:evm.erc20.metadata.v1.Events
 
 network: mainnet

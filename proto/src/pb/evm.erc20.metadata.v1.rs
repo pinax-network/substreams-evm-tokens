@@ -5,15 +5,19 @@
 pub struct Events {
     /// <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/IERC20Metadata.sol>
     #[prost(message, repeated, tag="1")]
-    pub metadata_by_contracts: ::prost::alloc::vec::Vec<MetadataByContract>,
+    pub metadata_initialize: ::prost::alloc::vec::Vec<MetadataInitialize>,
+    /// post-contract creation metadata changes
+    #[prost(message, repeated, tag="2")]
+    pub metadata_changes: ::prost::alloc::vec::Vec<MetadataChanges>,
 }
+/// From RPC calls
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MetadataByContract {
+pub struct MetadataInitialize {
     /// log.address
     #[prost(bytes="vec", tag="1")]
-    pub contract: ::prost::alloc::vec::Vec<u8>,
-    /// decimals() -> uint8 (REQUIRED)
+    pub address: ::prost::alloc::vec::Vec<u8>,
+    /// decimals() -> uint8
     #[prost(int32, tag="2")]
     pub decimals: i32,
     /// symbol() -> string
@@ -22,5 +26,32 @@ pub struct MetadataByContract {
     /// name() -> string
     #[prost(string, optional, tag="4")]
     pub name: ::core::option::Option<::prost::alloc::string::String>,
+}
+/// Pulls data from calls (only available in Extended blocks)
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MetadataChanges {
+    /// -- transaction --
+    #[prost(bytes="vec", tag="1")]
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
+    /// -- call --
+    ///
+    /// call.caller
+    #[prost(bytes="vec", tag="2")]
+    pub caller: ::prost::alloc::vec::Vec<u8>,
+    /// call.address
+    #[prost(bytes="vec", tag="3")]
+    pub address: ::prost::alloc::vec::Vec<u8>,
+    /// call.begin_ordinal
+    #[prost(uint64, tag="4")]
+    pub begin_ordinal: u64,
+    /// call.begin_ordinal
+    #[prost(uint64, tag="5")]
+    pub end_ordinal: u64,
+    /// -- function --
+    #[prost(string, optional, tag="10")]
+    pub name: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="11")]
+    pub symbol: ::core::option::Option<::prost::alloc::string::String>,
 }
 // @@protoc_insertion_point(module)
