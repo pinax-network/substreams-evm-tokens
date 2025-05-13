@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS seaport_order_fulfilled (
     ordinal              UInt64, -- log.ordinal
     `index`              UInt64, -- relative index
     global_sequence      UInt64, -- latest global sequence (block_num << 32 + index)
-    global_sequence_reverse  UInt64 MATERIALIZED global_sequence * -1,
+    global_sequence_reverse  UInt64 MATERIALIZED toUInt64(-1) - global_sequence,
 
     -- transaction --
     tx_hash              FixedString(66),
@@ -339,7 +339,7 @@ CREATE TABLE IF NOT EXISTS seaport_order_cancelled (
     ordinal              UInt64, -- log.ordinal
     `index`              UInt64, -- relative index
     global_sequence      UInt64, -- latest global sequence (block_num << 32 + index)
-    global_sequence_reverse  UInt64 MATERIALIZED global_sequence * -1,
+    global_sequence_reverse  UInt64 MATERIALIZED toUInt64(-1) - global_sequence,
 
     -- transaction --
     tx_hash              FixedString(66),
