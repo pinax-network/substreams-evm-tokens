@@ -7,7 +7,7 @@ package:
   image: ../image.png
 
 imports:
-  erc20: ../erc20/substreams.yaml
+  erc20: ../erc20-stores/evm-erc20-stores-v0.1.0.spkg
 
 protobuf:
   files:

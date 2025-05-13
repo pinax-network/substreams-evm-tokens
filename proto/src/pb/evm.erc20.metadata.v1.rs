@@ -3,33 +3,12 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
-    /// <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e34251682bac9c3252af30e91e999f13dd098b9f/contracts/token/ERC20/IERC20.sol#L32>
-    #[prost(message, repeated, tag="4")]
-    pub balance_by_owners: ::prost::alloc::vec::Vec<BalanceByOwner>,
     /// <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/IERC20Metadata.sol>
     #[prost(message, repeated, tag="1")]
     pub metadata_by_contracts: ::prost::alloc::vec::Vec<MetadataByContract>,
-    /// <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/IERC20Permit.sol>
-    #[prost(message, repeated, tag="2")]
-    pub permit_by_owners: ::prost::alloc::vec::Vec<PermitByOwner>,
-    /// <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e34251682bac9c3252af30e91e999f13dd098b9f/contracts/token/ERC20/IERC20.sol#L50>
-    #[prost(message, repeated, tag="3")]
-    pub allowance_by_owner_spenders: ::prost::alloc::vec::Vec<AllowanceByOwnerSpender>,
     /// <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/e34251682bac9c3252af30e91e999f13dd098b9f/contracts/token/ERC20/IERC20.sol#L27>
-    #[prost(message, repeated, tag="5")]
+    #[prost(message, repeated, tag="2")]
     pub total_supply_by_contracts: ::prost::alloc::vec::Vec<TotalSupplyByContract>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct BalanceByOwner {
-    /// log.address
-    #[prost(bytes="vec", tag="1")]
-    pub contract: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="2")]
-    pub owner: ::prost::alloc::vec::Vec<u8>,
-    /// balanceOf(address account) -> uint256
-    #[prost(string, tag="3")]
-    pub balance_of: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -37,15 +16,15 @@ pub struct MetadataByContract {
     /// log.address
     #[prost(bytes="vec", tag="1")]
     pub contract: ::prost::alloc::vec::Vec<u8>,
+    /// decimals() -> uint8 (REQUIRED)
+    #[prost(int32, tag="2")]
+    pub decimals: i32,
     /// symbol() -> string
-    #[prost(string, optional, tag="4")]
+    #[prost(string, optional, tag="3")]
     pub symbol: ::core::option::Option<::prost::alloc::string::String>,
     /// name() -> string
-    #[prost(string, optional, tag="5")]
+    #[prost(string, optional, tag="4")]
     pub name: ::core::option::Option<::prost::alloc::string::String>,
-    /// decimals() -> uint8
-    #[prost(int32, optional, tag="6")]
-    pub decimals: ::core::option::Option<i32>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -56,31 +35,5 @@ pub struct TotalSupplyByContract {
     /// totalSupply() -> uint256
     #[prost(string, tag="2")]
     pub total_supply: ::prost::alloc::string::String,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct PermitByOwner {
-    /// log.address
-    #[prost(bytes="vec", tag="1")]
-    pub contract: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="2")]
-    pub owner: ::prost::alloc::vec::Vec<u8>,
-    /// nonces(address owner) -> uint256
-    #[prost(string, tag="3")]
-    pub nonces: ::prost::alloc::string::String,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AllowanceByOwnerSpender {
-    /// log.address
-    #[prost(bytes="vec", tag="1")]
-    pub contract: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="2")]
-    pub owner: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="3")]
-    pub spender: ::prost::alloc::vec::Vec<u8>,
-    /// allowance(address owner, address spender) -> uint256
-    #[prost(string, tag="4")]
-    pub allowance: ::prost::alloc::string::String,
 }
 // @@protoc_insertion_point(module)

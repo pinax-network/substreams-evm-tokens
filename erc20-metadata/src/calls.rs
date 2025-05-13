@@ -18,7 +18,12 @@ pub fn batch_name(contracts: Vec<Address>) -> HashMap<Address, String> {
         let responses = batch.execute().expect("failed to execute erc20::functions::Name RpcBatch").responses;
         for (i, address) in chunks.iter().enumerate() {
             if let Some(name) = RpcBatch::decode::<String, erc20::functions::Name>(&responses[i]) {
-                results.insert(address.to_vec(), name);
+                // handle empty name
+                if name.is_empty() {
+                    substreams::log::info!("Empty name for address={:?}", Hex::encode(address));
+                } else {
+                    results.insert(address.to_vec(), name);
+                }
             } else {
                 substreams::log::info!("Failed to decode erc20::functions::Name for address={:?}", Hex::encode(address));
             }
@@ -36,7 +41,30 @@ pub fn batch_symbol(contracts: Vec<Address>) -> HashMap<Address, String> {
         let responses = batch.execute().expect("failed to execute erc20::functions::Symbol RpcBatch").responses;
         for (i, address) in chunks.iter().enumerate() {
             if let Some(symbol) = RpcBatch::decode::<String, erc20::functions::Symbol>(&responses[i]) {
-                results.insert(address.to_vec(), symbol);
+                // Handle empty symbol
+                if symbol.is_empty() {
+                    substreams::log::info!("Empty symbol for address={:?}", Hex::encode(address));
+                } else {
+                    results.insert(address.to_vec(), symbol);
+                }
+            } else {
+                substreams::log::info!("Failed to decode erc20::functions::Symbol for address={:?}", Hex::encode(address));
+            }
+        }
+    }
+    results
+}
+
+pub fn batch_decimals(contracts: Vec<Address>) -> HashMap<Address, BigInt> {
+    let mut results: HashMap<Address, BigInt> = HashMap::new();
+    for chunks in contracts.chunks(CHUNK_SIZE) {
+        let batch = chunks
+            .iter()
+            .fold(RpcBatch::new(), |batch, address| batch.add(erc20::functions::Decimals {}, address.to_vec()));
+        let responses = batch.execute().expect("failed to execute erc20::functions::Symbol RpcBatch").responses;
+        for (i, address) in chunks.iter().enumerate() {
+            if let Some(decimals) = RpcBatch::decode::<BigInt, erc20::functions::Decimals>(&responses[i]) {
+                results.insert(address.to_vec(), decimals);
             } else {
                 substreams::log::info!("Failed to decode erc20::functions::Symbol for address={:?}", Hex::encode(address));
             }
