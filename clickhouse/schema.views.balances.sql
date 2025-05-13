@@ -20,5 +20,5 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS balances_by_contract
 ENGINE = ReplacingMergeTree(global_sequence)
 PRIMARY KEY (contract, address)
 ORDER BY (contract, address)
-AS
+TO balances AS
 SELECT * FROM balances;
