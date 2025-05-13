@@ -72,8 +72,11 @@ pub fn to_optional_vector(vec: &Vec<u8>) -> Option<Vec<u8>> {
 }
 
 pub fn bytes32_to_string(bytes: &[u8]) -> String {
+    if bytes.is_empty() {
+        return "".to_string();
+    }
     let s = String::from_utf8_lossy(&bytes);
-    s.trim_matches('\0').to_string()
+    s.trim().trim_matches('\0').to_string()
 }
 
 // Used to enforce ERC-20 decimals to be between 0 and 255

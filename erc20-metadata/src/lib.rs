@@ -19,7 +19,7 @@ fn map_events(erc20: ERC20FirstTransfer) -> Result<Events, substreams::errors::E
     // Metadata By Contract
     for contract in contract_vec {
         let decimals = match decimals.get(&contract) {
-            Some(value) => Some(value),
+            Some(value) => Some(value.clone()),
             None => None,
         };
         let symbol = match symbols.get(&contract) {
@@ -35,7 +35,7 @@ fn map_events(erc20: ERC20FirstTransfer) -> Result<Events, substreams::errors::E
         if let Some(decimals) = decimals {
             events.metadata_by_contracts.push(MetadataByContract {
                 contract: contract.to_vec(),
-                decimals: decimals.to_i32(), // REQUIRED
+                decimals,
                 symbol,
                 name,
             });
