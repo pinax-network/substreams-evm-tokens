@@ -3,9 +3,7 @@ name = "erc20-balances-rpc"
 description = { workspace = true }
 edition = { workspace = true }
 version = { workspace = true }
-authors = [
-    "Denis <denis@pinax.network>"
-]
+authors = ["Denis <denis@pinax.network>"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]

@@ -15,6 +15,13 @@ pub mod evm {
         }
     }
     pub mod erc20 {
+        pub mod balances {
+            // @@protoc_insertion_point(attribute:evm.erc20.balances.v1)
+            pub mod v1 {
+                include!("evm.erc20.balances.v1.rs");
+                // @@protoc_insertion_point(evm.erc20.balances.v1)
+            }
+        }
         pub mod metadata {
             // @@protoc_insertion_point(attribute:evm.erc20.metadata.v1)
             pub mod v1 {

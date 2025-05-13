@@ -270,17 +270,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "erc20-balances"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams",
- "substreams-abis",
- "substreams-ethereum",
-]
-
-[[package]]
 name = "erc20-balances-rpc"
 version = "0.0.0"
 dependencies = [
@@ -716,17 +705,6 @@ name = "multimap"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "defc4c55412d89136f966bbb339008b474350e5e6e78d2714439c386b3137a03"
-
-[[package]]
-name = "native-contracts"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams",
- "substreams-abis",
- "substreams-ethereum",
-]
 
 [[package]]
 name = "native_balances"

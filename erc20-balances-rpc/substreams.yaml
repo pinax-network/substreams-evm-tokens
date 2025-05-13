@@ -1,13 +1,19 @@
 specVersion: v0.1.0
 package:
   name: evm_erc20_balances_rpc
-  version: v1.11.0
+  version: v0.1.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC20 balance changes via RPC
   image: ../image.png
 
 imports:
-  erc20_balances: ../erc20-balances/substreams.yaml
+  erc20: ../erc20/evm-erc20-v0.1.0.spkg
+
+protobuf:
+  files:
+    - erc20-balances.proto
+  importPaths:
+    - ../proto/v1
 
 binaries:
   default:
@@ -17,10 +23,9 @@ binaries:
 modules:
   - name: map_events
     kind: map
-    doc: ERC20 balance changes via RPC
     inputs:
-      - map: erc20_balances:map_events
+      - map: erc20:map_events
     output:
-      type: proto:evm.tokens.balances.v1.Events
+      type: proto:evm.erc20.balances.v1.Events
 
 network: mainnet
