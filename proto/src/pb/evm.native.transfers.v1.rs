@@ -3,16 +3,16 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
+    /// RPC Poller
     #[prost(message, repeated, tag="1")]
     pub transfers: ::prost::alloc::vec::Vec<Transfer>,
     #[prost(message, repeated, tag="2")]
-    pub transaction_fees: ::prost::alloc::vec::Vec<Transfer>,
-    /// EXTENDED
+    pub transfers_from_fees: ::prost::alloc::vec::Vec<Transfer>,
+    /// EXTENDED ONLY
     #[prost(message, repeated, tag="3")]
-    pub transfers_by_calls: ::prost::alloc::vec::Vec<Transfer>,
-    /// EXTENDED
+    pub extended_transfers_from_calls: ::prost::alloc::vec::Vec<Transfer>,
     #[prost(message, repeated, tag="4")]
-    pub block_rewards: ::prost::alloc::vec::Vec<Transfer>,
+    pub extended_transfers_from_block_rewards: ::prost::alloc::vec::Vec<Transfer>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

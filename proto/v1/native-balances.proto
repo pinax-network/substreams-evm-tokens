@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package evm.native.balances.v1;
+
+message Events {
+  // RPC Poller
+  repeated BalanceByAccount balances_by_account = 1;
+
+  // EXTENDED ONLY
+  repeated BalanceByAccount extended_balances_by_account_from_block_rewards = 2;
+  repeated BalanceByAccount extended_balances_by_account_from_calls = 3;
+  repeated BalanceByAccount extended_balances_by_account_from_system_calls = 4;
+  repeated BalanceByAccount extended_balances_by_account_from_gas = 5;
+}
+
+message BalanceByAccount {
+  // -- transaction --
+  optional bytes tx_hash = 1; // block rewards & system calls don't have tx_hash
+
+  bytes account = 2;
+  string amount = 3; // eth_getBalance(address account) -> uint256
+}

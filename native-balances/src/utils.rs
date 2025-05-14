@@ -9,7 +9,7 @@ pub fn is_failed_transaction(trx: &TransactionTrace) -> bool {
     false
 }
 
-pub fn is_failed_call(call: &Call) -> bool {
+pub fn _is_failed_call(call: &Call) -> bool {
     if call.state_reverted || call.status_failed || call.status_reverted {
         return true;
     }

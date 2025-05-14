@@ -43,10 +43,12 @@ pub mod evm {
                 // @@protoc_insertion_point(evm.erc20.supply.v1)
             }
         }
-        // @@protoc_insertion_point(attribute:evm.erc20.v1)
-        pub mod v1 {
-            include!("evm.erc20.v1.rs");
-            // @@protoc_insertion_point(evm.erc20.v1)
+        pub mod transfers {
+            // @@protoc_insertion_point(attribute:evm.erc20.transfers.v1)
+            pub mod v1 {
+                include!("evm.erc20.transfers.v1.rs");
+                // @@protoc_insertion_point(evm.erc20.transfers.v1)
+            }
         }
     }
     pub mod erc721 {
@@ -64,6 +66,13 @@ pub mod evm {
         }
     }
     pub mod native {
+        pub mod balances {
+            // @@protoc_insertion_point(attribute:evm.native.balances.v1)
+            pub mod v1 {
+                include!("evm.native.balances.v1.rs");
+                // @@protoc_insertion_point(evm.native.balances.v1)
+            }
+        }
         pub mod transfers {
             // @@protoc_insertion_point(attribute:evm.native.transfers.v1)
             pub mod v1 {

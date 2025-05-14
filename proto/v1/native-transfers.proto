@@ -3,10 +3,13 @@ syntax = "proto3";
 package evm.native.transfers.v1;
 
 message Events {
+  // RPC Poller
   repeated Transfer transfers = 1;
-  repeated Transfer transaction_fees = 2;
-  repeated Transfer transfers_by_calls = 3; // EXTENDED
-  repeated Transfer block_rewards = 4; // EXTENDED
+  repeated Transfer transfers_from_fees = 2;
+
+  // EXTENDED ONLY
+  repeated Transfer extended_transfers_from_calls = 3;
+  repeated Transfer extended_transfers_from_block_rewards = 4;
 }
 
 message Transfer {

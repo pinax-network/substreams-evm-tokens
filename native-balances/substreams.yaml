@@ -1,9 +1,9 @@
 specVersion: v0.1.0
 package:
   name: evm_native_balances
-  version: v1.11.1
+  version: v0.1.0
   url: https://github.com/pinax-network/substreams-evm-tokens
-  description: Extracts all ETH balances & transfers for EVM blockchains.
+  description: Extracts Native balances for EVM blockchains.
   image: ../image.png
 
 binaries:
@@ -13,8 +13,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/balances.proto
-    - v1/ethereum.proto
+    - v1/native-balances.proto
   importPaths:
     - ../proto
 
@@ -24,6 +23,6 @@ modules:
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:evm.tokens.balances.v1.Events
+      type: proto:evm.native.balances.v1.Events
 
 network: mainnet

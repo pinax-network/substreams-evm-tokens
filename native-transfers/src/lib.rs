@@ -18,7 +18,7 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
     for balance_change in &block.balance_changes {
         // Block Rewards as transfer
         if let Some(transfer) = get_transfer_from_block_reward(balance_change) {
-            events.block_rewards.push(to_transfer(None, transfer));
+            events.extended_transfers_from_block_rewards.push(to_transfer(None, transfer));
         }
     }
 
@@ -33,7 +33,7 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
     for trx in block.transactions() {
         // transaction fee
         for transfer in get_transfer_from_transaction_fee(trx, &base_fee_per_gas, &header.coinbase) {
-            events.transaction_fees.push(to_transfer(Some(trx.hash.clone()), transfer));
+            events.transfers_from_fees.push(to_transfer(Some(trx.hash.clone()), transfer));
         }
         // find all transfers from transactions
         if let Some(transfer) = get_transfer_from_transaction(trx) {
@@ -43,7 +43,7 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
         // find all transfers from calls
         for call_view in trx.calls() {
             if let Some(transfer) = get_transfer_from_call(call_view.call) {
-                events.transfers_by_calls.push(to_transfer(Some(trx.hash.clone()), transfer));
+                events.extended_transfers_from_calls.push(to_transfer(Some(trx.hash.clone()), transfer));
             }
         }
     }

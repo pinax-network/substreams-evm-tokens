@@ -1,13 +1,12 @@
 use common::logs_with_caller;
-use proto::pb::evm::erc20::v1 as erc20;
-use proto::pb::evm::erc20::v1::Events;
+use proto::pb::evm::erc20::transfers::v1 as erc20;
 use substreams_abis::evm::token::erc20::events;
 use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::Event;
 
 #[substreams::handlers::map]
-fn map_events(block: Block) -> Result<Events, substreams::errors::Error> {
-    let mut events = Events::default();
+fn map_events(block: Block) -> Result<erc20::Events, substreams::errors::Error> {
+    let mut events = erc20::Events::default();
 
     for trx in block.transactions() {
         for (log, caller) in logs_with_caller(&block, trx) {
