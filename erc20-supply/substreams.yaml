@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: erc20_supply
+  name: evm_erc20_supply
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC20 token supply

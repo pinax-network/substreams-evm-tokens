@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: erc20_metadata
+  name: evm_erc20_metadata
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC20 Token Metadata via RPC

@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: erc721_metadata
+  name: evm_erc721_metadata
   version: v0.4.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC721 token metadata
