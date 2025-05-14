@@ -9,7 +9,7 @@ package:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/uniswap_v3.wasm
+    file: ../target/wasm32-unknown-unknown/release/uniswap_v4.wasm
 
 protobuf:
   files:
