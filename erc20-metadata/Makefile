@@ -12,8 +12,12 @@ pack: build
 
 .PHONY: noop
 noop: build
-	substreams-sink-noop $(ENDPOINT) substreams.yaml map_events -H "X-Sf-Substreams-Parallel-Jobs: 2000"
+	substreams-sink-noop $(ENDPOINT) https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-erc20-metadata-v0.1.0.spkg map_events -H "X-Sf-Substreams-Parallel-Jobs: 600"
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 22211598
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 21469410
+
+.PHONY: prod
+prod: build
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 0 -t 0 --limit-processed-blocks 0 --production-mode

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package evm.native.transfers.v1;
+
+message Events {
+  repeated Transfer transfers = 1;
+  repeated Transfer transaction_fees = 2;
+  repeated Transfer transfers_by_calls = 3; // EXTENDED
+  repeated Transfer block_rewards = 4; // EXTENDED
+}
+
+message Transfer {
+  // -- transaction --
+  optional bytes tx_hash = 1; // block rewards don't have tx_hash
+
+  // -- event --
+  bytes from = 10;
+  bytes to = 11;
+  string value = 12;
+}

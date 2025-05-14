@@ -27,3 +27,5 @@ modules:
       - map: erc20:map_events
     output:
       type: proto:evm.erc20.metadata.v1.Events
+
+network: mainnet

@@ -63,6 +63,15 @@ pub mod evm {
             // @@protoc_insertion_point(evm.erc721.v1)
         }
     }
+    pub mod native {
+        pub mod transfers {
+            // @@protoc_insertion_point(attribute:evm.native.transfers.v1)
+            pub mod v1 {
+                include!("evm.native.transfers.v1.rs");
+                // @@protoc_insertion_point(evm.native.transfers.v1)
+            }
+        }
+    }
     pub mod seaport {
         // @@protoc_insertion_point(attribute:evm.seaport.v1)
         pub mod v1 {
@@ -71,20 +80,6 @@ pub mod evm {
         }
     }
     pub mod tokens {
-        pub mod balances {
-            // @@protoc_insertion_point(attribute:evm.tokens.balances.v1)
-            pub mod v1 {
-                include!("evm.tokens.balances.v1.rs");
-                // @@protoc_insertion_point(evm.tokens.balances.v1)
-            }
-        }
-        pub mod contracts {
-            // @@protoc_insertion_point(attribute:evm.tokens.contracts.v1)
-            pub mod v1 {
-                include!("evm.tokens.contracts.v1.rs");
-                // @@protoc_insertion_point(evm.tokens.contracts.v1)
-            }
-        }
         pub mod uniswap {
             // @@protoc_insertion_point(attribute:evm.tokens.uniswap.v2)
             pub mod v2 {

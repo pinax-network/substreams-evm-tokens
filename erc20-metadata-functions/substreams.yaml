@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: evm_erc20_metadata_functions
-  version: v1.11.0
+  version: v0.1.0
   url: https://githubcom/pinax-network/substreams-evm-tokens
   description: ERC20 Token Metadata via Functions
   image: ../image.png

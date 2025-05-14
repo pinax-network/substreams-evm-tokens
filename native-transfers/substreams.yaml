@@ -1,0 +1,28 @@
+specVersion: v0.1.0
+package:
+  name: evm_native
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-evm-tokens
+  description: Extracts Native transfers
+  image: ../image.png
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/native.wasm
+
+protobuf:
+  files:
+    - v1/native-transfers.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:evm.native.transfers.v1.Events
+
+network: mainnet

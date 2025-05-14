@@ -17,3 +17,7 @@ noop: build
 .PHONY: gui
 gui: build
 	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 21469410
+
+.PHONY: prod
+prod: build
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 0 -t 0 --limit-processed-blocks 0 --production-mode
