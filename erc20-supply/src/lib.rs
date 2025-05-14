@@ -4,7 +4,7 @@ use std::collections::HashSet;
 
 use common::Address;
 use proto::pb::evm::erc20::supply::v1::{Events, TotalSupplyByContract};
-use proto::pb::evm::erc20::v1::Events as ERC20Transfers;
+use proto::pb::evm::erc20::transfers::v1::Events as ERC20Transfers;
 
 use crate::calls::batch_total_supply;
 

@@ -1,5 +1,5 @@
 use proto::pb::evm::erc20::stores::v1::{Events, FirstTransferByContract};
-use proto::pb::evm::erc20::v1::Events as ERC20Transfers;
+use proto::pb::evm::erc20::transfers::v1::Events as ERC20Transfers;
 use std::collections::HashSet;
 use substreams::scalar::BigInt;
 use substreams::store::{DeltaBigInt, Deltas};

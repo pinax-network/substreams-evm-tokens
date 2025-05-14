@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 use calls::batch_balance_of;
 use common::Address;
 use proto::pb::evm::erc20::balances::v1::{BalanceByAccount, Events};
-use proto::pb::evm::erc20::v1::Events as ERC20Transfers;
+use proto::pb::evm::erc20::transfers::v1::Events as ERC20Transfers;
 use substreams::scalar::BigInt;
 
 #[substreams::handlers::map]
