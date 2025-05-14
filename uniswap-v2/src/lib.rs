@@ -1,23 +1,23 @@
 use common::logs_with_caller;
-use proto::pb::evm::tokens::uniswap::v2::{Events, PairCreated, Swap, Sync};
+use proto::pb::evm::uniswap::v2 as uniswap;
 use substreams::errors::Error;
-use substreams_abis::evm::uniswap::v2::factory::events::PairCreated as PairCreatedAbi;
-use substreams_abis::evm::uniswap::v2::pair::events::{Swap as SwapAbi, Sync as SyncAbi};
+use substreams_abis::evm::uniswap::v2::factory::events as factory;
+use substreams_abis::evm::uniswap::v2::pair::events as pair;
 use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::Event;
 
 #[substreams::handlers::map]
-pub fn map_events(block: Block) -> Result<Events, Error> {
-    let mut events = Events::default();
+pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
+    let mut events = uniswap::Events::default();
 
     // === Uniswap::V2 ===
-    // https://github.com/Uniswap/v2-core
-    // https://github.com/pinax-network/substreams-abis/tree/main/abi/evm/uniswap/v2
+    // https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Pair.sol
+    // https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Factory.sol
     for trx in block.transactions() {
         for (log, caller) in logs_with_caller(&block, trx) {
             // Uniswap::V2::Pair:Sync
-            if let Some(event) = SyncAbi::match_and_decode(log) {
-                events.syncs.push(Sync {
+            if let Some(event) = pair::Sync::match_and_decode(log) {
+                events.sync.push(uniswap::Sync {
                     // -- transaction --
                     tx_hash: trx.hash.to_vec(),
                     // -- call --
@@ -30,8 +30,8 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
                     reserve1: event.reserve1.to_string(),
                 });
             // Uniswap::V2::Pair:Swap
-            } else if let Some(event) = SwapAbi::match_and_decode(log) {
-                events.swaps.push(Swap {
+            } else if let Some(event) = pair::Swap::match_and_decode(log) {
+                events.swap.push(uniswap::Swap {
                     // -- transaction --
                     tx_hash: trx.hash.to_vec(),
                     // -- call --
@@ -48,8 +48,8 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
                     to: event.to,
                 });
             // Uniswap::V2::Factory:PairCreated
-            } else if let Some(event) = PairCreatedAbi::match_and_decode(log) {
-                events.pairs_created.push(PairCreated {
+            } else if let Some(event) = factory::PairCreated::match_and_decode(log) {
+                events.pair_created.push(uniswap::PairCreated {
                     // -- transaction --
                     tx_hash: trx.hash.to_vec(),
                     // -- call --
@@ -61,6 +61,38 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
                     pair: event.pair,
                     token0: event.token0,
                     token1: event.token1,
+                    all_pairs_length: event.param3.to_u64(),
+                });
+            // Uniswap::V2::Pair::Mint
+            } else if let Some(event) = pair::Mint::match_and_decode(log) {
+                events.mint.push(uniswap::Mint {
+                    // -- transaction --
+                    tx_hash: trx.hash.to_vec(),
+                    // -- call --
+                    caller,
+                    // -- log --
+                    contract: log.address.to_vec(),
+                    ordinal: log.ordinal,
+                    // -- event --
+                    sender: event.sender,
+                    amount0: event.amount0.to_string(),
+                    amount1: event.amount1.to_string(),
+                });
+            // Uniswap::V2::Pair::Burn
+            } else if let Some(event) = pair::Burn::match_and_decode(log) {
+                events.burn.push(uniswap::Burn {
+                    // -- transaction --
+                    tx_hash: trx.hash.to_vec(),
+                    // -- call --
+                    caller,
+                    // -- log --
+                    contract: log.address.to_vec(),
+                    ordinal: log.ordinal,
+                    // -- event --
+                    sender: event.sender,
+                    amount0: event.amount0.to_string(),
+                    amount1: event.amount1.to_string(),
+                    to: event.to,
                 });
             }
         }

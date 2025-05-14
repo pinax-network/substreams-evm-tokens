@@ -7,6 +7,7 @@ protobuf:
   files:
     - v1/uniswap-v2.proto
     - v1/uniswap-v3.proto
+    - v1/uniswap-v4.proto
     - v1/ethereum.proto
     - v1/ens.proto
     - v1/seaport.proto

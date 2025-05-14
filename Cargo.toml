@@ -14,6 +14,7 @@ members = [
   # DEX
   "uniswap-v2",
   "uniswap-v3",
+  "uniswap-v4",
 
   # NFT
   "clickhouse-nfts",

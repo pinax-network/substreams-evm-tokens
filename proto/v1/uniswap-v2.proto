@@ -1,11 +1,15 @@
 syntax = "proto3";
 
-package evm.tokens.uniswap.v2;
+package evm.uniswap.v2;
 
+// https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Pair.sol
+// https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Factory.sol
 message Events {
-  repeated Swap swaps = 1;
-  repeated Sync syncs = 2;
-  repeated PairCreated pairs_created = 3;
+  repeated Swap swap = 1;
+  repeated Sync sync = 2;
+  repeated PairCreated pair_created = 3;
+  repeated Mint mint = 4;
+  repeated Burn burn = 5;
 }
 
 message PairCreated {
@@ -23,6 +27,7 @@ message PairCreated {
   bytes token0 = 10;
   bytes token1 = 11;
   bytes pair = 12;
+  uint64 all_pairs_length = 13; // total number of pairs created
 }
 
 message Sync {
@@ -53,10 +58,45 @@ message Swap {
   uint64 ordinal = 4; // log.ordinal
 
   // -- event --
-  string amount0_in = 21; // uint256
-  string amount0_out = 22; // uint256
-  string amount1_in = 23; // uint256
-  string amount1_out = 24; // uint256
-  bytes sender = 25;
-  bytes to = 26;
+  bytes sender = 10;
+  string amount0_in = 11; // uint256
+  string amount0_out = 12; // uint256
+  string amount1_in = 13; // uint256
+  string amount1_out = 14; // uint256
+  bytes to = 15; // address
+}
+
+message Mint {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes sender = 10; // address
+  string amount0 = 11; // uint256
+  string amount1 = 12; // uint256
+}
+
+message Burn {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes sender = 10; // address
+  string amount0 = 11; // uint256
+  string amount1 = 12; // uint256
+  bytes to = 13; // address
 }

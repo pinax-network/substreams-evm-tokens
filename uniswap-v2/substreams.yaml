@@ -3,7 +3,7 @@ package:
   name: evm_uniswap_v2
   version: v0.1.0
   url: https://githubcom/pinax-network/substreams-evm-tokens
-  description: EVM Token prices Uniswap V2
+  description: Uniswap V2 for EVM
   image: ../image.png
 
 binaries:
