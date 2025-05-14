@@ -5,10 +5,13 @@ package evm.uniswap.v4;
 // https://github.com/Uniswap/v4-core/blob/main/src/interfaces/IPoolManager.sol
 // https://github.com/Uniswap/v4-core/blob/59d3ecf53afa9264a16bba0e38f4c5d2231f80bc/src/interfaces/IProtocolFees.sol
 message Events {
+  // IPoolManager
   repeated Swap swap = 1;
   repeated Initialize intialize = 2;
   repeated ModifyLiquidity modify_liquidity = 3;
   repeated Donate donate = 4;
+
+  // IProtocolFees
   repeated ProtocolFeeControllerUpdated protocol_fee_controller_updated = 5;
   repeated ProtocolFeeUpdated protocol_fee_updated = 6;
 }

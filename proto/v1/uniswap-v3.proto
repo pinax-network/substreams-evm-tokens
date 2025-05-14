@@ -2,10 +2,25 @@ syntax = "proto3";
 
 package evm.uniswap.v3;
 
+// https://github.com/Uniswap/v3-core/blob/main/contracts/interfaces/IUniswapV3Factory.sol
+// https://github.com/Uniswap/v3-core/blob/main/contracts/interfaces/IUniswapV3Pool.sol
+// https://github.com/Uniswap/v3-core/blob/main/contracts/interfaces/pool/IUniswapV3PoolEvents.sol
 message Events {
-  repeated Swap swaps = 1;
-  repeated Initialize intializes = 2;
-  repeated PoolCreated pools_created = 3;
+  // IUniswapV3Pool
+  repeated Swap swap = 1;
+  repeated Initialize intialize = 2;
+  repeated Mint mint = 3;
+  repeated Collect collect = 4;
+  repeated Burn burn = 5;
+  repeated Flash flash = 6;
+  repeated IncreaseObservationCardinalityNext increase_observation_cardinality_next = 7;
+  repeated SetFeeProtocol set_fee_protocol = 8;
+  repeated CollectProtocol collect_protocol = 9;
+
+  // IUniswapV3Factory
+  repeated PoolCreated pool_created = 10;
+  repeated OwnerChanged owner_changed = 11;
+  repeated FeeAmountEnabled fee_amount_enabled = 12;
 }
 
 /**
@@ -16,6 +31,12 @@ message Events {
  * newly created pool contract, thereby enabling users and applications to track and interact with the new pool.
  */
 
+/// @notice Emitted when a pool is created
+/// @param token0 The first token of the pool by address sort order
+/// @param token1 The second token of the pool by address sort order
+/// @param fee The fee collected upon every swap in the pool, denominated in hundredths of a bip
+/// @param tickSpacing The minimum number of ticks between initialized ticks
+/// @param pool The address of the created pool
 message PoolCreated {
   // -- transaction --
   bytes tx_hash = 1;
@@ -28,11 +49,11 @@ message PoolCreated {
   uint64 ordinal = 4; // log.ordinal
 
   // -- event --
-  bytes token0 = 21;
-  bytes token1 = 22;
-  bytes pool = 23;
-  int32 tick_spacing = 24; // int24 (e.g., 60)
-  uint64 fee = 25; // uint24 (e.g., 3000 represents 0.30%)
+  bytes token0 = 10;
+  bytes token1 = 11;
+  uint64 fee = 12; // uint24 (e.g., 3000 represents 0.30%)
+  int32 tick_spacing = 13; // int24 (e.g., 60)
+  bytes pool = 14; // address
 }
 
 /**
@@ -88,7 +109,7 @@ message Swap {
   bytes contract = 3; // log.address
   uint64 ordinal = 4; // log.ordinal
 
-  // -- swap --
+  // -- event --
   bytes sender = 21; // address
   bytes recipient = 22; // address
   string amount0 = 23; // int256
@@ -96,4 +117,222 @@ message Swap {
   string sqrt_price_x96 = 25; // uint160
   string liquidity = 26; // uint128
   int32 tick = 27; // int24
+}
+
+
+/// @notice Emitted when the owner of the factory is changed
+/// @param oldOwner The owner before the owner was changed
+/// @param newOwner The owner after the owner was changed
+message OwnerChanged {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes old_owner = 10; // address
+  bytes new_owner = 11; // address
+}
+
+/// @notice Emitted when a new fee amount is enabled for pool creation via the factory
+/// @param fee The enabled fee, denominated in hundredths of a bip
+/// @param tickSpacing The minimum number of ticks between initialized ticks for pools created with the given fee
+message FeeAmountEnabled {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  uint64 fee = 10; // uint24
+  int32 tick_spacing = 11; // int24
+}
+
+
+/// @notice Emitted when liquidity is minted for a given position
+/// @param sender The address that minted the liquidity
+/// @param owner The owner of the position and recipient of any minted liquidity
+/// @param tickLower The lower tick of the position
+/// @param tickUpper The upper tick of the position
+/// @param amount The amount of liquidity minted to the position range
+/// @param amount0 How much token0 was required for the minted liquidity
+/// @param amount1 How much token1 was required for the minted liquidity
+message Mint {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes sender = 10; // address
+  bytes owner = 11; // address
+  int32 tick_lower = 12; // int24
+  int32 tick_upper = 13; // int24
+  string amount = 14; // uint128
+  string amount0 = 15; // uint256
+  string amount1 = 16; // uint256
+}
+
+/// @notice Emitted when fees are collected by the owner of a position
+/// @dev Collect events may be emitted with zero amount0 and amount1 when the caller chooses not to collect fees
+/// @param owner The owner of the position for which fees are collected
+/// @param tickLower The lower tick of the position
+/// @param tickUpper The upper tick of the position
+/// @param amount0 The amount of token0 fees collected
+/// @param amount1 The amount of token1 fees collected
+message Collect {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes owner = 10; // address
+  bytes recipient = 11; // address
+  int32 tick_lower = 12; // int24
+  int32 tick_upper = 13; // int24
+  string amount0 = 14; // uint128
+  string amount1 = 15; // uint128
+}
+
+/// @notice Emitted when a position's liquidity is removed
+/// @dev Does not withdraw any fees earned by the liquidity position, which must be withdrawn via #collect
+/// @param owner The owner of the position for which liquidity is removed
+/// @param tickLower The lower tick of the position
+/// @param tickUpper The upper tick of the position
+/// @param amount The amount of liquidity to remove
+/// @param amount0 The amount of token0 withdrawn
+/// @param amount1 The amount of token1 withdrawn
+message Burn {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes owner = 10; // address
+  int32 tick_lower = 11; // int24
+  int32 tick_upper = 12; // int24
+  string amount = 13; // uint128
+  string amount0 = 14; // uint256
+  string amount1 = 15; // uint256
+}
+
+/// @notice Emitted by the pool for any flashes of token0/token1
+/// @param sender The address that initiated the swap call, and that received the callback
+/// @param recipient The address that received the tokens from flash
+/// @param amount0 The amount of token0 that was flashed
+/// @param amount1 The amount of token1 that was flashed
+/// @param paid0 The amount of token0 paid for the flash, which can exceed the amount0 plus the fee
+/// @param paid1 The amount of token1 paid for the flash, which can exceed the amount1 plus the fee
+message Flash {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes sender = 10; // address
+  bytes recipient = 11; // address
+  string amount0 = 12; // uint256
+  string amount1 = 13; // uint256
+  string paid0 = 14; // uint256
+  string paid1 = 15; // uint256
+}
+
+/// @notice Emitted by the pool for increases to the number of observations that can be stored
+/// @dev observationCardinalityNext is not the observation cardinality until an observation is written at the index
+/// just before a mint/swap/burn.
+/// @param observationCardinalityNextOld The previous value of the next observation cardinality
+/// @param observationCardinalityNextNew The updated value of the next observation cardinality
+message IncreaseObservationCardinalityNext {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  uint64 observation_cardinality_next_old = 10; // uint16
+  uint64 observation_cardinality_next_new = 11; // uint16
+}
+
+/// @notice Emitted when the protocol fee is changed by the pool
+/// @param feeProtocol0Old The previous value of the token0 protocol fee
+/// @param feeProtocol1Old The previous value of the token1 protocol fee
+/// @param feeProtocol0New The updated value of the token0 protocol fee
+/// @param feeProtocol1New The updated value of the token1 protocol fee
+message SetFeeProtocol {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  uint64 fee_protocol0_old = 10; // uint8
+  uint64 fee_protocol1_old = 11; // uint8
+  uint64 fee_protocol0_new = 12; // uint8
+  uint64 fee_protocol1_new = 13; // uint8
+}
+
+/// @notice Emitted when the collected protocol fees are withdrawn by the factory owner
+/// @param sender The address that collects the protocol fees
+/// @param recipient The address that receives the collected protocol fees
+/// @param amount0 The amount of token0 protocol fees that is withdrawn
+/// @param amount0 The amount of token1 protocol fees that is withdrawn
+message CollectProtocol {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes sender = 10; // address
+  bytes recipient = 11; // address
+  string amount0 = 12; // uint128
+  string amount1 = 13; // uint128
 }

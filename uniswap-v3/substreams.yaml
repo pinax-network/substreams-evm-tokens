@@ -23,6 +23,6 @@ modules:
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:evm.tokens.uniswap.v3.Events
+      type: proto:evm.uniswap.v3.Events
 
 network: mainnet

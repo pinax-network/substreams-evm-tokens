@@ -5,6 +5,7 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
+    /// IPoolManager
     #[prost(message, repeated, tag="1")]
     pub swap: ::prost::alloc::vec::Vec<Swap>,
     #[prost(message, repeated, tag="2")]
@@ -13,6 +14,7 @@ pub struct Events {
     pub modify_liquidity: ::prost::alloc::vec::Vec<ModifyLiquidity>,
     #[prost(message, repeated, tag="4")]
     pub donate: ::prost::alloc::vec::Vec<Donate>,
+    /// IProtocolFees
     #[prost(message, repeated, tag="5")]
     pub protocol_fee_controller_updated: ::prost::alloc::vec::Vec<ProtocolFeeControllerUpdated>,
     #[prost(message, repeated, tag="6")]

@@ -5,16 +5,18 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
+    /// UniswapV2Pair
     #[prost(message, repeated, tag="1")]
     pub swap: ::prost::alloc::vec::Vec<Swap>,
     #[prost(message, repeated, tag="2")]
     pub sync: ::prost::alloc::vec::Vec<Sync>,
     #[prost(message, repeated, tag="3")]
-    pub pair_created: ::prost::alloc::vec::Vec<PairCreated>,
-    #[prost(message, repeated, tag="4")]
     pub mint: ::prost::alloc::vec::Vec<Mint>,
-    #[prost(message, repeated, tag="5")]
+    #[prost(message, repeated, tag="4")]
     pub burn: ::prost::alloc::vec::Vec<Burn>,
+    /// UniswapV2Factory
+    #[prost(message, repeated, tag="5")]
+    pub pair_created: ::prost::alloc::vec::Vec<PairCreated>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -5,11 +5,14 @@ package evm.uniswap.v2;
 // https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Pair.sol
 // https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Factory.sol
 message Events {
+  // UniswapV2Pair
   repeated Swap swap = 1;
   repeated Sync sync = 2;
-  repeated PairCreated pair_created = 3;
-  repeated Mint mint = 4;
-  repeated Burn burn = 5;
+  repeated Mint mint = 3;
+  repeated Burn burn = 4;
+
+  // UniswapV2Factory
+  repeated PairCreated pair_created = 5;
 }
 
 message PairCreated {
