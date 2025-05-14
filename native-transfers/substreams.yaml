@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: evm_native
+  name: evm_native_transfers
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: Extracts Native transfers
@@ -9,7 +9,7 @@ package:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/native.wasm
+    file: ../target/wasm32-unknown-unknown/release/native_transfers.wasm
 
 protobuf:
   files:

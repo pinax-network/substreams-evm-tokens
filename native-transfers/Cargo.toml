@@ -1,5 +1,5 @@
 [package]
-name = "native"
+name = "native_transfers"
 description = "EVM Native Transfers"
 edition = { workspace = true }
 version = { workspace = true }
