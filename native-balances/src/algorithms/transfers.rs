@@ -1,7 +1,7 @@
 use common::{Address, NULL_ADDRESS};
 use proto::pb::evm::tokens::balances::v1::Algorithm;
-use substreams_ethereum::pb::eth::v2::{balance_change::Reason, BalanceChange, Call, CallType, TransactionTrace};
 use substreams::scalar::BigInt;
+use substreams_ethereum::pb::eth::v2::{balance_change::Reason, BalanceChange, Call, CallType, TransactionTrace};
 
 use crate::{
     maps::TransferStruct,
@@ -96,8 +96,7 @@ pub fn get_transfer_from_transaction_fee(trx: &TransactionTrace, base_fee_per_ga
     let gas_price = match trx.gas_price.as_ref() {
         // valid price, 20 bytes or fewer (assumption that 20 bytes is the maximum size of a gas price)
         // https://github.com/pinax-network/substreams-evm-tokens/issues/34
-        Some(data) if data.bytes.len() <= 20 =>
-            BigInt::from_unsigned_bytes_be(&data.bytes),
+        Some(data) if data.bytes.len() <= 20 => BigInt::from_unsigned_bytes_be(&data.bytes),
 
         // `None` **or** more than 20 bytes → treat as zero
         _ => BigInt::zero(),

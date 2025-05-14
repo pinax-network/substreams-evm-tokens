@@ -18,12 +18,7 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
     Ok(events)
 }
 
-pub fn to_balance_change<'a>(
-    trx: &'a TransactionTrace,
-    call: &'a Call,
-    balance_change: &'a BalanceChangeAbi,
-    algorithm: Algorithm,
-) -> BalanceChange {
+pub fn to_balance_change<'a>(trx: &'a TransactionTrace, call: &'a Call, balance_change: &'a BalanceChangeAbi, algorithm: Algorithm) -> BalanceChange {
     let (old_balance, new_balance) = get_balances(balance_change);
 
     BalanceChange {
@@ -89,18 +84,19 @@ pub fn insert_events<'a>(block: &'a Block, events: &mut Events) {
     let default_trace = TransactionTrace::default();
     let default_call = Call::default();
 
+    // EXTENDED
     // balance changes at block level
     for balance_change in &block.balance_changes {
         // Block Rewards as transfer
         if let Some(transfer) = get_transfer_from_block_reward(balance_change) {
-            events.transfers.push(to_transfer( &default_trace, &default_call, transfer));
+            events.transfers.push(to_transfer(&default_trace, &default_call, transfer));
         }
 
         // Block Rewards as balance change
         if is_valid_balance_change(balance_change) {
             events
                 .balance_changes
-                .push(to_balance_change( &default_trace, &default_call, balance_change, Algorithm::BlockReward));
+                .push(to_balance_change(&default_trace, &default_call, balance_change, Algorithm::BlockReward));
         }
     }
 
@@ -110,7 +106,7 @@ pub fn insert_events<'a>(block: &'a Block, events: &mut Events) {
             if is_valid_balance_change(balance_change) {
                 events
                     .balance_changes
-                    .push(to_balance_change( &default_trace, call, balance_change, Algorithm::System));
+                    .push(to_balance_change(&default_trace, call, balance_change, Algorithm::System));
             }
         }
     }
@@ -126,20 +122,22 @@ pub fn insert_events<'a>(block: &'a Block, events: &mut Events) {
     for trx in block.transactions() {
         // transaction fee
         for transfer in get_transfer_from_transaction_fee(trx, &base_fee_per_gas, &header.coinbase) {
-            events.transfers.push(to_transfer( trx, &default_call, transfer));
+            events.transfers.push(to_transfer(trx, &default_call, transfer));
         }
         // find all transfers from transactions
         if let Some(transfer) = get_transfer_from_transaction(trx) {
-            events.transfers.push(to_transfer( trx, &default_call, transfer));
+            events.transfers.push(to_transfer(trx, &default_call, transfer));
         }
+        // EXTENDED
         // find all transfers from calls
         for call_view in trx.calls() {
             if let Some(transfer) = get_transfer_from_call(call_view.call) {
-                events.transfers.push(to_transfer( trx, call_view.call, transfer));
+                events.transfers.push(to_transfer(trx, call_view.call, transfer));
             }
         }
     }
 
+    // EXTENDED
     // iterate over all transactions including failed ones
     for trx in &block.transaction_traces {
         for call_view in trx.calls() {
@@ -160,7 +158,7 @@ pub fn insert_events<'a>(block: &'a Block, events: &mut Events) {
 
                 // balance change
                 if is_valid_balance_change(balance_change) {
-                    events.balance_changes.push(to_balance_change( trx, call_view.call, balance_change, algorithm ));
+                    events.balance_changes.push(to_balance_change(trx, call_view.call, balance_change, algorithm));
                 }
             }
         }
