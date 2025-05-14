@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+package evm.uniswap.v4;
+
+// https://github.com/Uniswap/v4-core/blob/main/src/interfaces/IPoolManager.sol
+// https://github.com/Uniswap/v4-core/blob/59d3ecf53afa9264a16bba0e38f4c5d2231f80bc/src/interfaces/IProtocolFees.sol
+message Events {
+  repeated Swap swap = 1;
+  repeated Initialize intialize = 2;
+  repeated ModifyLiquidity modify_liquidity = 3;
+  repeated Donate donate = 4;
+  repeated ProtocolFeeControllerUpdated protocol_fee_controller_updated = 5;
+  repeated ProtocolFeeUpdated protocol_fee_updated = 6;
+}
+
+/// @notice Emitted when a new pool is initialized
+/// @param id The abi encoded hash of the pool key struct for the new pool
+/// @param currency0 The first currency of the pool by address sort order
+/// @param currency1 The second currency of the pool by address sort order
+/// @param fee The fee collected upon every swap in the pool, denominated in hundredths of a bip
+/// @param tickSpacing The minimum number of ticks between initialized ticks
+/// @param hooks The hooks contract address for the pool, or address(0) if none
+/// @param sqrtPriceX96 The price of the pool on initialization
+/// @param tick The initial tick of the pool corresponding to the initialized price
+message Initialize {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes id = 10; // address (Pool ID)
+  bytes currency0 = 11; // address (token0)
+  bytes currency1 = 12; // address (token1)
+  uint64 fee = 13; // uint24 (e.g., 3000 represents 0.30%)
+  int32 tick_spacing = 14; // int24 (e.g., 60)
+  optional string hooks = 15; // NOT IMPLEMENTED
+  string sqrt_price_x96 = 17; // uint160
+  int32 tick = 18; // int24
+}
+
+/// @notice Emitted for swaps between currency0 and currency1
+/// @param id The abi encoded hash of the pool key struct for the pool that was modified
+/// @param sender The address that initiated the swap call, and that received the callback
+/// @param amount0 The delta of the currency0 balance of the pool
+/// @param amount1 The delta of the currency1 balance of the pool
+/// @param sqrtPriceX96 The sqrt(price) of the pool after the swap, as a Q64.96
+/// @param liquidity The liquidity of the pool after the swap
+/// @param tick The log base 1.0001 of the price of the pool after the swap
+/// @param fee The swap fee in hundredths of a bip
+message Swap {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes id = 10; // address (Pool ID)
+  bytes sender = 11; // address
+  string amount0 = 13; // int256
+  string amount1 = 14; // int256
+  string sqrt_price_x96 = 15; // uint160
+  string liquidity = 16; // uint128
+  int32 tick = 17; // int24
+  string fee = 18; // int256
+}
+
+/// @notice Emitted when a liquidity position is modified
+/// @param id The abi encoded hash of the pool key struct for the pool that was modified
+/// @param sender The address that modified the pool
+/// @param tickLower The lower tick of the position
+/// @param tickUpper The upper tick of the position
+/// @param liquidityDelta The amount of liquidity that was added or removed
+/// @param salt The extra data to make positions unique
+message ModifyLiquidity {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+
+  // -- call --
+  optional bytes caller = 2;
+
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+
+  // -- event --
+  bytes id = 10; // address (Pool ID)
+  bytes sender = 11; // address
+  int32 tick_lower = 12; // int24
+  int32 tick_upper = 13; // int24
+  string liquidity_delta = 14; // int128
+  bytes salt = 18; // bytes32
+}
+
+/// @notice Emitted for donations
+/// @param id The abi encoded hash of the pool key struct for the pool that was donated to
+/// @param sender The address that initiated the donate call
+/// @param amount0 The amount donated in currency0
+/// @param amount1 The amount donated in currency1
+message Donate {
+  // -- transaction --
+  bytes tx_hash = 1;
+  // -- call --
+  optional bytes caller = 2;
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+  // -- event --
+  bytes id = 10; // address (Pool ID)
+  bytes sender = 11; // address
+  string amount0 = 12; // uint256
+  string amount1 = 13; // uint256
+}
+
+/// @notice Emitted when the protocol fee controller address is updated in setProtocolFeeController.
+message ProtocolFeeControllerUpdated {
+  // -- transaction --
+  bytes tx_hash = 1;
+  // -- call --
+  optional bytes caller = 2;
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+  // -- event --
+  bytes protocol_fee_controller = 10; // address
+}
+
+message ProtocolFeeUpdated {
+  // -- transaction --
+  bytes tx_hash = 1;
+  // -- call --
+  optional bytes caller = 2;
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
+  // -- event --
+  bytes id = 10; // address (Pool ID)
+  uint64 protocol_fee = 11; // uint24
+}

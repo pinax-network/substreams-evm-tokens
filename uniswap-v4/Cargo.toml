@@ -1,0 +1,16 @@
+[package]
+name = "uniswap-v4"
+description = { workspace = true }
+edition = { workspace = true }
+version = { workspace = true }
+authors = ["Denis <denis@pinax.network>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-ethereum = { workspace = true }
+substreams-abis = { workspace = true }
+proto = { path = "../proto" }
+common = { path = "../common" }

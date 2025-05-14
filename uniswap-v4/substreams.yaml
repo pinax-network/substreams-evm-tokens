@@ -1,0 +1,28 @@
+specVersion: v0.1.0
+package:
+  name: evm_uniswap_v4
+  version: v0.1.0
+  url: https://githubcom/pinax-network/substreams-evm-tokens
+  description: Uniswap V4 for EVM
+  image: ../image.png
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/uniswap_v3.wasm
+
+protobuf:
+  files:
+    - uniswap-v4.proto
+  importPaths:
+    - ../proto/v1
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:evm.tokens.uniswap.v4.Events
+
+network: mainnet
