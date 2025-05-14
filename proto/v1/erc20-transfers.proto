@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package evm.erc20.v1;
+package evm.erc20.transfers.v1;
 
 message Events {
   // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol

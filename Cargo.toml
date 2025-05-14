@@ -1,6 +1,8 @@
 [workspace]
 members = [
-  "erc20",
+  # Tokens
+  "clickhouse-tokens",
+  "erc20-transfers",
   "erc20-metadata",
   "erc20-metadata-functions",
   "erc20-stores",
@@ -8,21 +10,27 @@ members = [
   "erc20-balances-rpc",
   "native-balances",
   "native-transfers",
+
+  # DEX
   "uniswap-v2",
   "uniswap-v3",
-  "proto",
-  "common",
-  "ens",
+
+  # NFT
+  "clickhouse-nfts",
   "erc721",
   "erc721-metadata",
   "erc1155",
   "seaport",
-  "clickhouse",
-  "clickhouse-nfts",
+
+  # General
   "clickhouse-ens",
   "clickhouse-transactions",
   "clickhouse-contracts",
   "clickhouse-eas",
+
+  # Common
+  "proto",
+  "common",
 ]
 resolver = "2"
 

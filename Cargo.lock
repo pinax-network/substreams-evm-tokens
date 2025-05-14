@@ -259,17 +259,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "erc20"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams",
- "substreams-abis",
- "substreams-ethereum",
-]
-
-[[package]]
 name = "erc20-balances-rpc"
 version = "0.0.0"
 dependencies = [
@@ -319,6 +308,17 @@ dependencies = [
 
 [[package]]
 name = "erc20-supply"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-abis",
+ "substreams-ethereum",
+]
+
+[[package]]
+name = "erc20-transfers"
 version = "0.0.0"
 dependencies = [
  "common",

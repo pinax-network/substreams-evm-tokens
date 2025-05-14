@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: evm_erc20
+  name: evm_erc20_transfers
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC20 transfers
@@ -9,11 +9,11 @@ package:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/erc20.wasm
+    file: ../target/wasm32-unknown-unknown/release/erc20_transfers.wasm
 
 protobuf:
   files:
-    - v1/erc20.proto
+    - v1/erc20-transfers.proto
   importPaths:
     - ../proto
 
@@ -24,6 +24,6 @@ modules:
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:evm.erc20.v1.Events
+      type: proto:evm.erc20.transfers.v1.Events
 
 network: mainnet

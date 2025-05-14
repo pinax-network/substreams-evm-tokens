@@ -1,5 +1,5 @@
 [package]
-name = "erc20"
+name = "erc20-transfers"
 description = "ERC20"
 edition = { workspace = true }
 version = { workspace = true }
