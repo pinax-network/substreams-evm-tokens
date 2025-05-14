@@ -1,17 +1,23 @@
-.PHONY: all
-all:
-	make build
+ENDPOINT ?= eth.substreams.pinax.network:443
+ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+SINK_RANGE := ":"
 
 .PHONY: build
 build:
 	cargo build --target wasm32-unknown-unknown --release
+
+.PHONY: pack
+pack: build
 	substreams pack
 
-.PHONY: parquet
-parquet:
-	rm -f state.yaml && substreams-sink-files run eth.substreams.pinax.network:443 ./substreams.yaml map_events "./out" 21525891: --encoder parquet --file-block-count 100 --development-mode
+.PHONY: noop
+noop: build
+	substreams-sink-noop $(ENDPOINT) substreams.yaml map_events -H "X-Sf-Substreams-Parallel-Jobs: 600"
 
 .PHONY: gui
 gui: build
-	substreams gui substreams.yaml map_events -e eth.substreams.pinax.network:443 --network eth -s 21525891
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 21469410
 
+.PHONY: prod
+prod: build
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 0 -t 0 --limit-processed-blocks 0 --production-mode
