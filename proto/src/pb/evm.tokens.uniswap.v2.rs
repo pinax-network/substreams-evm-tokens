@@ -14,28 +14,25 @@ pub struct Events {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PairCreated {
     /// -- transaction --
-    #[prost(bytes="vec", tag="5")]
-    pub transaction_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="1")]
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
-    ///
-    /// call.caller
-    #[prost(bytes="vec", tag="8")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    ///
-    /// log.ordinal
-    #[prost(uint64, tag="10")]
-    pub ordinal: u64,
-    /// -- pool created --
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    /// -- log --
     ///
     /// log.address (factory)
-    #[prost(bytes="vec", tag="20")]
-    pub address: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="21")]
+    #[prost(bytes="vec", tag="3")]
+    pub contract: ::prost::alloc::vec::Vec<u8>,
+    /// log.ordinal
+    #[prost(uint64, tag="4")]
+    pub ordinal: u64,
+    /// -- event --
+    #[prost(bytes="vec", tag="10")]
     pub token0: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="22")]
+    #[prost(bytes="vec", tag="11")]
     pub token1: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="23")]
+    #[prost(bytes="vec", tag="12")]
     pub pair: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -43,22 +40,20 @@ pub struct PairCreated {
 pub struct Sync {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub transaction_id: ::prost::alloc::vec::Vec<u8>,
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    /// -- log --
     ///
-    /// call.caller
-    #[prost(bytes="vec", tag="8")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    ///
+    /// log.address
+    #[prost(bytes="vec", tag="3")]
+    pub contract: ::prost::alloc::vec::Vec<u8>,
     /// log.ordinal
-    #[prost(uint64, tag="10")]
+    #[prost(uint64, tag="4")]
     pub ordinal: u64,
-    /// -- sync --
+    /// -- event --
     ///
-    /// log.address (factory)
-    #[prost(bytes="vec", tag="20")]
-    pub address: ::prost::alloc::vec::Vec<u8>,
     /// uint112
     #[prost(string, tag="21")]
     pub reserve0: ::prost::alloc::string::String,
@@ -71,22 +66,20 @@ pub struct Sync {
 pub struct Swap {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub transaction_id: ::prost::alloc::vec::Vec<u8>,
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    /// -- log --
     ///
-    /// call.caller
-    #[prost(bytes="vec", tag="8")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    ///
+    /// log.address
+    #[prost(bytes="vec", tag="3")]
+    pub contract: ::prost::alloc::vec::Vec<u8>,
     /// log.ordinal
-    #[prost(uint64, tag="10")]
+    #[prost(uint64, tag="4")]
     pub ordinal: u64,
-    /// -- swap --
+    /// -- event --
     ///
-    /// log.address (factory)
-    #[prost(bytes="vec", tag="20")]
-    pub address: ::prost::alloc::vec::Vec<u8>,
     /// uint256
     #[prost(string, tag="21")]
     pub amount0_in: ::prost::alloc::string::String,

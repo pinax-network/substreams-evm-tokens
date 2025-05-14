@@ -18,16 +18,16 @@ message Events {
 
 message PoolCreated {
   // -- transaction --
-  bytes transaction_id = 1;
+  bytes tx_hash = 1;
 
   // -- call --
-  bytes caller = 8; // call.caller
+  optional bytes caller = 2;
 
-  // -- ordering --
-  uint64 ordinal = 10; // log.ordinal
+  // -- log --
+  bytes contract = 3; // log.address (factory)
+  uint64 ordinal = 4; // log.ordinal
 
-  // -- pool created --
-  bytes address = 20; // log.address (factory)
+  // -- event --
   bytes token0 = 21;
   bytes token1 = 22;
   bytes pool = 23;
@@ -44,16 +44,16 @@ message PoolCreated {
  */
 message Initialize {
   // -- transaction --
-  bytes transaction_id = 1;
+  bytes tx_hash = 1;
 
   // -- call --
-  bytes caller = 8; // call.caller
+  optional bytes caller = 2;
 
-  // -- ordering --
-  uint64 ordinal = 10; // log.ordinal
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
 
-  // -- Initialize --
-  bytes address = 20; // log.address
+  // -- event --
   string sqrt_price_x96 = 21; // uint160
   int32 tick = 22; // int24
 }
@@ -79,16 +79,16 @@ message Initialize {
  */
 message Swap {
   // -- transaction --
-  bytes transaction_id = 1;
+  bytes tx_hash = 1;
 
   // -- call --
-  bytes caller = 8; // call.caller
+  optional bytes caller = 2;
 
-  // -- ordering --
-  uint64 ordinal = 10; // log.ordinal
+  // -- log --
+  bytes contract = 3; // log.address
+  uint64 ordinal = 4; // log.ordinal
 
   // -- swap --
-  bytes address = 20; // log.address
   bytes sender = 21; // address
   bytes recipient = 22; // address
   string amount0 = 23; // int256

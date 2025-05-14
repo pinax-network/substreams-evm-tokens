@@ -1,7 +1,8 @@
-use proto::pb::evm::tokens::uniswap::v3::{Events, PoolCreated, Initialize, Swap};
+use common::logs_with_caller;
+use proto::pb::evm::tokens::uniswap::v3::{Events, Initialize, PoolCreated, Swap};
 use substreams::errors::Error;
 use substreams_abis::evm::uniswap::v3::factory::events::PoolCreated as PoolCreatedAbi;
-use substreams_abis::evm::uniswap::v3::pool::events::{Swap as SwapAbi, Initialize as InitializeAbi};
+use substreams_abis::evm::uniswap::v3::pool::events::{Initialize as InitializeAbi, Swap as SwapAbi};
 use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::Event;
 
@@ -13,18 +14,19 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
     // https://github.com/Uniswap/v3-core
     // https://github.com/pinax-network/substreams-abis/tree/main/abi/evm/uniswap/v3
     for trx in block.transactions() {
-        for (log, call_view) in trx.logs_with_calls() {
+        for (log, caller) in logs_with_caller(&block, trx) {
             // Uniswap::V3::Pair:Swap
             if let Some(event) = SwapAbi::match_and_decode(log) {
                 events.swaps.push(Swap {
                     // -- transaction --
-                    transaction_id: trx.hash.to_vec(),
+                    tx_hash: trx.hash.to_vec(),
                     // -- call --
-                    caller: call_view.call.caller.to_vec(),
-                    // -- ordering --
+                    caller,
+                    // -- log --
+                    contract: log.address.to_vec(),
                     ordinal: log.ordinal,
-                    // -- swap --
-                    address: log.address.to_vec(),
+
+                    // -- event --
                     amount0: event.amount0.to_string(),
                     amount1: event.amount1.to_string(),
                     sender: event.sender,
@@ -37,13 +39,13 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
             } else if let Some(event) = PoolCreatedAbi::match_and_decode(log) {
                 events.pools_created.push(PoolCreated {
                     // -- transaction --
-                    transaction_id: trx.hash.to_vec(),
+                    tx_hash: trx.hash.to_vec(),
                     // -- call --
-                    caller: call_view.call.caller.to_vec(),
-                    // -- ordering --
+                    caller,
+                    // -- log --
+                    contract: log.address.to_vec(),
                     ordinal: log.ordinal,
-                    // -- pair created --
-                    address: log.address.to_vec(),
+                    // -- event --
                     pool: event.pool,
                     token0: event.token0,
                     token1: event.token1,
@@ -54,13 +56,16 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
             } else if let Some(event) = InitializeAbi::match_and_decode(log) {
                 events.intializes.push(Initialize {
                     // -- transaction --
-                    transaction_id: trx.hash.to_vec(),
+                    tx_hash: trx.hash.to_vec(),
+
                     // -- call --
-                    caller: call_view.call.caller.to_vec(),
-                    // -- ordering --
+                    caller,
+
+                    // -- log --
+                    contract: log.address.to_vec(),
                     ordinal: log.ordinal,
-                    // -- intialize --
-                    address: log.address.to_vec(),
+
+                    // -- event --
                     sqrt_price_x96: event.sqrt_price_x96.to_string(),
                     tick: event.tick.to_i32(),
                 });

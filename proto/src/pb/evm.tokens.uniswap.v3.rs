@@ -22,22 +22,19 @@ pub struct Events {
 pub struct PoolCreated {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub transaction_id: ::prost::alloc::vec::Vec<u8>,
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
-    ///
-    /// call.caller
-    #[prost(bytes="vec", tag="8")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    ///
-    /// log.ordinal
-    #[prost(uint64, tag="10")]
-    pub ordinal: u64,
-    /// -- pool created --
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    /// -- log --
     ///
     /// log.address (factory)
-    #[prost(bytes="vec", tag="20")]
-    pub address: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="3")]
+    pub contract: ::prost::alloc::vec::Vec<u8>,
+    /// log.ordinal
+    #[prost(uint64, tag="4")]
+    pub ordinal: u64,
+    /// -- event --
     #[prost(bytes="vec", tag="21")]
     pub token0: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="22")]
@@ -62,22 +59,20 @@ pub struct PoolCreated {
 pub struct Initialize {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub transaction_id: ::prost::alloc::vec::Vec<u8>,
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
-    ///
-    /// call.caller
-    #[prost(bytes="vec", tag="8")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    ///
-    /// log.ordinal
-    #[prost(uint64, tag="10")]
-    pub ordinal: u64,
-    /// -- Initialize --
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    /// -- log --
     ///
     /// log.address
-    #[prost(bytes="vec", tag="20")]
-    pub address: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="3")]
+    pub contract: ::prost::alloc::vec::Vec<u8>,
+    /// log.ordinal
+    #[prost(uint64, tag="4")]
+    pub ordinal: u64,
+    /// -- event --
+    ///
     /// uint160
     #[prost(string, tag="21")]
     pub sqrt_price_x96: ::prost::alloc::string::String,
@@ -108,22 +103,20 @@ pub struct Initialize {
 pub struct Swap {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub transaction_id: ::prost::alloc::vec::Vec<u8>,
+    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
+    #[prost(bytes="vec", optional, tag="2")]
+    pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    /// -- log --
     ///
-    /// call.caller
-    #[prost(bytes="vec", tag="8")]
-    pub caller: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    ///
+    /// log.address
+    #[prost(bytes="vec", tag="3")]
+    pub contract: ::prost::alloc::vec::Vec<u8>,
     /// log.ordinal
-    #[prost(uint64, tag="10")]
+    #[prost(uint64, tag="4")]
     pub ordinal: u64,
     /// -- swap --
     ///
-    /// log.address
-    #[prost(bytes="vec", tag="20")]
-    pub address: ::prost::alloc::vec::Vec<u8>,
     /// address
     #[prost(bytes="vec", tag="21")]
     pub sender: ::prost::alloc::vec::Vec<u8>,
