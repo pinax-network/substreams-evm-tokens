@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: seaport
+  name: evm_seaport
   version: v0.4.0
   url: https://githubcom/pinax-network/substreams-evm-tokens
   description: Seaport

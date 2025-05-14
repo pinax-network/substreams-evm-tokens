@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: ens
+  name: evm_ens
   version: v1.12.0
   url: https://githubcom/pinax-network/substreams-evm-tokens
   description: ENS
