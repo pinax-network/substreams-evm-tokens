@@ -9,9 +9,10 @@ members = [
   "erc20-supply",
   "erc20-balances-rpc",
   "native-balances",
+  # "native-balances-rpc", # NOT IMPLEMENTED
   "native-transfers",
 
-  # Uniswaps
+  # Uniswaps/DEX
   "clickhouse-uniswaps",
   "uniswap-v2",
   "uniswap-v3",

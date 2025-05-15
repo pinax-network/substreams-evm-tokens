@@ -1,22 +1,61 @@
 use common::bytes_to_hex;
-use proto::pb::evm::uniswap::v3::{Events, Initialize, PoolCreated, Swap};
+use proto::pb::evm::uniswap::v3::{
+    Burn, Collect, CollectProtocol, Events, FeeAmountEnabled, Flash, IncreaseObservationCardinalityNext, Initialize, Mint, OwnerChanged, PoolCreated,
+    SetFeeProtocol, Swap,
+};
 use substreams::pb::substreams::Clock;
 
 use common::clickhouse::{common_key, set_caller, set_clock, set_ordering, set_tx_hash};
 
 pub fn process_uniswap_v3(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: Events, mut index: u64) -> u64 {
+    // IUniswapV3Factory
+    for event in events.pool_created {
+        process_uniswap_v3_pools_created(tables, clock, event, index);
+        index += 1;
+    }
+    for event in events.owner_changed {
+        process_uniswap_v3_owner_changed(tables, clock, event, index);
+        index += 1;
+    }
+    for event in events.fee_amount_enabled {
+        process_uniswap_v3_fee_amount_enabled(tables, clock, event, index);
+        index += 1;
+    }
+    // IUniswapV3Pool
     for event in events.swap {
         process_uniswap_v3_swaps(tables, clock, event, index);
         index += 1;
     }
-
     for event in events.intialize {
         process_uniswap_v3_initializes(tables, clock, event, index);
         index += 1;
     }
-
-    for event in events.pool_created {
-        process_uniswap_v3_pools_created(tables, clock, event, index);
+    for event in events.mint {
+        process_uniswap_v3_mint(tables, clock, event, index);
+        index += 1;
+    }
+    for event in events.collect {
+        process_uniswap_v3_collect(tables, clock, event, index);
+        index += 1;
+    }
+    for event in events.burn {
+        process_uniswap_v3_burn(tables, clock, event, index);
+        index += 1;
+    }
+    for event in events.flash {
+        process_uniswap_v3_flash(tables, clock, event, index);
+        index += 1;
+    }
+    for event in events.increase_observation_cardinality_next {
+        process_uniswap_v3_increase_observation_cardinality_next(tables, clock, event, index);
+        index += 1;
+    }
+    for event in events.set_fee_protocol {
+        process_uniswap_v3_set_fee_protocol(tables, clock, event, index);
+        index += 1;
+    }
+    for event in events.collect_protocol {
+        process_uniswap_v3_collect_protocol(tables, clock, event, index);
         index += 1;
     }
     index
@@ -65,6 +104,158 @@ fn process_uniswap_v3_pools_created(tables: &mut substreams_database_change::tab
         .set("pool", bytes_to_hex(&event.pool))
         .set("tick_spacing", event.tick_spacing.to_string())
         .set("fee", event.fee.to_string());
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_owner_changed(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: OwnerChanged, index: u64) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_owner_changed", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("old_owner", bytes_to_hex(&event.old_owner))
+        .set("new_owner", bytes_to_hex(&event.new_owner));
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_fee_amount_enabled(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: FeeAmountEnabled, index: u64) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_fee_amount_enabled", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("fee", event.fee.to_string())
+        .set("tick_spacing", event.tick_spacing.to_string());
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_mint(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Mint, index: u64) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_mints", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("sender", bytes_to_hex(&event.sender))
+        .set("owner", bytes_to_hex(&event.owner))
+        .set("tick_lower", event.tick_lower.to_string())
+        .set("tick_upper", event.tick_upper.to_string())
+        .set("amount", event.amount.to_string())
+        .set("amount0", event.amount0.to_string())
+        .set("amount1", event.amount1.to_string());
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_collect(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Collect, index: u64) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_collects", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("owner", bytes_to_hex(&event.owner))
+        .set("recipient", bytes_to_hex(&event.recipient))
+        .set("tick_lower", event.tick_lower.to_string())
+        .set("tick_upper", event.tick_upper.to_string())
+        .set("amount0", event.amount0.to_string())
+        .set("amount1", event.amount1.to_string());
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_burn(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Burn, index: u64) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_burns", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("owner", bytes_to_hex(&event.owner))
+        .set("tick_lower", event.tick_lower.to_string())
+        .set("tick_upper", event.tick_upper.to_string())
+        .set("amount", event.amount.to_string())
+        .set("amount0", event.amount0.to_string())
+        .set("amount1", event.amount1.to_string());
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_flash(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Flash, index: u64) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_flashes", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("sender", bytes_to_hex(&event.sender))
+        .set("recipient", bytes_to_hex(&event.recipient))
+        .set("amount0", event.amount0.to_string())
+        .set("amount1", event.amount1.to_string())
+        .set("paid0", event.paid0.to_string())
+        .set("paid1", event.paid1.to_string());
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_increase_observation_cardinality_next(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    event: IncreaseObservationCardinalityNext,
+    index: u64,
+) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_increase_observation_cardinality_nexts", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("observation_cardinality_next_old", event.observation_cardinality_next_old.to_string())
+        .set("observation_cardinality_next_new", event.observation_cardinality_next_new.to_string());
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_set_fee_protocol(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: SetFeeProtocol, index: u64) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_set_fee_protocols", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("fee_protocol0_old", event.fee_protocol0_old.to_string())
+        .set("fee_protocol1_old", event.fee_protocol1_old.to_string())
+        .set("fee_protocol0_new", event.fee_protocol0_new.to_string())
+        .set("fee_protocol1_new", event.fee_protocol1_new.to_string());
+
+    set_caller(event.caller, row);
+    set_ordering(index, Some(event.ordinal), clock, row);
+    set_tx_hash(Some(event.tx_hash), row);
+    set_clock(clock, row);
+}
+
+fn process_uniswap_v3_collect_protocol(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: CollectProtocol, index: u64) {
+    let key = common_key(clock, index);
+    let row = tables
+        .create_row("uniswap_v3_collect_protocols", key)
+        .set("address", &bytes_to_hex(&event.contract))
+        .set("sender", bytes_to_hex(&event.sender))
+        .set("recipient", bytes_to_hex(&event.recipient))
+        .set("amount0", event.amount0.to_string())
+        .set("amount1", event.amount1.to_string());
 
     set_caller(event.caller, row);
     set_ordering(index, Some(event.ordinal), clock, row);

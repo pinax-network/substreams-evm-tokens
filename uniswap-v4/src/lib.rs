@@ -35,7 +35,7 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     sqrt_price_x96: event.sqrt_price_x96.to_string(),
                     tick: event.tick.into(),
                 });
-            // Uniswap::V4::PoolManager:Initialize
+                // Uniswap::V4::PoolManager:Initialize
             } else if let Some(event) = poolmanager::Initialize::match_and_decode(log) {
                 events.intialize.push(uniswap::Initialize {
                     // -- transaction --

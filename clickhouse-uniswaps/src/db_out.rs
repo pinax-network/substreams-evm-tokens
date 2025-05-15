@@ -16,7 +16,7 @@ pub fn db_out(mut clock: Clock, uniswap_v2: v2::Events, uniswap_v3: v3::Events, 
     // -- Uniswap V2/V3/V4 --
     index = process_uniswap_v2(&mut tables, &clock, uniswap_v2, index);
     index = process_uniswap_v3(&mut tables, &clock, uniswap_v3, index);
-    index = process_uniswap_v4(&mut tables, &clock, uniswap_v4, index);
+    process_uniswap_v4(&mut tables, &clock, uniswap_v4, index);
 
     Ok(tables.to_database_changes())
 }
