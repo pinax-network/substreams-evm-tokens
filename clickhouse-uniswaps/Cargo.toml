@@ -1,0 +1,14 @@
+[package]
+name = "clickhouse"
+description = { workspace = true }
+edition = { workspace = true }
+version = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-database-change = "2.0"
+proto = { path = "../proto" }
+common = { path = "../common" }

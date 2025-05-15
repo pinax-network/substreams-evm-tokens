@@ -11,7 +11,8 @@ members = [
   "native-balances",
   "native-transfers",
 
-  # DEX
+  # Uniswaps
+  "clickhouse-uniswaps",
   "uniswap-v2",
   "uniswap-v3",
   "uniswap-v4",
