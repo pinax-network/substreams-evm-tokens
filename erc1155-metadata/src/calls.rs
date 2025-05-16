@@ -60,17 +60,7 @@ pub fn batch_uri(token_ids: Vec<(Address, String)>) -> HashMap<(Address, String)
         let batch = chunk.iter().fold(RpcBatch::new(), |batch, (address, id)| {
             batch.add(
                 erc1155::functions::Uri {
-                    id: match BigInt::from_str(id) {
-                        Ok(parsed_id) => parsed_id,
-                        Err(err) => {
-                            substreams::log::info!(
-                                "Failed to parse token_id {:?} into BigInt: {:?}",
-                                id,
-                                err
-                            );
-                            continue;
-                        }
-                    },
+                    id: BigInt::from_str(id).unwrap(),
                 },
                 address.to_vec(),
             )
