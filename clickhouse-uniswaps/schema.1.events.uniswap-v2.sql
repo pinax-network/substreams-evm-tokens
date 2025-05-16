@@ -1,5 +1,5 @@
 -- Uniswap::V2::Factory:PairCreated --
-CREATE TABLE IF NOT EXISTS uniswap_v2_pairs_created (
+CREATE TABLE IF NOT EXISTS uniswap_v2_pair_created (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -36,7 +36,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (address, pair);
 
 -- Uniswap::V2::Pair:Sync --
-CREATE TABLE IF NOT EXISTS uniswap_v2_syncs  (
+CREATE TABLE IF NOT EXISTS uniswap_v2_sync  (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -71,7 +71,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Swap --
-CREATE TABLE IF NOT EXISTS uniswap_v2_swaps (
+CREATE TABLE IF NOT EXISTS uniswap_v2_swap (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -114,7 +114,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Mint --
-CREATE TABLE IF NOT EXISTS uniswap_v2_mints (
+CREATE TABLE IF NOT EXISTS uniswap_v2_mint (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -152,8 +152,8 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_mints (
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V2::Pair:Mint --
-CREATE TABLE IF NOT EXISTS uniswap_v2_mints (
+-- Uniswap::V2::Pair:Burn --
+CREATE TABLE IF NOT EXISTS uniswap_v2_burn (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),

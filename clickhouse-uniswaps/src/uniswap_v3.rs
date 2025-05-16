@@ -10,7 +10,7 @@ use common::clickhouse::{common_key, set_caller, set_clock, set_ordering, set_tx
 pub fn process_uniswap_v3(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: Events, mut index: u64) -> u64 {
     // IUniswapV3Factory
     for event in events.pool_created {
-        process_uniswap_v3_pools_created(tables, clock, event, index);
+        process_uniswap_v3_pool_created(tables, clock, event, index);
         index += 1;
     }
     for event in events.owner_changed {
@@ -23,11 +23,11 @@ pub fn process_uniswap_v3(tables: &mut substreams_database_change::tables::Table
     }
     // IUniswapV3Pool
     for event in events.swap {
-        process_uniswap_v3_swaps(tables, clock, event, index);
+        process_uniswap_v3_swap(tables, clock, event, index);
         index += 1;
     }
     for event in events.intialize {
-        process_uniswap_v3_initializes(tables, clock, event, index);
+        process_uniswap_v3_initialize(tables, clock, event, index);
         index += 1;
     }
     for event in events.mint {
@@ -61,10 +61,10 @@ pub fn process_uniswap_v3(tables: &mut substreams_database_change::tables::Table
     index
 }
 
-fn process_uniswap_v3_swaps(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Swap, index: u64) {
+fn process_uniswap_v3_swap(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Swap, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_swaps", key)
+        .create_row("uniswap_v3_swap", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("amount0", event.amount0)
         .set("amount1", event.amount1)
@@ -80,10 +80,10 @@ fn process_uniswap_v3_swaps(tables: &mut substreams_database_change::tables::Tab
     set_clock(clock, row);
 }
 
-fn process_uniswap_v3_initializes(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Initialize, index: u64) {
+fn process_uniswap_v3_initialize(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Initialize, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_initializes", key)
+        .create_row("uniswap_v3_initialize", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("sqrt_price_x96", &event.sqrt_price_x96.to_string())
         .set("tick", &event.tick.to_string());
@@ -94,10 +94,10 @@ fn process_uniswap_v3_initializes(tables: &mut substreams_database_change::table
     set_clock(clock, row);
 }
 
-fn process_uniswap_v3_pools_created(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: PoolCreated, index: u64) {
+fn process_uniswap_v3_pool_created(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: PoolCreated, index: u64) {
     let key = [("address", bytes_to_hex(&event.contract)), ("pool", bytes_to_hex(&event.pool))];
     let row = tables
-        .create_row("uniswap_v3_pools_created", key)
+        .create_row("uniswap_v3_pool_created", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("token0", bytes_to_hex(&event.token0))
         .set("token1", bytes_to_hex(&event.token1))
@@ -142,7 +142,7 @@ fn process_uniswap_v3_fee_amount_enabled(tables: &mut substreams_database_change
 fn process_uniswap_v3_mint(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Mint, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_mints", key)
+        .create_row("uniswap_v3_mint", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("sender", bytes_to_hex(&event.sender))
         .set("owner", bytes_to_hex(&event.owner))
@@ -161,7 +161,7 @@ fn process_uniswap_v3_mint(tables: &mut substreams_database_change::tables::Tabl
 fn process_uniswap_v3_collect(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Collect, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_collects", key)
+        .create_row("uniswap_v3_collect", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("owner", bytes_to_hex(&event.owner))
         .set("recipient", bytes_to_hex(&event.recipient))
@@ -179,7 +179,7 @@ fn process_uniswap_v3_collect(tables: &mut substreams_database_change::tables::T
 fn process_uniswap_v3_burn(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Burn, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_burns", key)
+        .create_row("uniswap_v3_burn", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("owner", bytes_to_hex(&event.owner))
         .set("tick_lower", event.tick_lower.to_string())
@@ -197,7 +197,7 @@ fn process_uniswap_v3_burn(tables: &mut substreams_database_change::tables::Tabl
 fn process_uniswap_v3_flash(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Flash, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_flashes", key)
+        .create_row("uniswap_v3_flash", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("sender", bytes_to_hex(&event.sender))
         .set("recipient", bytes_to_hex(&event.recipient))
@@ -220,7 +220,7 @@ fn process_uniswap_v3_increase_observation_cardinality_next(
 ) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_increase_observation_cardinality_nexts", key)
+        .create_row("uniswap_v3_increase_observation_cardinality_next", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("observation_cardinality_next_old", event.observation_cardinality_next_old.to_string())
         .set("observation_cardinality_next_new", event.observation_cardinality_next_new.to_string());
@@ -234,7 +234,7 @@ fn process_uniswap_v3_increase_observation_cardinality_next(
 fn process_uniswap_v3_set_fee_protocol(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: SetFeeProtocol, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_set_fee_protocols", key)
+        .create_row("uniswap_v3_set_fee_protocol", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("fee_protocol0_old", event.fee_protocol0_old.to_string())
         .set("fee_protocol1_old", event.fee_protocol1_old.to_string())
@@ -250,7 +250,7 @@ fn process_uniswap_v3_set_fee_protocol(tables: &mut substreams_database_change::
 fn process_uniswap_v3_collect_protocol(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: CollectProtocol, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v3_collect_protocols", key)
+        .create_row("uniswap_v3_collect_protocol", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("sender", bytes_to_hex(&event.sender))
         .set("recipient", bytes_to_hex(&event.recipient))

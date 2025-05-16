@@ -6,32 +6,32 @@ use common::clickhouse::{common_key, set_caller, set_clock, set_ordering, set_tx
 
 pub fn process_uniswap_v2(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: Events, mut index: u64) -> u64 {
     for event in events.pair_created {
-        process_uniswap_v2_pairs_created(tables, clock, event, index);
+        process_uniswap_v2_pair_created(tables, clock, event, index);
         index += 1;
     }
     for event in events.swap {
-        process_uniswap_v2_swaps(tables, clock, event, index);
+        process_uniswap_v2_swap(tables, clock, event, index);
         index += 1;
     }
     for event in events.sync {
-        process_uniswap_v2_syncs(tables, clock, event, index);
+        process_uniswap_v2_sync(tables, clock, event, index);
         index += 1;
     }
     for event in events.mint {
-        process_uniswap_v2_mints(tables, clock, event, index);
+        process_uniswap_v2_mint(tables, clock, event, index);
         index += 1;
     }
     for event in events.burn {
-        process_uniswap_v2_burns(tables, clock, event, index);
+        process_uniswap_v2_burn(tables, clock, event, index);
         index += 1;
     }
     index
 }
 
-fn process_uniswap_v2_swaps(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Swap, index: u64) {
+fn process_uniswap_v2_swap(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Swap, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v2_swaps", key)
+        .create_row("uniswap_v2_swap", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("amount0_in", event.amount0_in)
         .set("amount0_out", event.amount0_out)
@@ -46,10 +46,10 @@ fn process_uniswap_v2_swaps(tables: &mut substreams_database_change::tables::Tab
     set_clock(clock, row);
 }
 
-fn process_uniswap_v2_syncs(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Sync, index: u64) {
+fn process_uniswap_v2_sync(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Sync, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v2_syncs", key)
+        .create_row("uniswap_v2_sync", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("reserve0", event.reserve0.to_string())
         .set("reserve1", event.reserve1.to_string());
@@ -60,10 +60,10 @@ fn process_uniswap_v2_syncs(tables: &mut substreams_database_change::tables::Tab
     set_clock(clock, row);
 }
 
-fn process_uniswap_v2_pairs_created(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: PairCreated, index: u64) {
+fn process_uniswap_v2_pair_created(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: PairCreated, index: u64) {
     let key = [("address", bytes_to_hex(&event.contract)), ("pair", bytes_to_hex(&event.pair))];
     let row = tables
-        .create_row("uniswap_v2_pairs_created", key)
+        .create_row("uniswap_v2_pair_created", key)
         .set("token0", bytes_to_hex(&event.token0))
         .set("token1", bytes_to_hex(&event.token1))
         .set("pair", bytes_to_hex(&event.pair))
@@ -75,10 +75,10 @@ fn process_uniswap_v2_pairs_created(tables: &mut substreams_database_change::tab
     set_clock(clock, row);
 }
 
-fn process_uniswap_v2_mints(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Mint, index: u64) {
+fn process_uniswap_v2_mint(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Mint, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v2_mints", key)
+        .create_row("uniswap_v2_mint", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("sender", &bytes_to_hex(&event.sender))
         .set("amount0", event.amount0)
@@ -90,10 +90,10 @@ fn process_uniswap_v2_mints(tables: &mut substreams_database_change::tables::Tab
     set_clock(clock, row);
 }
 
-fn process_uniswap_v2_burns(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Burn, index: u64) {
+fn process_uniswap_v2_burn(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: Burn, index: u64) {
     let key = common_key(clock, index);
     let row = tables
-        .create_row("uniswap_v2_burns", key)
+        .create_row("uniswap_v2_burn", key)
         .set("address", &bytes_to_hex(&event.contract))
         .set("sender", &bytes_to_hex(&event.sender))
         .set("amount0", event.amount0)

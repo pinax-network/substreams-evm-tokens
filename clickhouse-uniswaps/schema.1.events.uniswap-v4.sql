@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_swap (
    address              FixedString(42), -- log.address
 
    -- events --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
    sender               FixedString(42) COMMENT 'The address that initiated the swap call, and that received the callback',
    amount0              Int256 COMMENT 'The delta of the currency0 balance of the pool',
    amount1              Int256 COMMENT 'The delta of the currency1 balance of the pool',
@@ -45,10 +45,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_swap (
    INDEX idx_liquidity         (liquidity)         TYPE minmax       GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
-PRIMARY KEY (timestamp, block_num, `index`)
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V3::IPoolManager:Initialize --
+-- Uniswap::V4::IPoolManager:Initialize --
 CREATE TABLE IF NOT EXISTS uniswap_v4_initialize (
    -- block --
    block_num            UInt32,
@@ -70,7 +69,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_initialize (
    ordinal              UInt64, -- log.ordinal
 
    -- event --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the new pool',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the new pool',
    currency0            FixedString(42) COMMENT 'The first currency of the pool by address sort order',
    currency1            FixedString(42) COMMENT 'The second currency of the pool by address sort order',
    fee                  UInt64 COMMENT 'The fee collected upon every swap in the pool, denominated in hundredths of a bip',
@@ -96,7 +95,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 
--- Uniswap::V3::IPoolManager:ModifyLiquidity --
+-- Uniswap::V4::IPoolManager:ModifyLiquidity --
 -- Emitted when a liquidity position is modified --
 CREATE TABLE IF NOT EXISTS uniswap_v4_modify_liquidity (
    -- block --
@@ -119,7 +118,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_modify_liquidity (
    ordinal              UInt64, -- log.ordinal
 
    -- event --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
    sender               FixedString(42) COMMENT 'The address that modified the pool',
    tick_lower           Int32 COMMENT 'The lower tick of the position',
    tick_upper           Int32 COMMENT 'The upper tick of the position',
@@ -129,7 +128,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_modify_liquidity (
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V3::IPoolManager:Donate --
+-- Uniswap::V4::IPoolManager:Donate --
 -- Emitted for donations --
 CREATE TABLE IF NOT EXISTS uniswap_v4_donate (
    -- block --
@@ -152,7 +151,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_donate (
    ordinal              UInt64, -- log.ordinal
 
    -- event --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
    sender               FixedString(42) COMMENT 'The address that modified the pool',
    amount0              UInt256 COMMENT 'The amount of currency0 that was donated',
    amount1              UInt256 COMMENT 'The amount of currency1 that was donated',
@@ -171,7 +170,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_donate (
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V3::IPoolManager:ProtocolFeeControllerUpdated --
+-- Uniswap::V4::IPoolManager:ProtocolFeeControllerUpdated --
 -- Emitted when the protocol fee controller address is updated in setProtocolFeeController. --
 CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_controller_update (
    -- block --
@@ -207,7 +206,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_controller_update (
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V3::IPoolManager:ProtocolFeeUpdated --
+-- Uniswap::V4::IPoolManager:ProtocolFeeUpdated --
 -- Emitted when the protocol fee is updated in setProtocolFee. --
 CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_updated (
    -- block --
@@ -230,7 +229,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_updated (
    ordinal              UInt64, -- log.ordinal
 
    -- event --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
    protocol_fee         UInt32 COMMENT 'The protocol fee in hundredths of a bip',
 
    -- indexes --

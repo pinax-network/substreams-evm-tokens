@@ -1,5 +1,5 @@
 -- Uniswap::V3::Pool:Swap --
-CREATE TABLE IF NOT EXISTS uniswap_v3_swaps (
+CREATE TABLE IF NOT EXISTS uniswap_v3_swap (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -46,7 +46,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Initialize --
-CREATE TABLE IF NOT EXISTS uniswap_v3_initializes (
+CREATE TABLE IF NOT EXISTS uniswap_v3_initialize (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -83,7 +83,7 @@ ENGINE = ReplacingMergeTree(global_sequence_reverse) -- first event only --
 ORDER BY (address);
 
 -- Uniswap::V3::Factory:PoolCreated --
-CREATE TABLE IF NOT EXISTS uniswap_v3_pools_created (
+CREATE TABLE IF NOT EXISTS uniswap_v3_pool_created (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -124,7 +124,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (address, pool);
 
 -- Uniswap::V3::Pool:Mint --
-CREATE TABLE IF NOT EXISTS uniswap_v3_mints (
+CREATE TABLE IF NOT EXISTS uniswap_v3_mint (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -171,7 +171,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Collect --
-CREATE TABLE IF NOT EXISTS uniswap_v3_collects (
+CREATE TABLE IF NOT EXISTS uniswap_v3_collect (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -216,7 +216,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Burn --
-CREATE TABLE IF NOT EXISTS uniswap_v3_burns (
+CREATE TABLE IF NOT EXISTS uniswap_v3_burn (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -261,7 +261,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Flash --
-CREATE TABLE IF NOT EXISTS uniswap_v3_flashes (
+CREATE TABLE IF NOT EXISTS uniswap_v3_flash (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -306,7 +306,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:IncreaseObservationCardinalityNext --
-CREATE TABLE IF NOT EXISTS uniswap_v3_increase_observation_cardinality_nexts (
+CREATE TABLE IF NOT EXISTS uniswap_v3_increase_observation_cardinality_next (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -343,7 +343,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:SetFeeProtocol --
-CREATE TABLE IF NOT EXISTS uniswap_v3_set_fee_protocols (
+CREATE TABLE IF NOT EXISTS uniswap_v3_set_fee_protocol (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -384,7 +384,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:CollectProtocol --
-CREATE TABLE IF NOT EXISTS uniswap_v3_collect_protocols (
+CREATE TABLE IF NOT EXISTS uniswap_v3_collect_protocol (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),

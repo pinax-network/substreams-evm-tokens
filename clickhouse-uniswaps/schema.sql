@@ -9,7 +9,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (address);
 
 -- Uniswap::V2::Factory:PairCreated --
-CREATE TABLE IF NOT EXISTS uniswap_v2_pairs_created (
+CREATE TABLE IF NOT EXISTS uniswap_v2_pair_created (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -46,7 +46,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (address, pair);
 
 -- Uniswap::V2::Pair:Sync --
-CREATE TABLE IF NOT EXISTS uniswap_v2_syncs  (
+CREATE TABLE IF NOT EXISTS uniswap_v2_sync  (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -81,7 +81,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Swap --
-CREATE TABLE IF NOT EXISTS uniswap_v2_swaps (
+CREATE TABLE IF NOT EXISTS uniswap_v2_swap (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -124,7 +124,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Mint --
-CREATE TABLE IF NOT EXISTS uniswap_v2_mints (
+CREATE TABLE IF NOT EXISTS uniswap_v2_mint (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -162,8 +162,8 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_mints (
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V2::Pair:Mint --
-CREATE TABLE IF NOT EXISTS uniswap_v2_mints (
+-- Uniswap::V2::Pair:Burn --
+CREATE TABLE IF NOT EXISTS uniswap_v2_burn (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -205,7 +205,7 @@ ORDER BY (timestamp, block_num, `index`);
 
 
 -- Uniswap::V3::Pool:Swap --
-CREATE TABLE IF NOT EXISTS uniswap_v3_swaps (
+CREATE TABLE IF NOT EXISTS uniswap_v3_swap (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -252,7 +252,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Initialize --
-CREATE TABLE IF NOT EXISTS uniswap_v3_initializes (
+CREATE TABLE IF NOT EXISTS uniswap_v3_initialize (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -289,7 +289,7 @@ ENGINE = ReplacingMergeTree(global_sequence_reverse) -- first event only --
 ORDER BY (address);
 
 -- Uniswap::V3::Factory:PoolCreated --
-CREATE TABLE IF NOT EXISTS uniswap_v3_pools_created (
+CREATE TABLE IF NOT EXISTS uniswap_v3_pool_created (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -330,7 +330,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (address, pool);
 
 -- Uniswap::V3::Pool:Mint --
-CREATE TABLE IF NOT EXISTS uniswap_v3_mints (
+CREATE TABLE IF NOT EXISTS uniswap_v3_mint (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -377,7 +377,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Collect --
-CREATE TABLE IF NOT EXISTS uniswap_v3_collects (
+CREATE TABLE IF NOT EXISTS uniswap_v3_collect (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -422,7 +422,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Burn --
-CREATE TABLE IF NOT EXISTS uniswap_v3_burns (
+CREATE TABLE IF NOT EXISTS uniswap_v3_burn (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -467,7 +467,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Flash --
-CREATE TABLE IF NOT EXISTS uniswap_v3_flashes (
+CREATE TABLE IF NOT EXISTS uniswap_v3_flash (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -512,7 +512,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:IncreaseObservationCardinalityNext --
-CREATE TABLE IF NOT EXISTS uniswap_v3_increase_observation_cardinality_nexts (
+CREATE TABLE IF NOT EXISTS uniswap_v3_increase_observation_cardinality_next (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -549,7 +549,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:SetFeeProtocol --
-CREATE TABLE IF NOT EXISTS uniswap_v3_set_fee_protocols (
+CREATE TABLE IF NOT EXISTS uniswap_v3_set_fee_protocol (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -590,7 +590,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:CollectProtocol --
-CREATE TABLE IF NOT EXISTS uniswap_v3_collect_protocols (
+CREATE TABLE IF NOT EXISTS uniswap_v3_collect_protocol (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -730,7 +730,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_swap (
    address              FixedString(42), -- log.address
 
    -- events --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
    sender               FixedString(42) COMMENT 'The address that initiated the swap call, and that received the callback',
    amount0              Int256 COMMENT 'The delta of the currency0 balance of the pool',
    amount1              Int256 COMMENT 'The delta of the currency1 balance of the pool',
@@ -754,10 +754,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_swap (
    INDEX idx_liquidity         (liquidity)         TYPE minmax       GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
-PRIMARY KEY (timestamp, block_num, `index`)
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V3::IPoolManager:Initialize --
+-- Uniswap::V4::IPoolManager:Initialize --
 CREATE TABLE IF NOT EXISTS uniswap_v4_initialize (
    -- block --
    block_num            UInt32,
@@ -779,7 +778,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_initialize (
    ordinal              UInt64, -- log.ordinal
 
    -- event --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the new pool',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the new pool',
    currency0            FixedString(42) COMMENT 'The first currency of the pool by address sort order',
    currency1            FixedString(42) COMMENT 'The second currency of the pool by address sort order',
    fee                  UInt64 COMMENT 'The fee collected upon every swap in the pool, denominated in hundredths of a bip',
@@ -805,7 +804,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 
--- Uniswap::V3::IPoolManager:ModifyLiquidity --
+-- Uniswap::V4::IPoolManager:ModifyLiquidity --
 -- Emitted when a liquidity position is modified --
 CREATE TABLE IF NOT EXISTS uniswap_v4_modify_liquidity (
    -- block --
@@ -828,7 +827,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_modify_liquidity (
    ordinal              UInt64, -- log.ordinal
 
    -- event --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
    sender               FixedString(42) COMMENT 'The address that modified the pool',
    tick_lower           Int32 COMMENT 'The lower tick of the position',
    tick_upper           Int32 COMMENT 'The upper tick of the position',
@@ -838,7 +837,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_modify_liquidity (
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V3::IPoolManager:Donate --
+-- Uniswap::V4::IPoolManager:Donate --
 -- Emitted for donations --
 CREATE TABLE IF NOT EXISTS uniswap_v4_donate (
    -- block --
@@ -861,7 +860,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_donate (
    ordinal              UInt64, -- log.ordinal
 
    -- event --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
    sender               FixedString(42) COMMENT 'The address that modified the pool',
    amount0              UInt256 COMMENT 'The amount of currency0 that was donated',
    amount1              UInt256 COMMENT 'The amount of currency1 that was donated',
@@ -880,7 +879,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_donate (
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V3::IPoolManager:ProtocolFeeControllerUpdated --
+-- Uniswap::V4::IPoolManager:ProtocolFeeControllerUpdated --
 -- Emitted when the protocol fee controller address is updated in setProtocolFeeController. --
 CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_controller_update (
    -- block --
@@ -916,7 +915,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_controller_update (
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
 
--- Uniswap::V3::IPoolManager:ProtocolFeeUpdated --
+-- Uniswap::V4::IPoolManager:ProtocolFeeUpdated --
 -- Emitted when the protocol fee is updated in setProtocolFee. --
 CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_updated (
    -- block --
@@ -939,7 +938,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_updated (
    ordinal              UInt64, -- log.ordinal
 
    -- event --
-   id                   FixedString(42) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
+   id                   FixedString(66) COMMENT 'The abi encoded hash of the pool key struct for the pool that was modified',
    protocol_fee         UInt32 COMMENT 'The protocol fee in hundredths of a bip',
 
    -- indexes --
@@ -986,7 +985,7 @@ ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (pool, factory);
 
 -- Uniswap::V2::Factory:PairCreated --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_pairs_created_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_pair_created_mv
 TO pools AS
 SELECT
    block_num,
@@ -1000,10 +999,10 @@ SELECT
    token1,
    3000 AS fee, -- default Uniswap V2 fee
    'uniswap_v2' AS protocol
-FROM uniswap_v2_pairs_created;
+FROM uniswap_v2_pair_created;
 
 -- Uniswap::V3::Factory:PoolCreated --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_pools_created_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_pool_created_mv
 TO pools AS
 SELECT
    block_num,
@@ -1017,7 +1016,7 @@ SELECT
    token1,
    fee,
    'uniswap_v3' AS protocol
-FROM uniswap_v3_pools_created;
+FROM uniswap_v3_pool_created;
 
 -- Swaps for Uniswap V2 & V3 --
 CREATE TABLE IF NOT EXISTS swaps (
@@ -1060,7 +1059,7 @@ ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Swap --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_swaps_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_swap_mv
 TO swaps AS
 SELECT
    block_num,
@@ -1078,10 +1077,10 @@ SELECT
    amount1_in - amount1_out AS amount1,
    abs((amount1_in - amount1_out) / (amount0_in - amount0_out)) AS price,
    'uniswap_v2' AS protocol
-FROM uniswap_v2_swaps;
+FROM uniswap_v2_swap;
 
 -- Uniswap::V3::Pool:Swap --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_swaps_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_swap_mv
 TO swaps AS
 SELECT
    block_num,
@@ -1099,7 +1098,7 @@ SELECT
    amount1,
    pow(1.0001, tick) AS price,
    'uniswap_v3' AS protocol
-FROM uniswap_v3_swaps;
+FROM uniswap_v3_swap;
 
 
 -- OHLC prices including Uniswap V2 & V3 with faster quantile computation --
@@ -1125,7 +1124,6 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
    transactions         SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window'
 )
 ENGINE = AggregatingMergeTree
-PRIMARY KEY (pool, timestamp)
 ORDER BY (pool, timestamp);
 
 -- Swaps --
@@ -1179,7 +1177,6 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_contract (
    transactions         UInt64
 )
 ENGINE = AggregatingMergeTree
-PRIMARY KEY (token, pool, timestamp)
 ORDER BY (token, pool, timestamp);
 
 -- Swaps --

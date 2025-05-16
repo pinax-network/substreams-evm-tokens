@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
    transactions         SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window'
 )
 ENGINE = AggregatingMergeTree
-PRIMARY KEY (pool, timestamp)
 ORDER BY (pool, timestamp);
 
 -- Swaps --
@@ -75,7 +74,6 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_contract (
    transactions         UInt64
 )
 ENGINE = AggregatingMergeTree
-PRIMARY KEY (token, pool, timestamp)
 ORDER BY (token, pool, timestamp);
 
 -- Swaps --

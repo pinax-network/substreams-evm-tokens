@@ -39,7 +39,7 @@ ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Swap --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_swaps_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_swap_mv
 TO swaps AS
 SELECT
    block_num,
@@ -57,10 +57,10 @@ SELECT
    amount1_in - amount1_out AS amount1,
    abs((amount1_in - amount1_out) / (amount0_in - amount0_out)) AS price,
    'uniswap_v2' AS protocol
-FROM uniswap_v2_swaps;
+FROM uniswap_v2_swap;
 
 -- Uniswap::V3::Pool:Swap --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_swaps_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_swap_mv
 TO swaps AS
 SELECT
    block_num,
@@ -78,4 +78,4 @@ SELECT
    amount1,
    pow(1.0001, tick) AS price,
    'uniswap_v3' AS protocol
-FROM uniswap_v3_swaps;
+FROM uniswap_v3_swap;

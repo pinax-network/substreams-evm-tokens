@@ -31,7 +31,7 @@ ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (pool, factory);
 
 -- Uniswap::V2::Factory:PairCreated --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_pairs_created_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_pair_created_mv
 TO pools AS
 SELECT
    block_num,
@@ -45,10 +45,10 @@ SELECT
    token1,
    3000 AS fee, -- default Uniswap V2 fee
    'uniswap_v2' AS protocol
-FROM uniswap_v2_pairs_created;
+FROM uniswap_v2_pair_created;
 
 -- Uniswap::V3::Factory:PoolCreated --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_pools_created_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_pool_created_mv
 TO pools AS
 SELECT
    block_num,
@@ -62,4 +62,4 @@ SELECT
    token1,
    fee,
    'uniswap_v3' AS protocol
-FROM uniswap_v3_pools_created;
+FROM uniswap_v3_pool_created;
