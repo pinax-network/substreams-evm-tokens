@@ -48,6 +48,7 @@ license = "Apache-2.0"
 substreams = "0.6.1"
 substreams-abis = "0.4.1"
 substreams-ethereum = "0.10.4"
+substreams-database-change = "2.0"
 prost = "0.13"
 prost-types = "0.13"
 

@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_pairs_created (
    INDEX idx_timestamp        (timestamp)          TYPE minmax GRANULARITY 4,
    INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_token0           (token0)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_token1           (token1)             TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_token1           (token1)             TYPE bloom_filter GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (address, pair);
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_syncs  (
    INDEX idx_caller             (caller)              TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address            (address)             TYPE bloom_filter GRANULARITY 4,
    INDEX idx_reserve0_minmax    (reserve0)            TYPE minmax       GRANULARITY 4,
-   INDEX idx_reserve1_minmax    (reserve1)            TYPE minmax       GRANULARITY 4,
+   INDEX idx_reserve1_minmax    (reserve1)            TYPE minmax       GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_swaps (
    INDEX idx_amount0_in       (amount0_in)         TYPE minmax       GRANULARITY 4,
    INDEX idx_amount0_out      (amount0_out)        TYPE minmax       GRANULARITY 4,
    INDEX idx_amount1_in       (amount1_in)         TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1_out      (amount1_out)        TYPE minmax       GRANULARITY 4,
+   INDEX idx_amount1_out      (amount1_out)        TYPE minmax       GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);

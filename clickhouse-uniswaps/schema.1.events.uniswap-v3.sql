@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_swaps (
    INDEX idx_amount1           (amount1)           TYPE minmax       GRANULARITY 4,
    INDEX idx_sqrt_price_x96    (sqrt_price_x96)    TYPE minmax       GRANULARITY 4,
    INDEX idx_tick              (tick)              TYPE minmax       GRANULARITY 4,
-   INDEX idx_liquidity         (liquidity)         TYPE minmax       GRANULARITY 4,
+   INDEX idx_liquidity         (liquidity)         TYPE minmax       GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);

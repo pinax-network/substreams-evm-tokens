@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS erc721_transfers (
 
     -- event --
     operator             FixedString(42) DEFAULT '',
-    from                 FixedString(42),
-    to                   FixedString(42),
+    `from`                 FixedString(42),
+    `to`                   FixedString(42),
     token_id             UInt256,
     amount               UInt256 DEFAULT 1,
 
@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS erc721_transfers (
     INDEX idx_caller             (caller)                   TYPE bloom_filter GRANULARITY 4,
     INDEX idx_contract           (contract)                 TYPE bloom_filter GRANULARITY 4,
     INDEX idx_operator           (operator)                 TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_from               (from)                     TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_to                 (to)                       TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_from               (`from`)                   TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_to                 (`to`)                     TYPE bloom_filter GRANULARITY 4,
     INDEX idx_token_id           (token_id)                 TYPE minmax GRANULARITY 4,
     INDEX idx_amount             (amount)                   TYPE minmax GRANULARITY 4,
     INDEX idx_transfer_type      (transfer_type)            TYPE set(1) GRANULARITY 1,

@@ -19,7 +19,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/clickhouse.wasm
+    file: ../target/wasm32-unknown-unknown/release/uniswaps.wasm
 
 modules:
   - name: db_out

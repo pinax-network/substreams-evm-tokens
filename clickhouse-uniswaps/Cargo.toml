@@ -1,5 +1,5 @@
 [package]
-name = "clickhouse"
+name = "uniswaps"
 description = { workspace = true }
 edition = { workspace = true }
 version = { workspace = true }
@@ -9,6 +9,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 substreams = { workspace = true }
-substreams-database-change = "2.0"
+substreams-database-change = { workspace = true }
 proto = { path = "../proto" }
 common = { path = "../common" }
