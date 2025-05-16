@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_swap (
 
    -- transaction --
    tx_hash              FixedString(66),
+   tx_from              FixedString(42),
+   tx_to                FixedString(42),
 
    -- call --
    caller               FixedString(42), -- call.caller

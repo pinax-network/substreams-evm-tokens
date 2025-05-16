@@ -32,7 +32,11 @@ fn process_uniswap_v2_swap(tables: &mut substreams_database_change::tables::Tabl
     let key = common_key(clock, index);
     let row = tables
         .create_row("uniswap_v2_swap", key)
+        // -- transaction --
+        .set("tx_from", &bytes_to_hex(&event.tx_from))
+        .set("tx_to", &bytes_to_hex(&event.tx_to))
         .set("address", &bytes_to_hex(&event.contract))
+        // -- event --
         .set("amount0_in", event.amount0_in)
         .set("amount0_out", event.amount0_out)
         .set("amount1_in", event.amount1_in)

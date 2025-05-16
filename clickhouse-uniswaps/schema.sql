@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_pair_created (
 
    -- transaction --
    tx_hash              FixedString(66),
+   tx_from              FixedString(42),
+   tx_to                FixedString(42),
 
    -- call --
    caller               FixedString(42) COMMENT 'factory creator', -- call.caller
@@ -217,6 +219,8 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_swap (
 
    -- transaction --
    tx_hash              FixedString(66),
+   tx_from              FixedString(42),
+   tx_to                FixedString(42),
 
    -- call --
    caller               FixedString(42), -- call.caller
@@ -721,6 +725,8 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_swap (
 
    -- transaction --
    tx_hash              FixedString(66),
+   tx_from              FixedString(42),
+   tx_to                FixedString(42),
 
    -- call --
    caller               FixedString(42), -- call.caller
@@ -1141,7 +1147,7 @@ SELECT
    caller,
    id as pool,
    sender,
-   '' as recipient,
+   '' as recipient, -- not available in V4 due to single pool manager concept
    amount0,
    amount1,
    pow(1.0001, tick) AS price,

@@ -65,7 +65,11 @@ fn process_uniswap_v3_swap(tables: &mut substreams_database_change::tables::Tabl
     let key = common_key(clock, index);
     let row = tables
         .create_row("uniswap_v3_swap", key)
+        // -- transaction --
+        .set("tx_from", &bytes_to_hex(&event.tx_from))
+        .set("tx_to", &bytes_to_hex(&event.tx_to))
         .set("address", &bytes_to_hex(&event.contract))
+        // -- event --
         .set("amount0", event.amount0)
         .set("amount1", event.amount1)
         .set("sender", bytes_to_hex(&event.sender))

@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: evm_uniswaps
-  version: v0.1.0
+  version: v0.1.1
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: Uniswap V2/V3/V4 for EVM
   image: ../image.png
@@ -12,9 +12,9 @@ imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # Uniswaps
-  uniswap_v2: https://github.com/pinax-network/substreams-evm-tokens/releases/download/uniswaps-v0.1.0/evm-uniswap-v2-v0.1.0.spkg
-  uniswap_v3: https://github.com/pinax-network/substreams-evm-tokens/releases/download/uniswaps-v0.1.0/evm-uniswap-v3-v0.1.0.spkg
-  uniswap_v4: https://github.com/pinax-network/substreams-evm-tokens/releases/download/uniswaps-v0.1.0/evm-uniswap-v4-v0.1.0.spkg
+  uniswap_v2: https://github.com/pinax-network/substreams-evm-tokens/releases/download/uniswaps-v0.1.1/evm-uniswap-v2-v0.1.1.spkg
+  uniswap_v3: https://github.com/pinax-network/substreams-evm-tokens/releases/download/uniswaps-v0.1.1/evm-uniswap-v3-v0.1.1.spkg
+  uniswap_v4: https://github.com/pinax-network/substreams-evm-tokens/releases/download/uniswaps-v0.1.1/evm-uniswap-v4-v0.1.1.spkg
 
 binaries:
   default:
