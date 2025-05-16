@@ -14,28 +14,6 @@ pub struct Events {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventsMetadata {
-    #[prost(message, repeated, tag="1")]
-    pub metadatas: ::prost::alloc::vec::Vec<Metadata>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Metadata {
-    /// log.address
-    #[prost(bytes="vec", tag="1")]
-    pub contract: ::prost::alloc::vec::Vec<u8>,
-    /// uint256
-    #[prost(string, tag="2")]
-    pub token_id: ::prost::alloc::string::String,
-    /// ERC1155 Metadata
-    /// <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol>
-    ///
-    /// uri(uint256 id) -> string
-    #[prost(string, tag="3")]
-    pub uri: ::prost::alloc::string::String,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TransferSingle {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]

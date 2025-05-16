@@ -1,0 +1,29 @@
+specVersion: v0.1.0
+package:
+  name: evm_erc1155_metadata
+  version: v0.4.0
+  url: https://github.com/pinax-network/substreams-evm-tokens
+  description: ERC1155 token metadata via RPC
+  image: ../image.png
+
+imports:
+  erc1155: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc1155-v0.4.0.spkg
+
+protobuf:
+  files:
+    - erc1155-metadata.proto
+  importPaths:
+    - ../proto/v1
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/erc1155_metadata.wasm
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: erc1155:map_events
+    output:
+      type: proto:evm.erc1155.metadata.v1.Events

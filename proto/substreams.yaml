@@ -21,6 +21,7 @@ protobuf:
     - v1/erc721.proto
     - v1/erc721-metadata.proto
     - v1/erc1155.proto
+    - v1/erc1155-metadata.proto
   excludePaths:
     - sf/substreams
     - google

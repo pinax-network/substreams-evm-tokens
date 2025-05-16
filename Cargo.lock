@@ -249,6 +249,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "erc1155-metadata"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-abis",
+ "substreams-ethereum",
+]
+
+[[package]]
 name = "erc20-balances-rpc"
 version = "0.0.0"
 dependencies = [
@@ -1278,9 +1289,9 @@ dependencies = [
 
 [[package]]
 name = "substreams-abis"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8bd8c14059031e8e950bb36fde526359fbb52f0a52e5a4384a4e6c20b94897b"
+checksum = "082566913c230bcb00b7c3d973583f8ae1e53fa9c02f365d29c8a6c72adca080"
 dependencies = [
  "anyhow",
  "ethabi 18.0.0",

@@ -7,7 +7,7 @@ package:
   image: ../image.png
 
 imports:
-  erc721: ../erc721/substreams.yaml
+  erc721: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc721-v0.4.0.spkg
 
 protobuf:
   files:

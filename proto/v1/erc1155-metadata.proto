@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package evm.erc1155.metadata.v1;
+
+// ERC1155 Metadata
+// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol
+// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/ERC1155Supply.sol
+message Events {
+  repeated MetadataByContract metadata_by_contracts = 1;
+  repeated MetadataByToken metadata_by_tokens = 2;
+}
+
+message MetadataByContract {
+  bytes contract = 1; // log.address
+  optional string symbol = 2; // symbol() -> string
+  optional string name = 3; // name() -> string
+}
+
+message MetadataByToken {
+  bytes contract = 1; // log.address
+  string token_id = 2; // uint256
+  string uri = 3; // uri(uint256 id) -> string
+}
