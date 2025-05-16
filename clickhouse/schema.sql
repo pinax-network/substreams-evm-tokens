@@ -567,15 +567,15 @@ CREATE TABLE IF NOT EXISTS swaps (
    price                Float64 COMMENT 'computed price for token0',
    protocol             LowCardinality(String) COMMENT 'protocol name', -- 'uniswap_v2' or 'uniswap_v3'
 
-   INDEX idx_tx_hash tx_hash TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller caller TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_pool pool TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_sender sender TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_recipient recipient TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_amount0 amount0 TYPE minmax GRANULARITY 4,
-   INDEX idx_amount1 amount1 TYPE minmax GRANULARITY 4,
-   INDEX idx_price price TYPE minmax GRANULARITY 4,
-   INDEX idx_protocol protocol TYPE set(8) GRANULARITY 4
+   INDEX idx_tx_hash       (tx_hash)         TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_caller        (caller)          TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_pool          (pool)            TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_sender        (sender)          TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_recipient     (recipient)       TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_amount0       (amount0)         TYPE minmax GRANULARITY 4,
+   INDEX idx_amount1       (amount1)         TYPE minmax GRANULARITY 4,
+   INDEX idx_price         (price)           TYPE minmax GRANULARITY 4,
+   INDEX idx_protocol      (protocol)        TYPE set(8) GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (timestamp, block_num, `index`);
