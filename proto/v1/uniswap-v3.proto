@@ -101,22 +101,24 @@ message Initialize {
 message Swap {
   // -- transaction --
   bytes tx_hash = 1;
+  bytes tx_from = 2; // tx.from
+  bytes tx_to = 3; // tx.to
 
   // -- call --
-  optional bytes caller = 2;
+  optional bytes caller = 4;
 
   // -- log --
-  bytes contract = 3; // log.address
-  uint64 ordinal = 4; // log.ordinal
+  bytes contract = 5; // log.address
+  uint64 ordinal = 6; // log.ordinal
 
   // -- event --
-  bytes sender = 21; // address
-  bytes recipient = 22; // address
-  string amount0 = 23; // int256
-  string amount1 = 24; // int256
-  string sqrt_price_x96 = 25; // uint160
-  string liquidity = 26; // uint128
-  int32 tick = 27; // int24
+  bytes sender = 10; // address
+  bytes recipient = 11; // address
+  string amount0 = 12; // int256
+  string amount1 = 13; // int256
+  string sqrt_price_x96 = 14; // uint160
+  string liquidity = 15; // uint128
+  int32 tick = 16; // int24
 }
 
 
