@@ -1,4 +1,14 @@
--- OHLC Prices by Pool (Uniswap V3 WETH/USDT) --
+-- Top Uniswap pools --
+SELECT
+    protocol,
+    pool,
+    count()
+FROM swaps
+GROUP BY protocol, pool
+ORDER BY count() DESC
+LIMIT 10
+
+-- OHLC Prices by Pool --
 WITH (
       18 AS decimals0, -- JOIN contracts
       6 AS decimals1, -- JOIN contracts
@@ -9,8 +19,8 @@ WITH (
 
       -- OHLC --
       floor(argMinMerge(open0) * pow(10, decimals0 - decimals1), precision)                        AS open,
-      floor(quantileDeterministicMerge(0.99)(high0) * pow(10, decimals0 - decimals1), precision)   AS high,
-      floor(quantileDeterministicMerge(0.01)(low0) * pow(10, decimals0 - decimals1), precision)    AS low,
+      floor(quantileDeterministicMerge(0.99)(quantile0) * pow(10, decimals0 - decimals1), precision)   AS high,
+      floor(quantileDeterministicMerge(0.01)(quantile0) * pow(10, decimals0 - decimals1), precision)    AS low,
       floor(argMaxMerge(close0) * pow(10, decimals0 - decimals1), precision)                       AS close,
 
       -- volume --
@@ -23,7 +33,8 @@ WITH (
       uniqMerge(uaw)          AS uaw,
       sum(transactions)       AS transactions
 FROM ohlc_prices
-WHERE pool = lower('0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b') -- Uniswap V3 WETH/USDT
+-- WHERE pool = lower('0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b') -- Uniswap V3 WETH/USDT
+WHERE pool = lower('0x21c67e77068de97969ba93d4aab21826d33ca12bb9f565d8496e8fda8a82ca27') -- Uniswap V4 WETH/USDC
 GROUP BY pool, timestamp
 ORDER BY timestamp DESC
 LIMIT 10;
@@ -47,12 +58,13 @@ WITH (
       uniqMerge(uaw) AS uaw,
       sum(transactions) AS transactions
 FROM ohlc_prices
-WHERE pool = lower('0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b') -- Uniswap V3 WETH/USDT
+-- WHERE pool = lower('0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b') -- Uniswap V3 WETH/USDT
+WHERE pool = lower('0x21c67e77068de97969ba93d4aab21826d33ca12bb9f565d8496e8fda8a82ca27') -- Uniswap V4 WETH/USDC
 GROUP BY pool, date
 ORDER BY date DESC
 LIMIT 7;
 
--- OHLC Prices by Pool (Uniswap V3 DAI/USDC) --
+-- OHLC Prices by Pool --
 WITH (
       18 AS decimals0, -- JOIN contracts
       6 AS decimals1, -- JOIN contracts
@@ -63,8 +75,8 @@ WITH (
 
       -- OHLC --
       floor(argMinMerge(open0) * pow(10, decimals0 - decimals1), precision)                        AS open,
-      floor(quantileDeterministicMerge(0.99)(high0) * pow(10, decimals0 - decimals1), precision)   AS high,
-      floor(quantileDeterministicMerge(0.01)(low0) * pow(10, decimals0 - decimals1), precision)    AS low,
+      floor(quantileDeterministicMerge(0.99)(quantile0) * pow(10, decimals0 - decimals1), precision)   AS high,
+      floor(quantileDeterministicMerge(0.01)(quantile0) * pow(10, decimals0 - decimals1), precision)    AS low,
       floor(argMaxMerge(close0) * pow(10, decimals0 - decimals1), precision)                       AS close,
 
       -- volume --
@@ -85,8 +97,8 @@ WITH (
 
       -- OHLC --
       floor(argMinMerge(open0) * pow(10, decimals0 - decimals1), precision)                        AS open,
-      floor(quantileDeterministicMerge(0.99)(high0) * pow(10, decimals0 - decimals1), precision)   AS high,
-      floor(quantileDeterministicMerge(0.01)(low0) * pow(10, decimals0 - decimals1), precision)    AS low,
+      floor(quantileDeterministicMerge(0.99)(quantile0) * pow(10, decimals0 - decimals1), precision)   AS high,
+      floor(quantileDeterministicMerge(0.01)(quantile0) * pow(10, decimals0 - decimals1), precision)    AS low,
       floor(argMaxMerge(close0) * pow(10, decimals0 - decimals1), precision)                       AS close,
 
       -- volume --

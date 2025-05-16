@@ -1139,7 +1139,7 @@ SELECT
    global_sequence,
    tx_hash,
    caller,
-   address as pool,
+   id as pool,
    sender,
    '' as recipient,
    amount0,
@@ -1153,7 +1153,7 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
    timestamp            DateTime(0, 'UTC') COMMENT 'beginning of the bar',
 
    -- pool --
-   pool                 LowCardinality(FixedString(42)) COMMENT 'pool address',
+   pool                 LowCardinality(String) COMMENT 'pool address',
 
    -- swaps --
    open0                AggregateFunction(argMin, Float64, UInt64),
@@ -1208,7 +1208,7 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_contract (
    token                LowCardinality(FixedString(42)) COMMENT 'token address',
 
    -- pool --
-   pool                 LowCardinality(FixedString(42)) COMMENT 'pool address',
+   pool                 LowCardinality(String) COMMENT 'pool address',
 
    -- swaps --
    open                Float64,

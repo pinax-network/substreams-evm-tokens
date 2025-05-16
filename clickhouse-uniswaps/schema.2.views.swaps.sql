@@ -91,7 +91,7 @@ SELECT
    global_sequence,
    tx_hash,
    caller,
-   address as pool,
+   id as pool,
    sender,
    '' as recipient,
    amount0,
