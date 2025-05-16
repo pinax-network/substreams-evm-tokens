@@ -6,12 +6,16 @@ CREATE TABLE IF NOT EXISTS swaps (
    timestamp            DateTime(0, 'UTC'),
 
    -- ordering --
-   ordinal              UInt64, -- log.ordinal
    `index`              UInt64, -- relative index
    global_sequence      UInt64, -- latest global sequence (block_num << 32 + index)
 
    -- transaction --
    tx_hash              FixedString(66),
+   tx_from              FixedString(42),
+   tx_to                FixedString(42),
+
+   -- log --
+   ordinal              UInt64, -- log.ordinal
 
    -- call --
    caller               FixedString(42) COMMENT 'caller address', -- call.caller
@@ -42,15 +46,28 @@ ORDER BY (timestamp, block_num, `index`);
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v2_swap
 TO swaps AS
 SELECT
+   -- block --
    block_num,
    block_hash,
    timestamp,
-   ordinal,
+
+   -- ordering --
    `index`,
    global_sequence,
+
+   -- transaction --
    tx_hash,
+   tx_from,
+   tx_to,
+
+   -- call --
    caller,
+
+   -- log --
    address as pool,
+   ordinal,
+
+   -- event --
    sender,
    `to` AS recipient,
    amount0_in - amount0_out AS amount0,
@@ -63,15 +80,28 @@ FROM uniswap_v2_swap;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v3_swap
 TO swaps AS
 SELECT
+   -- block --
    block_num,
    block_hash,
    timestamp,
-   ordinal,
+
+   -- ordering --
    `index`,
    global_sequence,
+
+   -- transaction --
    tx_hash,
+   tx_from,
+   tx_to,
+
+   -- call --
    caller,
+
+   -- log --
    address as pool,
+   ordinal,
+
+   -- event --
    sender,
    recipient,
    amount0,
@@ -83,14 +113,27 @@ FROM uniswap_v3_swap;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v4_swap
 TO swaps AS
 SELECT
+   -- block --
    block_num,
    block_hash,
    timestamp,
-   ordinal,
+
+   -- ordering --
    `index`,
    global_sequence,
+
+   -- transaction --
    tx_hash,
+   tx_from,
+   tx_to,
+
+   -- call --
    caller,
+
+   -- log --
+   ordinal,
+
+   -- event --
    id as pool,
    sender,
    '' as recipient, -- not available in V4 due to single pool manager concept
