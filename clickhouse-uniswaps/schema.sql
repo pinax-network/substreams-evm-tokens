@@ -1078,11 +1078,11 @@ CREATE TABLE IF NOT EXISTS swaps (
    -- swaps --
    pool                 String COMMENT 'pool address', -- log.address
    sender               FixedString(42) COMMENT 'sender address',
-   recipient            FixedString(42) COMMENT 'recipient address',
+   recipient            Nullable(FixedString(42)) COMMENT 'recipient address', -- not available in Uniswap V4
    amount0              Int256 COMMENT 'token0 amount',
    amount1              Int256 COMMENT 'token1 amount',
    price                Float64 COMMENT 'computed price for token0',
-   protocol             LowCardinality(String) COMMENT 'protocol name', -- 'uniswap_v2' or 'uniswap_v3'
+   protocol             LowCardinality(String) COMMENT 'protocol name', -- 'uniswap_v2','uniswap_v3' & 'uniswap_v4'
 
    INDEX idx_tx_hash       (tx_hash)         TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller        (caller)          TYPE bloom_filter GRANULARITY 4,
@@ -1134,6 +1134,8 @@ FROM uniswap_v2_swap;
 -- Uniswap::V3::Pool:Swap --
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v3_swap
 TO swaps AS
+WITH
+   pow(2, 96) as Q96
 SELECT
    -- block --
    block_num,
@@ -1161,12 +1163,14 @@ SELECT
    recipient,
    amount0,
    amount1,
-   pow(1.0001, tick) AS price,
+   pow((toFloat64(sqrt_price_x96) / Q96), 2) AS price, -- https://github.com/pinax-network/substreams-evm-tokens/issues/68
    'uniswap_v3' AS protocol
 FROM uniswap_v3_swap;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v4_swap
 TO swaps AS
+WITH
+   pow(2, 96) as Q96
 SELECT
    -- block --
    block_num,
@@ -1191,10 +1195,10 @@ SELECT
    -- event --
    id as pool,
    sender,
-   '' as recipient, -- not available in V4 due to single pool manager concept
+   -- recipient not available in V4
    amount0,
    amount1,
-   pow(1.0001, tick) AS price,
+   pow((toFloat64(sqrt_price_x96) / Q96), 2) AS price, -- https://github.com/pinax-network/substreams-evm-tokens/issues/68
    'uniswap_v4' AS protocol
 FROM uniswap_v4_swap;
 
