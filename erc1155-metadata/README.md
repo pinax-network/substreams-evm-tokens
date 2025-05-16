@@ -1,13 +1,12 @@
-# ERC721 metadata
-
-> `IERC721Metadata.sol`: Interface for the ERC721 metadata extension.
+# ERC1155 metadata
 
 ## Includes
 
 - name
 - symbol
-- tokenURI
+- URI
 
 ## References
 
-- https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/IERC721Metadata.sol
+- <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol>
+- <https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/ERC1155Supply.sol>
