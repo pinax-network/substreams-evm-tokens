@@ -219,10 +219,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_swaps (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -267,10 +267,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_initializes (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -283,7 +283,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_initializes (
 
    -- indexes (event) --
    INDEX idx_sqrt_price_x96    (sqrt_price_x96)    TYPE minmax          GRANULARITY 4,
-   INDEX idx_tick              (tick)              TYPE minmax          GRANULARITY 4,
+   INDEX idx_tick              (tick)              TYPE minmax          GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree(global_sequence_reverse) -- first event only --
 ORDER BY (address);
@@ -303,7 +303,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_pools_created (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
    address              FixedString(42) COMMENT 'UniswapV3Pool factory address', -- log.address
@@ -324,7 +324,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_pools_created (
    INDEX idx_token0            (token0)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_token1            (token1)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_tick_spacing      (tick_spacing)      TYPE minmax       GRANULARITY 4,
-   INDEX idx_fee               (fee)               TYPE minmax       GRANULARITY 4,
+   INDEX idx_fee               (fee)               TYPE minmax       GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (address, pool);
@@ -344,10 +344,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_mints (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -391,10 +391,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_collects (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -409,7 +409,6 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_collects (
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_ordinal           (ordinal)           TYPE minmax       GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_owner             (owner)             TYPE bloom_filter GRANULARITY 4,
@@ -437,10 +436,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_burns (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -455,7 +454,6 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_burns (
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_ordinal           (ordinal)           TYPE minmax       GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_owner             (owner)             TYPE bloom_filter GRANULARITY 4,
@@ -483,11 +481,12 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_flashes (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
+
    -- event --
    sender               FixedString(42) COMMENT 'The address that initiated the flash',
    recipient            FixedString(42) COMMENT 'The address that received the flash',
@@ -500,7 +499,6 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_flashes (
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_ordinal           (ordinal)           TYPE minmax       GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_sender            (sender)            TYPE bloom_filter GRANULARITY 4,
@@ -528,10 +526,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_increase_observation_cardinality_nexts (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -542,7 +540,6 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_increase_observation_cardinality_nexts (
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_ordinal           (ordinal)           TYPE minmax       GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_observation_cardinality_next_old  (observation_cardinality_next_old)  TYPE minmax       GRANULARITY 4,
@@ -566,23 +563,22 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_set_fee_protocols (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
    fee_protocol0_old     UInt8 COMMENT 'The previous fee protocol for token0',
    fee_protocol1_old     UInt8 COMMENT 'The previous fee protocol for token1',
    fee_protocol0_new     UInt8 COMMENT 'The updated fee protocol for token0',
-   fee_protocol1_new     UInt8 COMMENT 'The updated fee protocol for token1'
+   fee_protocol1_new     UInt8 COMMENT 'The updated fee protocol for token1',
 
    -- indexes --
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_ordinal           (ordinal)           TYPE minmax       GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_fee_protocol0_old  (fee_protocol0_old) TYPE minmax       GRANULARITY 4,
@@ -608,10 +604,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_collect_protocols (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Pool pool address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -624,7 +620,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_collect_protocols (
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_ordinal           (ordinal)           TYPE minmax       GRANULARITY 4,
+
    -- indexes (event) --
    INDEX idx_sender            (sender)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_recipient         (recipient)         TYPE bloom_filter GRANULARITY 4,
@@ -650,10 +646,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_owner_changed (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Factory factory address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -664,7 +660,6 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_owner_changed (
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_ordinal           (ordinal)           TYPE minmax       GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_old_owner         (old_owner)         TYPE bloom_filter GRANULARITY 4,
@@ -689,10 +684,10 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_fee_amount_enabled (
    tx_hash              FixedString(66),
 
    -- call --
-   caller               FixedString(42) COMMENT 'caller address', -- call.caller
+   caller               FixedString(42), -- call.caller
 
    -- log --
-   address              FixedString(42) COMMENT 'UniswapV3Factory factory address', -- log.address
+   address              FixedString(42), -- log.address
    ordinal              UInt64, -- log.ordinal
 
    -- event --
@@ -703,7 +698,6 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_fee_amount_enabled (
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_ordinal           (ordinal)           TYPE minmax       GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_fee               (fee)               TYPE minmax       GRANULARITY 4,
@@ -958,34 +952,6 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_protocol_fee_updated (
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
-
--- latest balances by owner/contract --
-CREATE TABLE IF NOT EXISTS balances AS erc20_balance_changes
-ENGINE = ReplacingMergeTree(global_sequence)
-PRIMARY KEY (address, contract)
-ORDER BY (address, contract);
-
--- insert ERC20 balance changes --
-CREATE MATERIALIZED VIEW IF NOT EXISTS erc20_balances_mv
-TO balances AS
-SELECT * FROM erc20_balance_changes
-WHERE algorithm != 'ALGORITHM_BALANCE_NOT_MATCH_TRANSFER'; -- not implemented yet
-
--- insert Native balance changes --
-CREATE MATERIALIZED VIEW IF NOT EXISTS native_balances_mv
-TO balances AS
-SELECT * FROM native_balance_changes;
-
--- latest balances by contract/address --
-CREATE TABLE IF NOT EXISTS balances_by_contract AS balances
-ENGINE = ReplacingMergeTree(global_sequence)
-PRIMARY KEY (contract, address)
-ORDER BY (contract, address);
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS balances_by_contract_mv
-TO balances_by_contract AS
-SELECT * FROM balances;
-
 
 -- Pools Created for Uniswap V2 & V3 --
 CREATE TABLE IF NOT EXISTS pools (
