@@ -24,7 +24,7 @@ ENGINE = AggregatingMergeTree
 ORDER BY (pool, timestamp);
 
 -- Swaps --
-CREATE MATERIALIZED VIEW IF NOT EXISTS ohlc_prices_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
 TO ohlc_prices
 AS
 SELECT
@@ -77,7 +77,7 @@ ENGINE = AggregatingMergeTree
 ORDER BY (token, pool, timestamp);
 
 -- Swaps --
-CREATE MATERIALIZED VIEW IF NOT EXISTS ohlc_prices_by_contract_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_contract
 TO ohlc_prices_by_contract
 AS
 -- Get pools for token contract
@@ -108,7 +108,7 @@ ranked_pools AS (
         uniqMerge(o.uaw) AS uaw,
         sum(o.transactions) AS transactions,
         row_number() OVER (PARTITION BY token, timestamp ORDER BY uniqMerge(o.uaw) + sum(o.transactions) DESC) AS rank
-    FROM ohlc_prices_mv AS o
+    FROM mv_ohlc_prices AS o
     JOIN tokens ON o.pool = tokens.pool
     GROUP BY token, is_first_token, pool, timestamp
 )

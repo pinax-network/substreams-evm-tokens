@@ -25,7 +25,7 @@ PRIMARY KEY (pool, timestamp)
 ORDER BY (pool, timestamp);
 
 -- Swaps --
-CREATE MATERIALIZED VIEW IF NOT EXISTS ohlc_prices_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
 TO ohlc_prices
 AS
 SELECT

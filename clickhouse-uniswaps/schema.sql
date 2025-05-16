@@ -985,7 +985,7 @@ ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (pool, factory);
 
 -- Uniswap::V2::Factory:PairCreated --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_pair_created_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v2_pair_created
 TO pools AS
 SELECT
    block_num,
@@ -1002,7 +1002,7 @@ SELECT
 FROM uniswap_v2_pair_created;
 
 -- Uniswap::V3::Factory:PoolCreated --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_pool_created_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v3_pool_created
 TO pools AS
 SELECT
    block_num,
@@ -1017,6 +1017,32 @@ SELECT
    fee,
    'uniswap_v3' AS protocol
 FROM uniswap_v3_pool_created;
+
+-- Uniswap::V4::IPoolManager:Initialize --
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v4_initialize
+TO pools AS
+SELECT
+   -- block --
+   block_num,
+   block_hash,
+   timestamp,
+
+   -- ordering --
+   global_sequence,
+
+   -- transaction --
+   tx_hash,
+
+   -- log --
+   address AS factory,
+
+   -- event --
+   id as pool,
+   currency0 as token0,
+   currency1 as token1,
+   fee,
+   'uniswap_v4' AS protocol
+FROM uniswap_v4_initialize;
 
 -- Swaps for Uniswap V2 & V3 --
 CREATE TABLE IF NOT EXISTS swaps (
@@ -1037,7 +1063,7 @@ CREATE TABLE IF NOT EXISTS swaps (
    caller               FixedString(42) COMMENT 'caller address', -- call.caller
 
    -- swaps --
-   pool                 FixedString(42) COMMENT 'pool address', -- log.address
+   pool                 String COMMENT 'pool address', -- log.address
    sender               FixedString(42) COMMENT 'sender address',
    recipient            FixedString(42) COMMENT 'recipient address',
    amount0              Int256 COMMENT 'token0 amount',
@@ -1059,7 +1085,7 @@ ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Swap --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_swap_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v2_swap
 TO swaps AS
 SELECT
    block_num,
@@ -1080,7 +1106,7 @@ SELECT
 FROM uniswap_v2_swap;
 
 -- Uniswap::V3::Pool:Swap --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_swap_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v3_swap
 TO swaps AS
 SELECT
    block_num,
@@ -1100,6 +1126,25 @@ SELECT
    'uniswap_v3' AS protocol
 FROM uniswap_v3_swap;
 
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v4_swap
+TO swaps AS
+SELECT
+   block_num,
+   block_hash,
+   timestamp,
+   ordinal,
+   `index`,
+   global_sequence,
+   tx_hash,
+   caller,
+   address as pool,
+   sender,
+   '' as recipient,
+   amount0,
+   amount1,
+   pow(1.0001, tick) AS price,
+   'uniswap_v4' AS protocol
+FROM uniswap_v4_swap;
 
 -- OHLC prices including Uniswap V2 & V3 with faster quantile computation --
 CREATE TABLE IF NOT EXISTS ohlc_prices (
@@ -1127,7 +1172,7 @@ ENGINE = AggregatingMergeTree
 ORDER BY (pool, timestamp);
 
 -- Swaps --
-CREATE MATERIALIZED VIEW IF NOT EXISTS ohlc_prices_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
 TO ohlc_prices
 AS
 SELECT
@@ -1180,7 +1225,7 @@ ENGINE = AggregatingMergeTree
 ORDER BY (token, pool, timestamp);
 
 -- Swaps --
-CREATE MATERIALIZED VIEW IF NOT EXISTS ohlc_prices_by_contract_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_contract
 TO ohlc_prices_by_contract
 AS
 -- Get pools for token contract
@@ -1211,7 +1256,7 @@ ranked_pools AS (
         uniqMerge(o.uaw) AS uaw,
         sum(o.transactions) AS transactions,
         row_number() OVER (PARTITION BY token, timestamp ORDER BY uniqMerge(o.uaw) + sum(o.transactions) DESC) AS rank
-    FROM ohlc_prices_mv AS o
+    FROM mv_ohlc_prices AS o
     JOIN tokens ON o.pool = tokens.pool
     GROUP BY token, is_first_token, pool, timestamp
 )

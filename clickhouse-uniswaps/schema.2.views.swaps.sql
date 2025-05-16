@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS swaps (
    caller               FixedString(42) COMMENT 'caller address', -- call.caller
 
    -- swaps --
-   pool                 FixedString(42) COMMENT 'pool address', -- log.address
+   pool                 String COMMENT 'pool address', -- log.address
    sender               FixedString(42) COMMENT 'sender address',
    recipient            FixedString(42) COMMENT 'recipient address',
    amount0              Int256 COMMENT 'token0 amount',
@@ -39,7 +39,7 @@ ENGINE = ReplacingMergeTree(global_sequence)
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Swap --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v2_swap_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v2_swap
 TO swaps AS
 SELECT
    block_num,
@@ -60,7 +60,7 @@ SELECT
 FROM uniswap_v2_swap;
 
 -- Uniswap::V3::Pool:Swap --
-CREATE MATERIALIZED VIEW IF NOT EXISTS uniswap_v3_swap_mv
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v3_swap
 TO swaps AS
 SELECT
    block_num,
@@ -79,3 +79,23 @@ SELECT
    pow(1.0001, tick) AS price,
    'uniswap_v3' AS protocol
 FROM uniswap_v3_swap;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_uniswap_v4_swap
+TO swaps AS
+SELECT
+   block_num,
+   block_hash,
+   timestamp,
+   ordinal,
+   `index`,
+   global_sequence,
+   tx_hash,
+   caller,
+   address as pool,
+   sender,
+   '' as recipient,
+   amount0,
+   amount1,
+   pow(1.0001, tick) AS price,
+   'uniswap_v4' AS protocol
+FROM uniswap_v4_swap;
