@@ -965,9 +965,11 @@ CREATE TABLE IF NOT EXISTS pools (
    -- transaction --
    tx_hash              FixedString(66),
 
-   -- swaps --
+   -- log --
    factory              FixedString(42) COMMENT 'factory address', -- log.address
-   pool                 FixedString(42) COMMENT 'pool address',
+
+   -- event --
+   pool                 String COMMENT 'pool address',
    token0               FixedString(42) COMMENT 'token0 address',
    token1               FixedString(42) COMMENT 'token1 address',
    fee                  UInt32 COMMENT 'pool fee (e.g., 3000 represents 0.30%)',
