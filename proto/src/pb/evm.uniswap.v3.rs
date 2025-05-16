@@ -10,7 +10,7 @@ pub struct Events {
     #[prost(message, repeated, tag="1")]
     pub swap: ::prost::alloc::vec::Vec<Swap>,
     #[prost(message, repeated, tag="2")]
-    pub intialize: ::prost::alloc::vec::Vec<Initialize>,
+    pub initialize: ::prost::alloc::vec::Vec<Initialize>,
     #[prost(message, repeated, tag="3")]
     pub mint: ::prost::alloc::vec::Vec<Mint>,
     #[prost(message, repeated, tag="4")]

@@ -8,7 +8,7 @@ package evm.uniswap.v3;
 message Events {
   // IUniswapV3Pool
   repeated Swap swap = 1;
-  repeated Initialize intialize = 2;
+  repeated Initialize initialize = 2;
   repeated Mint mint = 3;
   repeated Collect collect = 4;
   repeated Burn burn = 5;

@@ -7,7 +7,7 @@ package evm.uniswap.v4;
 message Events {
   // IPoolManager
   repeated Swap swap = 1;
-  repeated Initialize intialize = 2;
+  repeated Initialize initialize = 2;
   repeated ModifyLiquidity modify_liquidity = 3;
   repeated Donate donate = 4;
 

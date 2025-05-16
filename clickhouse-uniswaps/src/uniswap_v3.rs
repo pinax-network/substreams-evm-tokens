@@ -26,7 +26,7 @@ pub fn process_uniswap_v3(tables: &mut substreams_database_change::tables::Table
         process_uniswap_v3_swap(tables, clock, event, index);
         index += 1;
     }
-    for event in events.intialize {
+    for event in events.initialize {
         process_uniswap_v3_initialize(tables, clock, event, index);
         index += 1;
     }

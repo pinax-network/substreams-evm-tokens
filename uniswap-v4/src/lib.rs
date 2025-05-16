@@ -39,7 +39,7 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                 });
                 // Uniswap::V4::PoolManager:Initialize
             } else if let Some(event) = poolmanager::Initialize::match_and_decode(log) {
-                events.intialize.push(uniswap::Initialize {
+                events.initialize.push(uniswap::Initialize {
                     // -- transaction --
                     tx_hash: trx.hash.to_vec(),
 
