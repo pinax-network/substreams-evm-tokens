@@ -1245,7 +1245,7 @@ SELECT
    sum(toInt256(amount1))     AS net_flow1,
 
    -- universal --
-   uniqState(sender) AS uaw,
+   uniqState(sender) + uniqState(tx_from) AS uaw,
    sum(1) AS transactions
 FROM swaps AS s
 GROUP BY pool, timestamp;
