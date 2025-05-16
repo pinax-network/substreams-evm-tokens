@@ -93,7 +93,7 @@ SELECT
    caller,
    id as pool,
    sender,
-   '' as recipient,
+   '' as recipient, -- not available in V4 due to single pool manager concept
    amount0,
    amount1,
    pow(1.0001, tick) AS price,
