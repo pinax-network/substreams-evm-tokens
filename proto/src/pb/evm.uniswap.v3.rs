@@ -134,39 +134,45 @@ pub struct Swap {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
     pub tx_hash: ::prost::alloc::vec::Vec<u8>,
+    /// tx.from
+    #[prost(bytes="vec", tag="2")]
+    pub tx_from: ::prost::alloc::vec::Vec<u8>,
+    /// tx.to
+    #[prost(bytes="vec", tag="3")]
+    pub tx_to: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
-    #[prost(bytes="vec", optional, tag="2")]
+    #[prost(bytes="vec", optional, tag="4")]
     pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// -- log --
     ///
     /// log.address
-    #[prost(bytes="vec", tag="3")]
+    #[prost(bytes="vec", tag="5")]
     pub contract: ::prost::alloc::vec::Vec<u8>,
     /// log.ordinal
-    #[prost(uint64, tag="4")]
+    #[prost(uint64, tag="6")]
     pub ordinal: u64,
     /// -- event --
     ///
     /// address
-    #[prost(bytes="vec", tag="21")]
+    #[prost(bytes="vec", tag="10")]
     pub sender: ::prost::alloc::vec::Vec<u8>,
     /// address
-    #[prost(bytes="vec", tag="22")]
+    #[prost(bytes="vec", tag="11")]
     pub recipient: ::prost::alloc::vec::Vec<u8>,
     /// int256
-    #[prost(string, tag="23")]
+    #[prost(string, tag="12")]
     pub amount0: ::prost::alloc::string::String,
     /// int256
-    #[prost(string, tag="24")]
+    #[prost(string, tag="13")]
     pub amount1: ::prost::alloc::string::String,
     /// uint160
-    #[prost(string, tag="25")]
+    #[prost(string, tag="14")]
     pub sqrt_price_x96: ::prost::alloc::string::String,
     /// uint128
-    #[prost(string, tag="26")]
+    #[prost(string, tag="15")]
     pub liquidity: ::prost::alloc::string::String,
     /// int24
-    #[prost(int32, tag="27")]
+    #[prost(int32, tag="16")]
     pub tick: i32,
 }
 /// / @notice Emitted when the owner of the factory is changed

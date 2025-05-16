@@ -59,13 +59,15 @@ message Initialize {
 message Swap {
   // -- transaction --
   bytes tx_hash = 1;
+  bytes tx_from = 2; // tx.from
+  bytes tx_to = 3; // tx.to
 
   // -- call --
-  optional bytes caller = 2;
+  optional bytes caller = 4;
 
   // -- log --
-  bytes contract = 3; // log.address
-  uint64 ordinal = 4; // log.ordinal
+  bytes contract = 5; // log.address
+  uint64 ordinal = 6; // log.ordinal
 
   // -- event --
   bytes id = 10; // address (Pool ID)

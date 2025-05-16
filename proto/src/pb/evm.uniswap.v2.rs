@@ -78,16 +78,22 @@ pub struct Swap {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
     pub tx_hash: ::prost::alloc::vec::Vec<u8>,
+    /// tx.from
+    #[prost(bytes="vec", tag="2")]
+    pub tx_from: ::prost::alloc::vec::Vec<u8>,
+    /// tx.to
+    #[prost(bytes="vec", tag="3")]
+    pub tx_to: ::prost::alloc::vec::Vec<u8>,
     /// -- call --
-    #[prost(bytes="vec", optional, tag="2")]
+    #[prost(bytes="vec", optional, tag="4")]
     pub caller: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// -- log --
     ///
     /// log.address
-    #[prost(bytes="vec", tag="3")]
+    #[prost(bytes="vec", tag="5")]
     pub contract: ::prost::alloc::vec::Vec<u8>,
     /// log.ordinal
-    #[prost(uint64, tag="4")]
+    #[prost(uint64, tag="6")]
     pub ordinal: u64,
     /// -- event --
     #[prost(bytes="vec", tag="10")]

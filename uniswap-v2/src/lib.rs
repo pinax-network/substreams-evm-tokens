@@ -34,6 +34,8 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                 events.swap.push(uniswap::Swap {
                     // -- transaction --
                     tx_hash: trx.hash.to_vec(),
+                    tx_from: trx.from.to_vec(),
+                    tx_to: trx.to.to_vec(),
                     // -- call --
                     caller,
                     // -- log --
