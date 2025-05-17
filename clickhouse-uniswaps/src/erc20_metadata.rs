@@ -2,7 +2,7 @@ use common::bytes_to_hex;
 use proto::pb::evm::erc20;
 use substreams::pb::substreams::Clock;
 
-pub fn process_erc20_metadata_(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: erc20::metadata::v1::Events) {
+pub fn process_erc20_metadata(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: erc20::metadata::v1::Events) {
     for event in events.metadata_initialize {
         process_erc20_metadata_initialize(tables, &clock, event);
     }

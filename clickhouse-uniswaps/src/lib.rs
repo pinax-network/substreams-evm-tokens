@@ -21,8 +21,8 @@ pub fn db_out(
     let mut tables = substreams_database_change::tables::Tables::new();
 
     // -- Minimal ERC20 Metadata --
-    erc20_metadata::process_erc20_metadata_(&mut tables, &clock, erc20_metadata);
-    erc20_metadata::process_erc20_metadata_(&mut tables, &clock, erc20_metadata_functions);
+    erc20_metadata::process_erc20_metadata(&mut tables, &clock, erc20_metadata);
+    erc20_metadata::process_erc20_metadata(&mut tables, &clock, erc20_metadata_functions);
 
     // -- Uniswap V2/V3/V4 --
     let mut index = 0; // relative index

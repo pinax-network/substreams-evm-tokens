@@ -34,6 +34,7 @@ modules:
       - map: uniswap_v3:map_events
       - map: uniswap_v4:map_events
       - map: erc20_metadata:map_events
+      - map: erc20_metadata_functions:map_events
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 
