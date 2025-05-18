@@ -1302,14 +1302,14 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     -- token0 erc20 metadata --
     token0               SimpleAggregateFunction(any, FixedString(42)),
     decimals0            SimpleAggregateFunction(any, UInt8),
-    symbol0              SimpleAggregateFunction(anyLast, String),
-    name0                SimpleAggregateFunction(anyLast, String),
+    symbol0              SimpleAggregateFunction(anyLast, Nullable(String)),
+    name0                SimpleAggregateFunction(anyLast, Nullable(String)),
 
     -- token1 erc20 metadata --
     token1               SimpleAggregateFunction(any, FixedString(42)),
     decimals1            SimpleAggregateFunction(any, UInt8),
-    symbol1              SimpleAggregateFunction(anyLast, String),
-    name1                SimpleAggregateFunction(anyLast, String),
+    symbol1              SimpleAggregateFunction(anyLast, Nullable(String)),
+    name1                SimpleAggregateFunction(anyLast, Nullable(String)),
 
     -- swaps --
     open0                AggregateFunction(argMin, Float64, UInt64),
