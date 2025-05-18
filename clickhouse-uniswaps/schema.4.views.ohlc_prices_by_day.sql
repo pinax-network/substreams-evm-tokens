@@ -72,7 +72,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_day
 TO ohlc_prices_by_day
 AS
 SELECT
-    toStartOfDay(timestamp) AS timestamp
+    toStartOfDay(timestamp) AS timestamp,
 
     -- pool --
     pool,

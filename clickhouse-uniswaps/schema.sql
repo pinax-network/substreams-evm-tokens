@@ -1498,8 +1498,8 @@ SELECT
 
     -- token0 swaps --
     argMinMerge(open0) AS open0,
-    quantileDeterministicMerge(0.99)(quantile0) AS high0,
-    quantileDeterministicMerge(0.01)(quantile0) AS low0,
+    quantileDeterministicMerge(0.95)(quantile0) AS high0,
+    quantileDeterministicMerge(0.05)(quantile0) AS low0,
     argMaxMerge(close0) AS close0,
 
     -- volume --
