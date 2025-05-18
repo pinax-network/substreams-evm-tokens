@@ -1291,27 +1291,28 @@ SELECT
    'uniswap_v4' AS protocol
 FROM uniswap_v4_swap;
 
--- OHLC prices including Uniswap V2 & V3 with faster quantile computation --
+-- OHLC prices including Uniswaps with faster quantile computation --
 CREATE TABLE IF NOT EXISTS ohlc_prices (
-   timestamp            DateTime(0, 'UTC') COMMENT 'beginning of the bar',
+    timestamp            DateTime(0, 'UTC') COMMENT 'beginning of the bar',
 
-   -- pool --
-   pool                 LowCardinality(String) COMMENT 'pool address',
+    -- pool --
+    pool                 String COMMENT 'pool address',
+    protocol             SimpleAggregateFunction(anyLast, LowCardinality(String)),
 
-   -- swaps --
-   open0                AggregateFunction(argMin, Float64, UInt64),
-   quantile0            AggregateFunction(quantileDeterministic, Float64, UInt64),
-   close0               AggregateFunction(argMax, Float64, UInt64),
+    -- swaps --
+    open0                AggregateFunction(argMin, Float64, UInt64),
+    quantile0            AggregateFunction(quantileDeterministic, Float64, UInt64),
+    close0               AggregateFunction(argMax, Float64, UInt64),
 
-   -- volume --
-   gross_volume0        SimpleAggregateFunction(sum, UInt256) COMMENT 'gross volume of token0 in the window',
-   gross_volume1        SimpleAggregateFunction(sum, UInt256) COMMENT 'gross volume of token1 in the window',
-   net_flow0            SimpleAggregateFunction(sum, Int256) COMMENT 'net flow of token0 in the window',
-   net_flow1            SimpleAggregateFunction(sum, Int256) COMMENT 'net flow of token1 in the window',
+    -- volume --
+    gross_volume0        SimpleAggregateFunction(sum, UInt256) COMMENT 'gross volume of token0 in the window',
+    gross_volume1        SimpleAggregateFunction(sum, UInt256) COMMENT 'gross volume of token1 in the window',
+    net_flow0            SimpleAggregateFunction(sum, Int256) COMMENT 'net flow of token0 in the window',
+    net_flow1            SimpleAggregateFunction(sum, Int256) COMMENT 'net flow of token1 in the window',
 
-   -- universal --
-   uaw                  AggregateFunction(uniq, FixedString(42)) COMMENT 'unique wallet addresses in the window',
-   transactions         SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window'
+    -- universal --
+    uaw                  AggregateFunction(uniq, FixedString(42)) COMMENT 'unique wallet addresses in the window',
+    transactions         SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window'
 )
 ENGINE = AggregatingMergeTree
 ORDER BY (pool, timestamp);
@@ -1321,104 +1322,154 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
 TO ohlc_prices
 AS
 SELECT
-   toStartOfHour(timestamp) AS timestamp,
+    toStartOfHour(timestamp) AS timestamp,
 
-   -- pool --
-   pool,
+    -- pool --
+    pool AS pool,
+    any(protocol) AS protocol,
 
-   -- swaps --
-   argMinState(price, global_sequence) AS open0,
-   quantileDeterministicState(price, global_sequence) AS quantile0,
-   argMaxState(price, global_sequence) AS close0,
+    -- swaps --
+    argMinState(price, global_sequence)                AS open0,
+    quantileDeterministicState(price, global_sequence) AS quantile0,
+    argMaxState(price, global_sequence)                AS close0,
 
-   -- volume --
-   sum(toUInt256(abs(amount0))) AS gross_volume0,
-   sum(toUInt256(abs(amount1))) AS gross_volume1,
-   sum(toInt256(amount0))     AS net_flow0,
-   sum(toInt256(amount1))     AS net_flow1,
+    -- volume --
+    sum(toUInt256(abs(amount0)))     AS gross_volume0,
+    sum(toUInt256(abs(amount1)))     AS gross_volume1,
+    sum(toInt256(amount0))           AS net_flow0,
+    sum(toInt256(amount1))           AS net_flow1,
 
-   -- universal --
-   uniqState(sender) + uniqState(tx_from) AS uaw,
-   sum(1) AS transactions
-FROM swaps AS s
+    -- universal --
+    uniqState(tx_from) AS uaw,
+    sum(1) AS transactions
+FROM swaps
 GROUP BY pool, timestamp;
 
--- OHLC prices by token contract --
-CREATE TABLE IF NOT EXISTS ohlc_prices_by_contract (
-   timestamp            DateTime(0, 'UTC') COMMENT 'beginning of the bar',
 
-   -- token --
-   token                LowCardinality(FixedString(42)) COMMENT 'token address',
+-- OHLC prices including Uniswaps with faster quantile computation --
+CREATE TABLE IF NOT EXISTS ohlc_prices_by_tokens (
+    timestamp           DateTime(0, 'UTC') COMMENT 'beginning of the bar',
 
-   -- pool --
-   pool                 LowCardinality(String) COMMENT 'pool address',
+    -- pool --
+    pool                String COMMENT 'pool address',
+    protocol            LowCardinality(String),
 
-   -- swaps --
-   open                Float64,
-   high                Float64,
-   low                 Float64,
-   close               Float64,
+    -- token0 erc20 metadata --
+    token0              String,
+    decimals0           SimpleAggregateFunction(anyLast, UInt8),
+    name0               SimpleAggregateFunction(anyLast, Nullable(String)),
+    symbol0             SimpleAggregateFunction(anyLast, Nullable(String)),
 
-   -- volume --
-   volume              UInt256,
+    -- token1 erc20 metadata --
+    token1              String,
+    decimals1           SimpleAggregateFunction(anyLast, UInt8),
+    name1               SimpleAggregateFunction(anyLast, Nullable(String)),
+    symbol1             SimpleAggregateFunction(anyLast, Nullable(String)),
 
-   -- universal --
-   uaw                  UInt64,
-   transactions         UInt64
+    -- swaps --
+    open0               AggregateFunction(argMin, Float64, UInt64),
+    quantile0           AggregateFunction(quantileDeterministic, Float64, UInt64),
+    close0              AggregateFunction(argMax, Float64, UInt64),
+
+    -- volume --
+    gross_volume0       SimpleAggregateFunction(sum, UInt256) COMMENT 'gross volume of token0 in the window',
+    gross_volume1       SimpleAggregateFunction(sum, UInt256) COMMENT 'gross volume of token1 in the window',
+    net_flow0           SimpleAggregateFunction(sum, Int256) COMMENT 'net flow of token0 in the window',
+    net_flow1           SimpleAggregateFunction(sum, Int256) COMMENT 'net flow of token1 in the window',
+
+    -- universal --
+    uaw                 AggregateFunction(uniq, FixedString(42)) COMMENT 'unique wallet addresses in the window',
+    transactions        SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window'
 )
 ENGINE = AggregatingMergeTree
-ORDER BY (token, pool, timestamp);
+ORDER BY (token0, token1, pool, timestamp);
 
--- Swaps --
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_contract
-TO ohlc_prices_by_contract
+-- Swaps Token0 --
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_token0
+TO ohlc_prices_by_tokens
 AS
--- Get pools for token contract
-WITH tokens AS (
-    SELECT
-        token,
-        pool,
-        p.token0 == t.token AS is_first_token
-    FROM (
-        SELECT DISTINCT token0 AS token FROM pools
-        UNION DISTINCT
-        SELECT DISTINCT token1 AS token FROM pools
-    ) AS t
-    JOIN pools AS p ON p.token0 = t.token OR p.token1 = t.token
-),
--- Rank pools for token contract based on activity (UAW and transactions count)
-ranked_pools AS (
-   SELECT
-        timestamp,
-        token,
-        pool,
-        -- Handle both pair directions, normalize to token as first pair
-        if(is_first_token, argMinMerge(o.open0), 1/argMinMerge(o.open0)) AS open,
-        if(is_first_token, quantileDeterministicMerge(0.95)(o.quantile0), 1/quantileDeterministicMerge(0.05)(o.quantile0)) AS high,
-        if(is_first_token, quantileDeterministicMerge(0.05)(o.quantile0), 1/quantileDeterministicMerge(0.95)(o.quantile0)) AS low,
-        if(is_first_token, argMaxMerge(o.close0), 1/argMaxMerge(o.close0)) AS close,
-        if(is_first_token, sum(o.gross_volume1), sum(o.gross_volume0)) AS volume,
-        uniqMerge(o.uaw) AS uaw,
-        sum(o.transactions) AS transactions,
-        row_number() OVER (PARTITION BY token, timestamp ORDER BY uniqMerge(o.uaw) + sum(o.transactions) DESC) AS rank
-    FROM mv_ohlc_prices AS o
-    JOIN tokens ON o.pool = tokens.pool
-    GROUP BY token, is_first_token, pool, timestamp
-)
 SELECT
-    timestamp,
-    token,
-    pool,
-    open,
-    high,
-    low,
-    close,
-    volume,
-    uaw,
-    transactions
-FROM ranked_pools
-WHERE rank <= 20 -- Only keep top 20 pools for each token
-ORDER BY token, pool, rank DESC;
+    toStartOfHour(s.timestamp) AS timestamp,
+
+    -- pool --
+    s.pool AS pool,
+    any(s.protocol) AS protocol,
+
+    -- token0 erc20 metadata --
+    p.token0         AS token0,
+    any(m0.decimals) AS decimals0,
+    any(m0.name)     AS name0,
+    any(m0.symbol)   AS symbol0,
+
+    -- token1 erc20 metadata --
+    p.token1         AS token1,
+    any(m1.decimals) AS decimals1,
+    any(m1.name)     AS name1,
+    any(m1.symbol)   AS symbol1,
+
+    -- swaps --
+    argMinState(s.price, s.global_sequence) AS open0,
+    quantileDeterministicState(s.price, s.global_sequence) AS quantile0,
+    argMaxState(s.price, s.global_sequence) AS close0,
+
+    -- volume --
+    sum(toUInt256(abs(s.amount0)))     AS gross_volume0,
+    sum(toUInt256(abs(s.amount1)))     AS gross_volume1,
+    sum(toInt256(s.amount0))           AS net_flow0,
+    sum(toInt256(s.amount1))           AS net_flow1,
+
+    -- universal --
+    uniqState(s.tx_from) AS uaw,
+    sum(1) AS transactions
+FROM swaps AS s
+JOIN pools AS p USING (pool)
+JOIN erc20_metadata AS m0 ON m0.address = p.token0
+JOIN erc20_metadata AS m1 ON m1.address = p.token1
+GROUP BY token0, token1, pool, timestamp;
+
+
+-- Swaps Token1 (inverse) --
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_token0
+TO ohlc_prices_by_tokens
+AS
+SELECT
+    toStartOfHour(s.timestamp) AS timestamp,
+
+    -- pool --
+    s.pool AS pool,
+    any(s.protocol) AS protocol,
+
+    -- token0 erc20 metadata --
+    p.token0         AS token0,
+    any(m0.decimals) AS decimals0,
+    any(m0.name)     AS name0,
+    any(m0.symbol)   AS symbol0,
+
+    -- token1 erc20 metadata --
+    p.token1         AS token1,
+    any(m1.decimals) AS decimals1,
+    any(m1.name)     AS name1,
+    any(m1.symbol)   AS symbol1,
+
+    -- swaps --
+    argMinState(1/s.price, s.global_sequence) AS open0,
+    quantileDeterministicState(1/s.price, s.global_sequence) AS quantile0,
+    argMaxState(1/s.price, s.global_sequence) AS close0,
+
+    -- volume --
+    sum(toUInt256(abs(s.amount1)))     AS gross_volume0,
+    sum(toUInt256(abs(s.amount0)))     AS gross_volume1,
+    sum(toInt256(s.amount1))           AS net_flow0,
+    sum(toInt256(s.amount0))           AS net_flow1,
+
+    -- universal --
+    uniqState(s.tx_from) AS uaw,
+    sum(1) AS transactions
+FROM swaps AS s
+JOIN pools AS p USING (pool)
+JOIN erc20_metadata AS m0 ON m0.address = p.token1
+JOIN erc20_metadata AS m1 ON m1.address = p.token0
+GROUP BY token0, token1, pool, timestamp;
 
 
 CREATE TABLE IF NOT EXISTS cursors

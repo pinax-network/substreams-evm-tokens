@@ -107,7 +107,7 @@ ranked_pools AS (
         if(is_first_token, sum(o.gross_volume1), sum(o.gross_volume0)) AS volume,
         uniqMerge(o.uaw) AS uaw,
         sum(o.transactions) AS transactions,
-        row_number() OVER (PARTITION BY token, timestamp ORDER BY uniqMerge(o.uaw) + sum(o.transactions) DESC) AS rank
+        row_number() OVER (PARTITION BY pool, timestamp ORDER BY uniqMerge(o.uaw) + sum(o.transactions) DESC) AS rank
     FROM mv_ohlc_prices AS o
     JOIN tokens ON o.pool = tokens.pool
     GROUP BY token, is_first_token, pool, timestamp
@@ -126,3 +126,18 @@ SELECT
 FROM ranked_pools
 WHERE rank <= 20 -- Only keep top 20 pools for each token
 ORDER BY token, pool, rank DESC;
+
+SELECT
+    toStartOfDay(timestamp) as timestamp,
+    pool,
+    argMinMerge(open0) AS open,
+    quantileDeterministicMerge(0.95)(quantile0) AS high,
+    quantileDeterministicMerge(0.05)(quantile0) AS low,
+    argMaxMerge(close0) AS close,
+    sum(gross_volume0) AS volume0,
+    sum(gross_volume1) AS volume1,
+    uniqMerge(uaw) AS uaw,
+    sum(transactions) AS transactions,
+    uaw + transactions AS rank
+FROM ohlc_prices
+GROUP BY pool, timestamp
