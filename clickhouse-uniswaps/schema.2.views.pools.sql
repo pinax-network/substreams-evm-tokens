@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS pools (
 
    -- indexes --
    INDEX idx_tx_hash              (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_factory              (factory)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_token0               (token0)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_token1               (token1)            TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_factory              (factory)           TYPE set(64) GRANULARITY 4,
+   INDEX idx_token0               (token0)            TYPE set(64) GRANULARITY 4,
+   INDEX idx_token1               (token1)            TYPE set(64) GRANULARITY 4,
    INDEX idx_fee                  (fee)               TYPE minmax GRANULARITY 4,
    INDEX idx_protocol             (protocol)          TYPE set(8) GRANULARITY 4,
 )

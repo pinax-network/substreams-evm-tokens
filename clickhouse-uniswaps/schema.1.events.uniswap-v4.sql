@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_swap (
    -- indexes --
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_address           (address)           TYPE set(64) GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_id                (id)                TYPE bloom_filter GRANULARITY 4,

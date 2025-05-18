@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS swaps (
 
    INDEX idx_tx_hash       (tx_hash)         TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller        (caller)          TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_pool          (pool)            TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_pool          (pool)            TYPE set(64) GRANULARITY 4,
    INDEX idx_sender        (sender)          TYPE bloom_filter GRANULARITY 4,
    INDEX idx_recipient     (recipient)       TYPE bloom_filter GRANULARITY 4,
    INDEX idx_amount0       (amount0)         TYPE minmax GRANULARITY 4,

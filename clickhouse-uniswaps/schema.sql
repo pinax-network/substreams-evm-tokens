@@ -65,7 +65,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_swap (
    -- indexes --
    INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller           (caller)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address          (address)            TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_address          (address)            TYPE set(64) GRANULARITY 4,
+
+   -- indexes (event) --
    INDEX idx_sender           (sender)             TYPE bloom_filter GRANULARITY 4,
    INDEX idx_to               (`to`)               TYPE bloom_filter GRANULARITY 4,
    INDEX idx_amount0_in       (amount0_in)         TYPE minmax       GRANULARITY 4,
@@ -264,7 +266,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_swap (
    -- indexes --
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_address           (address)           TYPE set(64) GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_sender            (sender)            TYPE bloom_filter GRANULARITY 4,
@@ -771,7 +773,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v4_swap (
    -- indexes --
    INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_address           (address)           TYPE set(64) GRANULARITY 4,
 
    -- indexes (event) --
    INDEX idx_id                (id)                TYPE bloom_filter GRANULARITY 4,
@@ -1073,9 +1075,9 @@ CREATE TABLE IF NOT EXISTS pools (
 
    -- indexes --
    INDEX idx_tx_hash              (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_factory              (factory)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_token0               (token0)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_token1               (token1)            TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_factory              (factory)           TYPE set(64) GRANULARITY 4,
+   INDEX idx_token0               (token0)            TYPE set(64) GRANULARITY 4,
+   INDEX idx_token1               (token1)            TYPE set(64) GRANULARITY 4,
    INDEX idx_fee                  (fee)               TYPE minmax GRANULARITY 4,
    INDEX idx_protocol             (protocol)          TYPE set(8) GRANULARITY 4,
 )
@@ -1175,7 +1177,7 @@ CREATE TABLE IF NOT EXISTS swaps (
 
    INDEX idx_tx_hash       (tx_hash)         TYPE bloom_filter GRANULARITY 4,
    INDEX idx_caller        (caller)          TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_pool          (pool)            TYPE bloom_filter GRANULARITY 4,
+   INDEX idx_pool          (pool)            TYPE set(64) GRANULARITY 4,
    INDEX idx_sender        (sender)          TYPE bloom_filter GRANULARITY 4,
    INDEX idx_recipient     (recipient)       TYPE bloom_filter GRANULARITY 4,
    INDEX idx_amount0       (amount0)         TYPE minmax GRANULARITY 4,
@@ -1311,20 +1313,41 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     symbol1              SimpleAggregateFunction(anyLast, Nullable(String)),
     name1                SimpleAggregateFunction(anyLast, Nullable(String)),
 
+    -- canonical pair (token0, token1) lexicographic order --
+    canonical0           SimpleAggregateFunction(any, FixedString(42)),
+    canonical1           SimpleAggregateFunction(any, FixedString(42)),
+
     -- swaps --
     open0                AggregateFunction(argMin, Float64, UInt64),
     quantile0            AggregateFunction(quantileDeterministic, Float64, UInt64),
     close0               AggregateFunction(argMax, Float64, UInt64),
 
     -- volume --
-    gross_volume0        SimpleAggregateFunction(sum, UInt256) COMMENT 'gross volume of token0 in the window',
-    gross_volume1        SimpleAggregateFunction(sum, UInt256) COMMENT 'gross volume of token1 in the window',
-    net_flow0            SimpleAggregateFunction(sum, Int256) COMMENT 'net flow of token0 in the window',
-    net_flow1            SimpleAggregateFunction(sum, Int256) COMMENT 'net flow of token1 in the window',
+    gross_volume0        SimpleAggregateFunction(sum, Float64) COMMENT 'gross volume of token0 in the window',
+    gross_volume1        SimpleAggregateFunction(sum, Float64) COMMENT 'gross volume of token1 in the window',
+    net_flow0            SimpleAggregateFunction(sum, Float64) COMMENT 'net flow of token0 in the window',
+    net_flow1            SimpleAggregateFunction(sum, Float64) COMMENT 'net flow of token1 in the window',
 
     -- universal --
     uaw                  AggregateFunction(uniq, FixedString(42)) COMMENT 'unique wallet addresses in the window',
-    transactions         SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window'
+    transactions         SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window',
+
+    -- indexes --
+    INDEX idx_protocol          (protocol)                  TYPE set(4)         GRANULARITY 4,
+    INDEX idx_token0            (token0)                    TYPE set(64)        GRANULARITY 4,
+    INDEX idx_token1            (token1)                    TYPE set(64)        GRANULARITY 4,
+
+    -- indexes (volume) --
+    INDEX idx_gross_volume0     (gross_volume0)             TYPE minmax         GRANULARITY 4,
+    INDEX idx_gross_volume1     (gross_volume1)             TYPE minmax         GRANULARITY 4,
+    INDEX idx_net_flow0         (net_flow0)                 TYPE minmax         GRANULARITY 4,
+    INDEX idx_net_flow1         (net_flow1)                 TYPE minmax         GRANULARITY 4,
+    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 4,
+
+    -- indexes (canonical pair) --
+    INDEX idx_canonical_pair    (canonical0, canonical1)    TYPE set(64)        GRANULARITY 4,
+    INDEX idx_canonical_pair0   (canonical0)                TYPE set(64)        GRANULARITY 4,
+    INDEX idx_canonical_pair1   (canonical1)                TYPE set(64)        GRANULARITY 4
 )
 ENGINE = AggregatingMergeTree
 ORDER BY (pool, timestamp);
@@ -1343,25 +1366,29 @@ SELECT
     -- token0 erc20 metadata --
     any(p.token0)           AS token0,
     any(m0.decimals)        AS decimals0,
-    anyLast(m0.name)        AS name0,
-    anyLast(m0.symbol)      AS symbol0,
+    any(m0.symbol)          AS symbol0,
+    any(m0.name)            AS name0,
 
     -- token1 erc20 metadata --
     any(p.token1)           AS token1,
     any(m1.decimals)        AS decimals1,
-    anyLast(m1.name)        AS name1,
-    anyLast(m1.symbol)      AS symbol1,
+    any(m1.symbol)          AS symbol1,
+    any(m1.name)            AS name1,
+
+    -- canonical pair --
+    if(any(p.token0) < any(p.token1), any(p.token0), any(p.token1)) AS canonical0,
+    if(any(p.token0) < any(p.token1), any(p.token1), any(p.token0)) AS canonical1,
 
     -- swaps --
-    argMinState(s.price, s.global_sequence)                AS open0,
-    quantileDeterministicState(s.price, s.global_sequence) AS quantile0,
-    argMaxState(s.price, s.global_sequence)                AS close0,
+    argMinState(s.price / pow(10, m1.decimals - m0.decimals), s.global_sequence)                AS open0,
+    quantileDeterministicState(s.price / pow(10, m1.decimals - m0.decimals), s.global_sequence) AS quantile0,
+    argMaxState(s.price / pow(10, m1.decimals - m0.decimals), s.global_sequence)                AS close0,
 
     -- volume --
-    sum(toUInt256(abs(s.amount0)))     AS gross_volume0,
-    sum(toUInt256(abs(s.amount1)))     AS gross_volume1,
-    sum(toInt256(s.amount0))           AS net_flow0,
-    sum(toInt256(s.amount1))           AS net_flow1,
+    sum(abs(s.amount0) / pow(10, m0.decimals))     AS gross_volume0,
+    sum(abs(s.amount1) / pow(10, m1.decimals))     AS gross_volume1,
+    sum(s.amount0 / pow(10, m0.decimals))           AS net_flow0,
+    sum(s.amount1 / pow(10, m1.decimals))           AS net_flow1,
 
     -- universal --
     uniqState(s.tx_from) AS uaw,
@@ -1370,6 +1397,121 @@ FROM swaps AS s
 JOIN pools AS p USING (pool)
 JOIN erc20_metadata AS m0 ON m0.address = p.token0
 JOIN erc20_metadata AS m1 ON m1.address = p.token1
+GROUP BY pool, timestamp;
+
+
+-- Swap Prices by 24h --
+CREATE TABLE IF NOT EXISTS ohlc_prices_by_day (
+    timestamp            DateTime(0, 'UTC') COMMENT 'beginning of 24h',
+
+    -- pool --
+    pool                 String COMMENT 'pool address',
+    protocol             LowCardinality(String),
+
+    -- token0 erc20 metadata --
+    token0               FixedString(42),
+    decimals0            UInt8,
+    symbol0              Nullable(String),
+    name0                Nullable(String),
+
+    -- token1 erc20 metadata --
+    token1               FixedString(42),
+    decimals1            UInt8,
+    symbol1              Nullable(String),
+    name1                Nullable(String),
+
+    -- canonical pair (token0, token1) lexicographic order --
+    canonical0           FixedString(42),
+    canonical1           FixedString(42),
+
+    -- swaps --
+    open0                Float64 COMMENT 'price of token0 at the beginning of the 24h',
+    high0                Float64 COMMENT 'price of token0 at the highest point in the 24h',
+    low0                 Float64 COMMENT 'price of token0 at the lowest point in the 24h',
+    close0               Float64 COMMENT 'price of token0 at the end of the 24h',
+
+    -- volume --
+    gross_volume0        Float64 COMMENT 'gross volume of token0 in 24h',
+    gross_volume1        Float64 COMMENT 'gross volume of token1 in 24h',
+    net_flow0            Float64 COMMENT 'net flow of token0 in 24h',
+    net_flow1            Float64 COMMENT 'net flow of token1 in 24h',
+
+    -- universal --
+    uaw                  UInt64 COMMENT 'unique wallet addresses in 24h',
+    transactions         UInt64 COMMENT 'number of transactions in 24h',
+
+    -- indexes --
+    INDEX idx_protocol          (protocol)          TYPE set(4)         GRANULARITY 4,
+    INDEX idx_token0            (token0)            TYPE set(64)        GRANULARITY 4,
+    INDEX idx_token1            (token1)            TYPE set(64)        GRANULARITY 4,
+
+    -- indexes (swaps) --
+    INDEX idx_open0             (open0)             TYPE minmax         GRANULARITY 4,
+    INDEX idx_high0             (high0)             TYPE minmax         GRANULARITY 4,
+    INDEX idx_low0              (low0)              TYPE minmax         GRANULARITY 4,
+    INDEX idx_close0            (close0)            TYPE minmax         GRANULARITY 4,
+
+    -- indexes (volume) --
+    INDEX idx_gross_volume0     (gross_volume0)     TYPE minmax         GRANULARITY 4,
+    INDEX idx_gross_volume1     (gross_volume1)     TYPE minmax         GRANULARITY 4,
+    INDEX idx_net_flow0         (net_flow0)         TYPE minmax         GRANULARITY 4,
+    INDEX idx_net_flow1         (net_flow1)         TYPE minmax         GRANULARITY 4,
+
+    -- indexes (universal) --
+    INDEX idx_uaw               (uaw)               TYPE minmax         GRANULARITY 4,
+    INDEX idx_transactions      (transactions)      TYPE minmax         GRANULARITY 4,
+
+    -- indexes (canonical pair) --
+    INDEX idx_canonical_pair    (canonical0, canonical1)    TYPE set(64)        GRANULARITY 4,
+    INDEX idx_canonical_pair0   (canonical0)                TYPE set(64)        GRANULARITY 4,
+    INDEX idx_canonical_pair1   (canonical1)                TYPE set(64)        GRANULARITY 4
+)
+ENGINE = ReplacingMergeTree
+ORDER BY (timestamp, pool);
+
+-- Swaps --
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_day
+TO ohlc_prices_by_day
+AS
+SELECT
+    toStartOfDay(timestamp) AS timestamp,
+
+    -- pool --
+    pool,
+    any(protocol) as protocol,
+
+    -- tokens0 erc20 metadata --
+    any(token0) as token0,
+    any(decimals0) as decimals0,
+    any(symbol0) as symbol0,
+    any(name0) as name0,
+
+    -- tokens1 erc20 metadata --
+    any(token1) as token1,
+    any(decimals1) as decimals1,
+    any(symbol1) as symbol1,
+    any(name1) as name1,
+
+    -- canonical pair (token0, token1) lexicographic order --
+    any(canonical0) as canonical0,
+    any(canonical1) as canonical1,
+
+    -- token0 swaps --
+    argMinMerge(open0) AS open0,
+    quantileDeterministicMerge(0.99)(quantile0) AS high0,
+    quantileDeterministicMerge(0.01)(quantile0) AS low0,
+    argMaxMerge(close0) AS close0,
+
+    -- volume --
+    sum(gross_volume0) AS gross_volume0,
+    sum(gross_volume1) AS gross_volume1,
+    sum(net_flow0) AS net_flow0,
+    sum(net_flow1) AS net_flow1,
+
+    -- universal --
+    uniqMerge(uaw) AS uaw,
+    sum(transactions) AS transactions
+FROM ohlc_prices
 GROUP BY pool, timestamp;
 
 
