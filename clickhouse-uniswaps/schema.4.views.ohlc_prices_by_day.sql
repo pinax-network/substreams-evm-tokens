@@ -1,6 +1,6 @@
 -- Swap Prices by 24h --
 CREATE TABLE IF NOT EXISTS ohlc_prices_by_day (
-    timestamp            DateTime(0, 'UTC') COMMENT 'beginning of 24h',
+    timestamp            DateTime(0, 'UTC') COMMENT 'beginning of window',
 
     -- pool --
     pool                 String COMMENT 'pool address',
@@ -23,20 +23,20 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_day (
     canonical1           FixedString(42),
 
     -- swaps --
-    open0                Float64 COMMENT 'price of token0 at the beginning of the 24h',
-    high0                Float64 COMMENT 'price of token0 at the highest point in the 24h',
-    low0                 Float64 COMMENT 'price of token0 at the lowest point in the 24h',
-    close0               Float64 COMMENT 'price of token0 at the end of the 24h',
+    open0                Float64 COMMENT 'price of token0 at the beginning of the window',
+    high0                Float64 COMMENT 'price of token0 at the highest point in the window',
+    low0                 Float64 COMMENT 'price of token0 at the lowest point in the window',
+    close0               Float64 COMMENT 'price of token0 at the end of the window',
 
     -- volume --
-    gross_volume0        Float64 COMMENT 'gross volume of token0 in 24h',
-    gross_volume1        Float64 COMMENT 'gross volume of token1 in 24h',
-    net_flow0            Float64 COMMENT 'net flow of token0 in 24h',
-    net_flow1            Float64 COMMENT 'net flow of token1 in 24h',
+    gross_volume0        Float64 COMMENT 'gross volume of token0 in window',
+    gross_volume1        Float64 COMMENT 'gross volume of token1 in window',
+    net_flow0            Float64 COMMENT 'net flow of token0 in window',
+    net_flow1            Float64 COMMENT 'net flow of token1 in window',
 
     -- universal --
-    uaw                  UInt64 COMMENT 'unique wallet addresses in 24h',
-    transactions         UInt64 COMMENT 'number of transactions in 24h',
+    uaw                  UInt64 COMMENT 'unique wallet addresses in window',
+    transactions         UInt64 COMMENT 'number of transactions in window',
 
     -- indexes --
     INDEX idx_protocol          (protocol)          TYPE set(4)         GRANULARITY 4,
@@ -65,10 +65,10 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_day (
     INDEX idx_canonical_pair1   (canonical1)                TYPE set(64)        GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
-ORDER BY (timestamp, pool);
+ORDER BY (pool, timestamp);
 
--- Swaps --
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_day
+REFRESH EVERY 1 HOUR OFFSET 5 MINUTE
 TO ohlc_prices_by_day
 AS
 SELECT
