@@ -99,7 +99,7 @@ SELECT
 
     -- universal --
     uniqState(s.tx_from)                AS uaw,
-    sum(1)                              AS transactions
+    count()                             AS transactions
 FROM swaps AS s
 JOIN pools AS p USING (pool)
 JOIN erc20_metadata AS m0 ON m0.address = p.token0
