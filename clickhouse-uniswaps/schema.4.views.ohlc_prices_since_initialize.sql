@@ -4,7 +4,6 @@ ENGINE = ReplacingMergeTree
 ORDER BY (pool);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_since_initialize
-REFRESH EVERY 1 HOUR OFFSET 5 MINUTE
 TO ohlc_prices_since_initialize
 AS
 SELECT

@@ -68,7 +68,6 @@ ENGINE = ReplacingMergeTree
 ORDER BY (pool, timestamp);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices_by_day
-REFRESH EVERY 1 HOUR OFFSET 5 MINUTE
 TO ohlc_prices_by_day
 AS
 SELECT
