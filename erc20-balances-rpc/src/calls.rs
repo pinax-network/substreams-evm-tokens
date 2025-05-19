@@ -5,13 +5,11 @@ use substreams::{log, scalar::BigInt, Hex};
 use substreams_abis::evm::token::erc20;
 use substreams_ethereum::rpc::RpcBatch;
 
-static CHUNK_SIZE: usize = 25;
-
 // Returns the token URI.
-pub fn batch_balance_of(contract_owners: Vec<(Address, Address)>) -> HashMap<(Address, Address), BigInt> {
+pub fn batch_balance_of(contract_owners: Vec<(Address, Address)>, chunk_size: usize) -> HashMap<(Address, Address), BigInt> {
     let mut results: HashMap<(Address, Address), BigInt> = HashMap::with_capacity(contract_owners.len());
 
-    for chunk in contract_owners.chunks(CHUNK_SIZE) {
+    for chunk in contract_owners.chunks(chunk_size) {
         let batch = chunk.iter().fold(RpcBatch::new(), |batch, (contract, owner)| {
             batch.add(erc20::functions::BalanceOf { account: owner.to_vec() }, contract.to_vec())
         });
@@ -31,7 +29,7 @@ pub fn batch_balance_of(contract_owners: Vec<(Address, Address)>) -> HashMap<(Ad
     log::info!(
         "\nBalances={}\nRpcBatch={}\nMissing={}",
         contract_owners.len(),
-        contract_owners.chunks(CHUNK_SIZE).len(),
+        contract_owners.chunks(chunk_size).len(),
         contract_owners.len() - results.len()
     );
     results
