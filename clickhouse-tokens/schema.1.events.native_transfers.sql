@@ -1,5 +1,5 @@
--- ERC-20 transfers --
-CREATE TABLE IF NOT EXISTS erc20_transfer  (
+-- Native transfers --
+CREATE TABLE IF NOT EXISTS native_transfers  (
    -- block --
    block_num            UInt32,
    block_hash           FixedString(66),
@@ -12,13 +12,6 @@ CREATE TABLE IF NOT EXISTS erc20_transfer  (
    -- transaction --
    tx_hash              FixedString(66),
 
-   -- call --
-   caller               FixedString(42),
-
-   -- log --
-   contract             FixedString(42),
-   ordinal              UInt64, -- log.ordinal
-
    -- event --
    `from`               FixedString(42) COMMENT 'sender address', -- log.topics[1]
    `to`                 FixedString(42) COMMENT 'recipient address', -- log.topics[2]
@@ -26,13 +19,23 @@ CREATE TABLE IF NOT EXISTS erc20_transfer  (
 
    -- indexes --
    INDEX idx_tx_hash            (tx_hash)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller             (caller)             TYPE bloom_filter GRANULARITY 4,
 
    -- indexes (event) --
-   INDEX idx_contract           (contract)           TYPE set(64) GRANULARITY 4,
    INDEX idx_from               (`from`)             TYPE bloom_filter GRANULARITY 4,
    INDEX idx_to                 (`to`)               TYPE bloom_filter GRANULARITY 4,
    INDEX idx_value              (value)              TYPE minmax GRANULARITY 4
 )
+ENGINE = ReplacingMergeTree
+ORDER BY (timestamp, block_num, `index`);
+
+CREATE TABLE IF NOT EXISTS native_transfers_from_fees AS native_transfers
+ENGINE = ReplacingMergeTree
+ORDER BY (timestamp, block_num, `index`);
+
+CREATE TABLE IF NOT EXISTS native_transfers_from_block_rewards AS native_transfers
+ENGINE = ReplacingMergeTree
+ORDER BY (timestamp, block_num, `index`);
+
+CREATE TABLE IF NOT EXISTS native_transfers_from_calls AS native_transfers
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);

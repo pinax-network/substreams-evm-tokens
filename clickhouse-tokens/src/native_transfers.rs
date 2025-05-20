@@ -9,11 +9,11 @@ use substreams::pb::substreams::Clock;
 pub fn process_native_transfers(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: native::transfers::v1::Events) {
     let mut index = 0; // relative index for transfers
     for event in events.transfers {
-        process_native_transfer("native_transfer", tables, clock, event, index);
+        process_native_transfer("native_transfers", tables, clock, event, index);
         index += 1;
     }
     for event in events.transfers_from_fees {
-        process_native_transfer("native_transfer_from_fees", tables, clock, event, index);
+        process_native_transfer("native_transfers_from_fees", tables, clock, event, index);
         index += 1;
     }
     for event in events.extended_transfers_from_block_rewards {
