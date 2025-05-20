@@ -16,7 +16,7 @@ noop: build
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml db_out -s 22423815 -t +3 --production-mode
+	substreams gui -e $(ENDPOINT) substreams.yaml db_out -s 4000000 -t +100 --production-mode
 
 .PHONY: prod
 prod: build

@@ -1,6 +1,7 @@
 use common::{
     bytes_to_hex,
-    clickhouse::{common_key, set_clock, set_tx_hash},
+    clickhouse::{common_key, set_clock, set_ordering, set_tx_hash},
+    to_global_sequence,
 };
 use proto::pb::evm::native;
 use substreams::pb::substreams::Clock;
@@ -39,6 +40,9 @@ fn process_native_transfer(
         .set("to", bytes_to_hex(&event.to))
         .set("value", event.value.to_string());
 
+    // -- ordering --
+    row.set("index", index);
+    row.set("global_sequence", to_global_sequence(clock, index));
     set_tx_hash(event.tx_hash, row);
     set_clock(clock, row);
 }
