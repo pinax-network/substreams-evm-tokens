@@ -1,7 +1,7 @@
 [workspace]
 members = [
   # Tokens
-  # "clickhouse-tokens",
+  "clickhouse-tokens",
   "erc20-transfers",
   "erc20-metadata",
   "erc20-metadata-functions",

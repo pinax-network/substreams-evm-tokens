@@ -1,9 +1,5 @@
 use common::bytes_to_hex;
-use proto::pb::evm::tokens::balances::v1::{BalanceChange, Events, Transfer};
-use proto::pb::{
-    evm::tokens::balances::v1::Algorithm,
-    sf::ethereum::r#type::v2::{balance_change::Reason, transaction_trace::Type, CallType},
-};
+use proto::pb::evm::erc20::balances::v1::{BalanceByAccount, Events};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::tables::Row;
 

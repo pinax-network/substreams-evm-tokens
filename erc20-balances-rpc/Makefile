@@ -12,7 +12,7 @@ pack: build
 
 .PHONY: noop
 noop: build
-	substreams-sink-noop $(ENDPOINT) https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-erc20-balances-rpc-v0.1.0.spkg map_events -H "X-Sf-Substreams-Parallel-Jobs: 600" 5724000:5725000
+	substreams-sink-noop $(ENDPOINT) https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc20-balances-v0.1.1/evm-erc20-balances-rpc-v0.1.1.spkg map_events -H "X-Sf-Substreams-Parallel-Jobs: 600"
 
 .PHONY: gui
 gui: build

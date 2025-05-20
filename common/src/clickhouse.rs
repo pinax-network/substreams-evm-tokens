@@ -1,7 +1,7 @@
 use substreams::pb::substreams::Clock;
 use substreams_database_change::tables::Row;
 
-use crate::{bytes_to_hex, to_global_sequence, Hash};
+use crate::{bytes_to_hex, to_global_sequence, Address, Hash};
 
 pub fn common_key(clock: &Clock, index: u64) -> [(&'static str, String); 3] {
     let seconds = clock.timestamp.as_ref().expect("clock.timestamp is required").seconds;
@@ -17,6 +17,14 @@ pub fn set_clock(clock: &Clock, row: &mut Row) {
     row.set("block_num", clock.number.to_string())
         .set("block_hash", format!("0x{}", &clock.id))
         .set("timestamp", clock.timestamp.as_ref().expect("missing timestamp").seconds.to_string());
+}
+
+pub fn set_log(clock: &Clock, index: u64, tx_hash: Hash, contract: Address, ordinal: u64, caller: Option<Address>, row: &mut Row) {
+    set_bytes(Some(tx_hash), "tx_hash", row);
+    set_bytes(Some(contract), "contract", row);
+    set_bytes(caller, "caller", row);
+    set_ordering(index, Some(ordinal), clock, row);
+    set_clock(&clock, row);
 }
 
 pub fn set_tx_hash(tx_hash: Option<Hash>, row: &mut Row) {

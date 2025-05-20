@@ -7,8 +7,7 @@ ORDER BY (address, contract);
 -- insert ERC20 balance changes --
 CREATE MATERIALIZED VIEW IF NOT EXISTS erc20_balances_mv
 TO balances AS
-SELECT * FROM erc20_balance_changes
-WHERE algorithm != 'ALGORITHM_BALANCE_NOT_MATCH_TRANSFER'; -- not implemented yet
+SELECT * FROM erc20_balance_changes;
 
 -- insert Native balance changes --
 CREATE MATERIALIZED VIEW IF NOT EXISTS native_balances_mv

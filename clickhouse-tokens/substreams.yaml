@@ -1,9 +1,9 @@
 specVersion: v0.1.0
 package:
-  name: evm_tokens
+  name: evm_clickhouse_tokens
   version: v1.13.0
   url: https://github.com/pinax-network/substreams-evm-tokens
-  description: ERC-20 & Native tokens for EVM blockchains.
+  description: ERC-20 & Native transfers & balances for EVM blockchains.
   image: ../image.png
 
 imports:
@@ -11,36 +11,39 @@ imports:
   database_changes: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
-  # EVM Tokens Substreams
-  native_balances: ../native-balances/substreams.yaml
-  native_contracts: ../native-contracts/substreams.yaml
+  # Native
+  native_balances: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-native-balances-v0.1.0.spkg
+  native_transfers: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-native-transfers-v0.1.0.spkg
 
-  erc20_balances: ../erc20-balances/substreams.yaml
-  erc20_contracts: ../erc20-contracts/substreams.yaml
-  erc20_contracts_rpc: ../__cache__/erc20-contracts-rpc-v1.11.0.spkg
-  uniswap_v2: ../uniswap-v2/substreams.yaml
-  uniswap_v3: ../uniswap-v3/substreams.yaml
+  # ERC-20
+  erc20_balances_rpc: https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc20-balances-v0.1.1/evm-erc20-balances-rpc-v0.1.1.spkg
+  erc20_transfers: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-erc20-transfers-v0.1.0.spkg
+  erc20_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-erc20-metadata-v0.1.0.spkg
+  erc20_metadata_functions: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-erc20-metadata-functions-v0.1.0.spkg
+  erc20_supply: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-erc20-supply-v0.1.0.spkg
 
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/clickhouse.wasm
+    file: ../target/wasm32-unknown-unknown/release/evm_clickhouse_tokens.wasm
 
 modules:
   - name: db_out
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock
+
       # Native
       - map: native_balances:map_events
-      - map: native_contracts:map_events
+      - map: native_transfers:map_events
+
       # ERC20
-      - map: erc20_balances:map_events
-      - map: erc20_contracts:map_events
-      - map: erc20_contracts_rpc:map_events
-      # Uniswap V2/V3
-      - map: uniswap_v2:map_events
-      - map: uniswap_v3:map_events
+      - map: erc20_balances_rpc:map_events
+      - map: erc20_transfers:map_events
+      - map: erc20_supply:map_events
+      - map: erc20_metadata:map_events
+      - map: erc20_metadata_functions:map_events
+
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 

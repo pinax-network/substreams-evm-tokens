@@ -16,4 +16,4 @@ noop: build
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 22423815 -t 0 --limit-processed-blocks 0
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 22394646 -t 22394647 --limit-processed-blocks 0
