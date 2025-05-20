@@ -15,6 +15,7 @@ imports:
   erc721: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc721-v0.4.0.spkg
   erc721_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc721-metadata-v0.4.0.spkg
   erc1155: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc1155-v0.4.0.spkg
+  erc1155_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc1155-metadata-v0.4.0/evm-erc1155-metadata-v0.4.0.spkg
   seaport: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/seaport-v0.4.0.spkg
 
 binaries:
@@ -30,6 +31,7 @@ modules:
       - map: erc721:map_events
       - map: erc721_metadata:map_events
       - map: erc1155:map_events
+      - map: erc1155_metadata:map_events
       - map: seaport:map_events
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
