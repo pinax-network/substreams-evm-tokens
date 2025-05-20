@@ -1,14 +1,14 @@
 -- latest ERC-20 Metadata --
 CREATE TABLE IF NOT EXISTS erc20_metadata  (
-   -- block --
-   block_num            SimpleAggregateFunction(max, UInt32) COMMENT 'block number',
-   timestamp            SimpleAggregateFunction(max, DateTime(0, 'UTC')),
+    -- block --
+    block_num            SimpleAggregateFunction(max, UInt32) COMMENT 'block number',
+    timestamp            SimpleAggregateFunction(max, DateTime(0, 'UTC')),
 
-   -- contract --
-   address              FixedString(42) COMMENT 'ERC-20 contract address',
-   decimals             SimpleAggregateFunction(anyLast, UInt8) COMMENT 'ERC-20 contract decimals (typically 18)',
-   name                 SimpleAggregateFunction(anyLast, Nullable(String)) COMMENT 'ERC-20 contract name (typically 3-8 characters)',
-   symbol               SimpleAggregateFunction(anyLast, Nullable(String)) COMMENT 'ERC-20 contract symbol (typically 3-4 characters)'
+    -- contract --
+    address              FixedString(42) COMMENT 'ERC-20 contract address',
+    decimals             SimpleAggregateFunction(anyLast, UInt8) COMMENT 'ERC-20 contract decimals (typically 18)',
+    name                 SimpleAggregateFunction(anyLast, Nullable(String)) COMMENT 'ERC-20 contract name (typically 3-8 characters)',
+    symbol               SimpleAggregateFunction(anyLast, Nullable(String)) COMMENT 'ERC-20 contract symbol (typically 3-4 characters)'
 )
 ENGINE = AggregatingMergeTree
 ORDER BY address;
