@@ -27,9 +27,7 @@ pub fn process_erc1155_metadata(tables: &mut substreams_database_change::tables:
             .create_row("erc1155_metadata_by_contract", key)
             .set("contract", bytes_to_hex(&event.contract))
             .set("name", event.name())
-            .set("symbol", event.symbol())
-            // Compatible with ERC721
-            .set("base_uri", "".to_string());
+            .set("symbol", event.symbol());
 
         set_clock(&clock, row);
     }

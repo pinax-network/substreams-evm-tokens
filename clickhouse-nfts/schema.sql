@@ -191,12 +191,11 @@ CREATE TABLE IF NOT EXISTS erc721_metadata_by_contract (
     timestamp            DateTime(0, 'UTC'),
 
     -- log --
-    contract            FixedString(42) COMMENT 'contract address',
+    contract            FixedString(42),
 
     -- metadata --
     symbol              String DEFAULT '',
     name                String DEFAULT '',
-    base_uri            String DEFAULT '',
 
     -- indexes --
     INDEX idx_symbol             (symbol)              TYPE bloom_filter GRANULARITY 4,
@@ -213,7 +212,7 @@ CREATE TABLE IF NOT EXISTS erc721_metadata_by_token (
     timestamp            DateTime(0, 'UTC'),
 
     -- log --
-    contract            FixedString(42) COMMENT 'contract address',
+    contract            FixedString(42),
 
     -- metadata --
     token_id            UInt256,
@@ -230,10 +229,25 @@ CREATE TABLE IF NOT EXISTS erc721_total_supply (
     timestamp            DateTime(0, 'UTC'),
 
     -- log --
-    contract            FixedString(42) COMMENT 'contract address',
+    contract            FixedString(42),
 
     -- metadata --
     total_supply        UInt256
+
+) ENGINE = ReplacingMergeTree(block_num)
+ORDER BY (contract);
+
+CREATE TABLE IF NOT EXISTS erc721_base_uri (
+    -- block --
+    block_num            UInt32,
+    block_hash           FixedString(66),
+    timestamp            DateTime(0, 'UTC'),
+
+    -- log --
+    contract            FixedString(42),
+
+    -- metadata --
+    base_uri            String
 
 ) ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (contract);

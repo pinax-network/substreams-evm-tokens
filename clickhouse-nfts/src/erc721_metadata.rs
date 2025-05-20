@@ -32,14 +32,13 @@ pub fn process_erc721_metadata(tables: &mut substreams_database_change::tables::
             .create_row("erc721_metadata_by_contract", key)
             .set("contract", bytes_to_hex(&event.contract))
             .set("name", event.name())
-            .set("symbol", event.symbol())
-            .set("base_uri", event.base_uri());
+            .set("symbol", event.symbol());
 
         set_clock(&clock, row);
     }
 
     // ERC721 Total Supply by Contract
-    for event in events.metadata_by_contracts {
+    for event in events.metadata_by_contracts.iter() {
         let key = [("contract", bytes_to_hex(&event.contract))];
         // Skip if total supply is not set
         if event.total_supply.is_none() {
@@ -50,6 +49,22 @@ pub fn process_erc721_metadata(tables: &mut substreams_database_change::tables::
             .create_row("erc721_total_supply", key)
             .set("contract", bytes_to_hex(&event.contract))
             .set("total_supply", event.total_supply());
+
+        set_clock(&clock, row);
+    }
+
+    // ERC721 Base URI by Contract
+    for event in events.metadata_by_contracts {
+        let key = [("contract", bytes_to_hex(&event.contract))];
+        // Skip if total supply is not set
+        if event.base_uri().len() == 0 {
+            continue; // INCLUDE for testing purposes
+        }
+
+        let row = tables
+            .create_row("erc721_base_uri", key)
+            .set("contract", bytes_to_hex(&event.contract))
+            .set("base_uri", event.base_uri());
 
         set_clock(&clock, row);
     }
