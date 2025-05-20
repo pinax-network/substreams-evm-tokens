@@ -14,8 +14,7 @@ CREATE TABLE IF NOT EXISTS erc721_metadata_by_contract (
 
     -- indexes --
     INDEX idx_symbol             (symbol)              TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_name               (name)                TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_base_uri           (base_uri)            TYPE bloom_filter GRANULARITY 4
+    INDEX idx_name               (name)                TYPE bloom_filter GRANULARITY 4
 
 ) ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (contract);
