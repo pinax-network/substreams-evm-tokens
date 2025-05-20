@@ -570,9 +570,7 @@ SELECT
     tupleElement(o, 3) AS token_id,
     tupleElement(o, 4) AS amount
 FROM seaport_order_fulfilled
-LEFT ARRAY JOIN offer AS o
--- ERC721 and ERC1155 --
-WHERE item_type IN (2, 3);
+LEFT ARRAY JOIN offer AS o;
 
 
 CREATE TABLE IF NOT EXISTS seaport_orders (
@@ -665,9 +663,7 @@ SELECT
 
 FROM seaport_order_fulfilled AS f
 LEFT ARRAY JOIN f.offer AS o
-LEFT ARRAY JOIN f.consideration AS c
--- ERC721 and ERC1155 --
-WHERE offer_item_type IN (2, 3);
+LEFT ARRAY JOIN f.consideration AS c;
 
 
 CREATE TABLE IF NOT EXISTS erc1155_balances (

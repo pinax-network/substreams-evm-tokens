@@ -88,6 +88,4 @@ SELECT
 
 FROM seaport_order_fulfilled AS f
 LEFT ARRAY JOIN f.offer AS o
-LEFT ARRAY JOIN f.consideration AS c
--- ERC721 and ERC1155 --
-WHERE offer_item_type IN (2, 3);
+LEFT ARRAY JOIN f.consideration AS c;

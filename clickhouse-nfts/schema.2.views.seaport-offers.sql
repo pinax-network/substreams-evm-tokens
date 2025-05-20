@@ -55,6 +55,4 @@ SELECT
     tupleElement(o, 3) AS token_id,
     tupleElement(o, 4) AS amount
 FROM seaport_order_fulfilled
-LEFT ARRAY JOIN offer AS o
--- ERC721 and ERC1155 --
-WHERE item_type IN (2, 3);
+LEFT ARRAY JOIN offer AS o;
