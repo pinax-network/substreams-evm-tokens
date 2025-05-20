@@ -1,6 +1,6 @@
 use common::{
     bytes_to_hex,
-    clickhouse::{common_key, set_clock, set_ordering, set_tx_hash},
+    clickhouse::{common_key, set_clock, set_tx_hash},
     to_global_sequence,
 };
 use proto::pb::evm::native;
