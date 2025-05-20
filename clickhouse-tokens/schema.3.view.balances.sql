@@ -16,7 +16,6 @@ SELECT * FROM native_balance_changes;
 -- latest balances by contract/address --
 CREATE TABLE IF NOT EXISTS balances_by_contract AS balances
 ENGINE = ReplacingMergeTree(block_num)
-PRIMARY KEY (contract, address)
 ORDER BY (contract, address);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_balances_by_contract
