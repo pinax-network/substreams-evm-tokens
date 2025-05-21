@@ -62,7 +62,7 @@ ENGINE = AggregatingMergeTree
 ORDER BY (pool, timestamp);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
-REFRESH EVERY 1 HOUR OFFSET 5 MINUTE APPEND
+-- REFRESH EVERY 1 HOUR OFFSET 5 MINUTE APPEND
 TO ohlc_prices
 AS
 WITH
@@ -108,7 +108,7 @@ SELECT
     uniqState(s.tx_from)                AS uaw,
     count()                             AS transactions
 FROM swaps AS s
-JOIN pools AS p USING (pool)
-JOIN erc20_metadata AS m0 ON m0.address = p.token0
-JOIN erc20_metadata AS m1 ON m1.address = p.token1
+LEFT JOIN pools AS p USING (pool)
+LEFT JOIN erc20_metadata AS m0 ON m0.address = p.token0
+LEFT JOIN erc20_metadata AS m1 ON m1.address = p.token1
 GROUP BY pool, timestamp;

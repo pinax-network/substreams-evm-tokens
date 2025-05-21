@@ -61,7 +61,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (pool);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pool_activity_summary
-REFRESH EVERY 1 HOUR OFFSET 10 MINUTE APPEND
+-- REFRESH EVERY 1 HOUR OFFSET 10 MINUTE APPEND
 TO pool_activity_summary
 AS
 SELECT
@@ -70,6 +70,8 @@ SELECT
     -- pool --
     pool,
     any(protocol) as protocol,
+    any(factory) as factory,
+    any(fee) as fee,
 
     -- tokens0 erc20 metadata --
     any(token0) as token0,
