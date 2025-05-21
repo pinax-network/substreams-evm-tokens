@@ -1,10 +1,12 @@
--- Swap Prices by 24h --
-CREATE TABLE IF NOT EXISTS ohlc_prices_by_day (
+-- Pool activity summary table (Volume, UAW, Transactions) for each pool --
+CREATE TABLE IF NOT EXISTS pool_activity_summary (
     timestamp            DateTime(0, 'UTC') COMMENT 'beginning of window',
 
     -- pool --
     pool                 String COMMENT 'pool address',
     protocol             LowCardinality(String),
+    factory              FixedString(42) COMMENT 'factory address', -- log.address
+    fee                  UInt32 COMMENT 'pool fee (e.g., 3000 represents 0.30%)',
 
     -- token0 erc20 metadata --
     token0               FixedString(42),
@@ -22,12 +24,6 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_day (
     canonical0           FixedString(42),
     canonical1           FixedString(42),
 
-    -- swaps --
-    open0                Float64 COMMENT 'price of token0 at the beginning of the window',
-    high0                Float64 COMMENT 'price of token0 at the highest point in the window',
-    low0                 Float64 COMMENT 'price of token0 at the lowest point in the window',
-    close0               Float64 COMMENT 'price of token0 at the end of the window',
-
     -- volume --
     gross_volume0        Float64 COMMENT 'gross volume of token0 in window',
     gross_volume1        Float64 COMMENT 'gross volume of token1 in window',
@@ -39,15 +35,12 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_day (
     transactions         UInt64 COMMENT 'number of transactions in window',
 
     -- indexes --
+    INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 4,
     INDEX idx_protocol          (protocol)          TYPE set(4)         GRANULARITY 4,
     INDEX idx_token0            (token0)            TYPE set(64)        GRANULARITY 4,
     INDEX idx_token1            (token1)            TYPE set(64)        GRANULARITY 4,
-
-    -- indexes (swaps) --
-    INDEX idx_open0             (open0)             TYPE minmax         GRANULARITY 4,
-    INDEX idx_high0             (high0)             TYPE minmax         GRANULARITY 4,
-    INDEX idx_low0              (low0)              TYPE minmax         GRANULARITY 4,
-    INDEX idx_close0            (close0)            TYPE minmax         GRANULARITY 4,
+    INDEX idx_factory           (factory)           TYPE set(64)        GRANULARITY 4,
+    INDEX idx_fee               (fee)               TYPE minmax         GRANULARITY 4,
 
     -- indexes (volume) --
     INDEX idx_gross_volume0     (gross_volume0)     TYPE minmax         GRANULARITY 4,
@@ -65,9 +58,43 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_day (
     INDEX idx_canonical_pair1   (canonical1)                TYPE set(64)        GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
-ORDER BY (pool, timestamp);
-
--- Swap Prices since initialize --
-CREATE TABLE IF NOT EXISTS ohlc_prices_since_initialize AS ohlc_prices_by_day
-ENGINE = ReplacingMergeTree
 ORDER BY (pool);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pool_activity_summary
+REFRESH EVERY 1 HOUR OFFSET 10 MINUTE APPEND
+TO pool_activity_summary
+AS
+SELECT
+    min(timestamp) AS timestamp,
+
+    -- pool --
+    pool,
+    any(protocol) as protocol,
+
+    -- tokens0 erc20 metadata --
+    any(token0) as token0,
+    any(decimals0) as decimals0,
+    any(symbol0) as symbol0,
+    any(name0) as name0,
+
+    -- tokens1 erc20 metadata --
+    any(token1) as token1,
+    any(decimals1) as decimals1,
+    any(symbol1) as symbol1,
+    any(name1) as name1,
+
+    -- canonical pair (token0, token1) lexicographic order --
+    any(canonical0) as canonical0,
+    any(canonical1) as canonical1,
+
+    -- volume --
+    sum(gross_volume0) AS gross_volume0,
+    sum(gross_volume1) AS gross_volume1,
+    sum(net_flow0) AS net_flow0,
+    sum(net_flow1) AS net_flow1,
+
+    -- universal --
+    uniqMerge(uaw) AS uaw,
+    sum(transactions) AS transactions
+FROM ohlc_prices
+GROUP BY pool;
