@@ -53,7 +53,7 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     // -- event --
                     id: event.id.to_vec(),
                     currency0: event.currency0.to_vec(),
-                    currency1: event.currency0.to_vec(),
+                    currency1: event.currency1.to_vec(),
                     fee: bigint_to_uint64(&event.fee).unwrap_or(u64::MAX),
                     tick_spacing: bigint_to_i32(&event.tick_spacing).unwrap_or(i32::MAX),
                     hooks: None, // NOT IMPLEMENTED
