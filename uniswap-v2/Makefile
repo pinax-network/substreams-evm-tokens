@@ -1,6 +1,7 @@
 ENDPOINT ?= eth.substreams.pinax.network:443
 ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 SINK_RANGE := ":"
+START_BLOCK := 12205119
 
 .PHONY: build
 build:
@@ -16,7 +17,7 @@ noop: build
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 21469410
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK)
 
 .PHONY: prod
 prod: build

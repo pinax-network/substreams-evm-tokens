@@ -1,4 +1,4 @@
-use common::logs_with_caller;
+use common::{bigint_to_i32, bigint_to_uint64, logs_with_caller};
 use proto::pb::evm::uniswap::v3 as uniswap;
 use substreams::errors::Error;
 use substreams_abis::evm::uniswap::v3::factory::events as factory;
@@ -35,7 +35,7 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     recipient: event.recipient,
                     liquidity: event.liquidity.to_string(),
                     sqrt_price_x96: event.sqrt_price_x96.to_string(),
-                    tick: event.tick.into(),
+                    tick: bigint_to_i32(&event.tick).unwrap_or(i32::MAX),
                 });
             // Uniswap::V3::Factory:PoolCreated
             } else if let Some(event) = factory::PoolCreated::match_and_decode(log) {
@@ -51,8 +51,8 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     pool: event.pool,
                     token0: event.token0,
                     token1: event.token1,
-                    tick_spacing: event.tick_spacing.to_i32(),
-                    fee: event.fee.to_u64(),
+                    tick_spacing: bigint_to_i32(&event.tick_spacing).unwrap_or(i32::MAX),
+                    fee: bigint_to_uint64(&event.fee).unwrap_or(u64::MAX),
                 });
             // Uniswap::V3::Pool:Initialize
             } else if let Some(event) = pool::Initialize::match_and_decode(log) {
@@ -69,7 +69,7 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
 
                     // -- event --
                     sqrt_price_x96: event.sqrt_price_x96.to_string(),
-                    tick: event.tick.to_i32(),
+                    tick: bigint_to_i32(&event.tick).unwrap_or(i32::MAX),
                 });
             // Uniswap::V3::Pool:Mint
             } else if let Some(event) = pool::Mint::match_and_decode(log) {
@@ -87,8 +87,8 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     // -- event --
                     sender: event.sender,
                     owner: event.owner,
-                    tick_lower: event.tick_lower.to_i32(),
-                    tick_upper: event.tick_upper.to_i32(),
+                    tick_lower: bigint_to_i32(&event.tick_lower).unwrap_or(i32::MAX),
+                    tick_upper: bigint_to_i32(&event.tick_upper).unwrap_or(i32::MAX),
                     amount: event.amount.to_string(),
                     amount0: event.amount0.to_string(),
                     amount1: event.amount1.to_string(),
@@ -109,8 +109,8 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     // -- event --
                     owner: event.owner,
                     recipient: event.recipient,
-                    tick_lower: event.tick_lower.to_i32(),
-                    tick_upper: event.tick_upper.to_i32(),
+                    tick_lower: bigint_to_i32(&event.tick_lower).unwrap_or(i32::MAX),
+                    tick_upper: bigint_to_i32(&event.tick_upper).unwrap_or(i32::MAX),
                     amount0: event.amount0.to_string(),
                     amount1: event.amount1.to_string(),
                 });
@@ -129,8 +129,8 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
 
                     // -- event --
                     owner: event.owner,
-                    tick_lower: event.tick_lower.to_i32(),
-                    tick_upper: event.tick_upper.to_i32(),
+                    tick_lower: bigint_to_i32(&event.tick_lower).unwrap_or(i32::MAX),
+                    tick_upper: bigint_to_i32(&event.tick_upper).unwrap_or(i32::MAX),
                     amount: event.amount.to_string(),
                     amount0: event.amount0.to_string(),
                     amount1: event.amount1.to_string(),
@@ -170,8 +170,8 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     ordinal: log.ordinal,
 
                     // -- event --
-                    observation_cardinality_next_old: event.observation_cardinality_next_old.to_u64(),
-                    observation_cardinality_next_new: event.observation_cardinality_next_new.to_u64(),
+                    observation_cardinality_next_old: bigint_to_uint64(&event.observation_cardinality_next_old).unwrap_or(u64::MAX),
+                    observation_cardinality_next_new: bigint_to_uint64(&event.observation_cardinality_next_new).unwrap_or(u64::MAX),
                 });
             // Uniswap::V3::Pool:SetFeeProtocol
             } else if let Some(event) = pool::SetFeeProtocol::match_and_decode(log) {
@@ -187,10 +187,10 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     ordinal: log.ordinal,
 
                     // -- event --
-                    fee_protocol0_old: event.fee_protocol0_old.to_u64(),
-                    fee_protocol1_old: event.fee_protocol1_old.to_u64(),
-                    fee_protocol0_new: event.fee_protocol0_new.to_u64(),
-                    fee_protocol1_new: event.fee_protocol1_new.to_u64(),
+                    fee_protocol0_old: bigint_to_uint64(&event.fee_protocol0_old).unwrap_or(u64::MAX),
+                    fee_protocol1_old: bigint_to_uint64(&event.fee_protocol1_old).unwrap_or(u64::MAX),
+                    fee_protocol0_new: bigint_to_uint64(&event.fee_protocol0_new).unwrap_or(u64::MAX),
+                    fee_protocol1_new: bigint_to_uint64(&event.fee_protocol1_new).unwrap_or(u64::MAX),
                 });
             // Uniswap::V3::Pool:Collect
             } else if let Some(event) = pool::CollectProtocol::match_and_decode(log) {

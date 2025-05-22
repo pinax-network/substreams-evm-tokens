@@ -1,4 +1,4 @@
-use common::logs_with_caller;
+use common::{bigint_to_uint64, logs_with_caller};
 use proto::pb::evm::uniswap::v2 as uniswap;
 use substreams::errors::Error;
 use substreams_abis::evm::uniswap::v2::factory::events as factory;
@@ -63,7 +63,7 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     pair: event.pair,
                     token0: event.token0,
                     token1: event.token1,
-                    all_pairs_length: event.param3.to_u64(),
+                    all_pairs_length: bigint_to_uint64(&event.param3).unwrap_or(u64::MAX),
                 });
             // Uniswap::V2::Pair::Mint
             } else if let Some(event) = pair::Mint::match_and_decode(log) {

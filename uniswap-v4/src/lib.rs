@@ -1,4 +1,4 @@
-use common::logs_with_caller;
+use common::{bigint_to_i32, bigint_to_uint64, logs_with_caller};
 use proto::pb::evm::uniswap::v4 as uniswap;
 use substreams::errors::Error;
 use substreams_abis::evm::uniswap::v4::poolmanager::events as poolmanager;
@@ -35,7 +35,7 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     fee: event.fee.to_string(),
                     liquidity: event.liquidity.to_string(),
                     sqrt_price_x96: event.sqrt_price_x96.to_string(),
-                    tick: event.tick.into(),
+                    tick: bigint_to_i32(&event.tick).unwrap_or(i32::MAX),
                 });
                 // Uniswap::V4::PoolManager:Initialize
             } else if let Some(event) = poolmanager::Initialize::match_and_decode(log) {
@@ -54,11 +54,11 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     id: event.id.to_vec(),
                     currency0: event.currency0.to_vec(),
                     currency1: event.currency0.to_vec(),
-                    fee: event.fee.to_u64(),
-                    tick_spacing: event.tick_spacing.to_i32(),
+                    fee: bigint_to_uint64(&event.fee).unwrap_or(u64::MAX),
+                    tick_spacing: bigint_to_i32(&event.tick_spacing).unwrap_or(i32::MAX),
                     hooks: None, // NOT IMPLEMENTED
                     sqrt_price_x96: event.sqrt_price_x96.to_string(),
-                    tick: event.tick.to_i32(),
+                    tick: bigint_to_i32(&event.tick).unwrap_or(i32::MAX),
                 });
             // Uniswap::V4::PoolManager:ModifyLiquidity
             } else if let Some(event) = poolmanager::ModifyLiquidity::match_and_decode(log) {
@@ -76,8 +76,8 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
                     // -- event --
                     id: event.id.to_vec(),
                     sender: event.sender.to_vec(),
-                    tick_lower: event.tick_lower.to_i32(),
-                    tick_upper: event.tick_upper.to_i32(),
+                    tick_lower: bigint_to_i32(&event.tick_lower).unwrap_or(i32::MAX),
+                    tick_upper: bigint_to_i32(&event.tick_upper).unwrap_or(i32::MAX),
                     liquidity_delta: event.liquidity_delta.to_string(),
                     salt: event.salt.to_vec(),
                 });
@@ -131,7 +131,7 @@ pub fn map_events(block: Block) -> Result<uniswap::Events, Error> {
 
                     // -- event --
                     id: event.id.to_vec(),
-                    protocol_fee: event.protocol_fee.to_u64(),
+                    protocol_fee: bigint_to_uint64(&event.protocol_fee).unwrap_or(u64::MAX),
                 });
             }
         }

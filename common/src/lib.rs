@@ -104,6 +104,18 @@ pub fn bigint_to_uint64(bigint: &substreams::scalar::BigInt) -> Option<u64> {
     Some(bigint.to_u64())
 }
 
+pub fn bigint_to_i32(bigint: &substreams::scalar::BigInt) -> Option<i32> {
+    if bigint.lt(&BigInt::zero()) {
+        log::info!("bigint_to_i32: value is negative");
+        return None;
+    }
+    if bigint.gt(&BigInt::from(i32::MAX)) {
+        log::info!("bigint_to_i32: value is greater than i32::MAX");
+        return None;
+    }
+    Some(bigint.to_i32())
+}
+
 // Convert a 32-byte hash to a 20-byte address
 // Edge case transaction: 0x083752500764e30f9f6b13c8a6d7d80214b907bd897937b35de78371ca85009e
 pub fn bytes_to_address(bytes: &[u8]) -> Vec<u8> {
