@@ -2,4 +2,4 @@
 
 > Substreams for tracking ERC-20 transfers for EVM blockchains.
 
-Handles `Deposits` & `Withdrawls` from WETH9 as `Transfer` events.
+Handles `Deposits` & `Withdrawals` from WETH9 as `Transfer` events.
