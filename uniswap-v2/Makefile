@@ -1,7 +1,5 @@
 ENDPOINT ?= eth.substreams.pinax.network:443
-ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-SINK_RANGE := ":"
-START_BLOCK := 12205119
+START_BLOCK ?= 12205119
 
 .PHONY: build
 build:

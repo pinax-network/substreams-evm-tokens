@@ -1,13 +1,13 @@
 specVersion: v0.1.0
 package:
   name: evm_erc20_balances_rpc
-  version: v0.1.1
+  version: v0.2.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC20 balance changes via RPC
   image: ../image.png
 
 imports:
-  erc20_transfers: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-erc20-transfers-v0.1.0.spkg
+  erc20_transfers: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.2.0/evm-erc20-transfers-v0.2.0.spkg
 
 protobuf:
   files:
