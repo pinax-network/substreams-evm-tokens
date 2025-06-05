@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: evm_nft_tokens
-  version: v0.5.1
+  version: v0.6.0
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: NFT tokens for EVM blockchains.
   image: ../image.png
@@ -17,6 +17,7 @@ imports:
   erc1155: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/erc1155-v0.4.0.spkg
   erc1155_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc1155-metadata-v0.4.1/evm-erc1155-metadata-v0.4.1.spkg
   seaport: https://github.com/pinax-network/substreams-evm-tokens/releases/download/nfts-v0.4.0/seaport-v0.4.0.spkg
+  erc721_cryptopunks: https://github.com/pinax-network/substreams-evm-nfts/releases/download/cryptopunks-v0.1.0/evm-erc721-cryptopunks-v0.1.0.spkg
 
 binaries:
   default:
@@ -33,6 +34,7 @@ modules:
       - map: erc1155:map_events
       - map: erc1155_metadata:map_events
       - map: seaport:map_events
+      - map: erc721_cryptopunks:map_events
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 

@@ -15,11 +15,11 @@ use substreams_database_change::tables::Tables;
 pub fn db_out(
     clock: Clock,
     erc721_events: evm::erc721::v1::Events,
-    erc721_cryptopunks_events: evm::erc721::v1::Events,
     erc721_metadata_events: evm::erc721::metadata::v1::Events,
     erc1155_events: evm::erc1155::v1::Events,
     erc1155_metadata_events: evm::erc1155::metadata::v1::Events,
     seaport_events: evm::seaport::v1::Events,
+    erc721_cryptopunks_events: evm::erc721::v1::Events,
 ) -> Result<DatabaseChanges, substreams::errors::Error> {
     let mut tables = Tables::new();
 
