@@ -1,7 +1,10 @@
 specVersion: v0.1.0
 package:
   name: proto
-  version: v1.11.0
+  version: v0.0.0
+
+imports:
+  cryptopunks: https://github.com/pinax-network/substreams-evm-nfts/releases/download/cryptopunks-v0.1.0/evm-cryptopunks-v0.1.0.spkg
 
 protobuf:
   files:
