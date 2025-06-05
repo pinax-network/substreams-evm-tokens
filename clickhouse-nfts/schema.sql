@@ -455,7 +455,7 @@ INSERT INTO erc721_metadata_by_contract (
     block_hash,
     timestamp,
     -- event --
-    address,
+    contract,
     symbol,
     name
 )
@@ -468,12 +468,13 @@ VALUES (
     'Ͼ'
 );
 
-INSERT INTO erc721_metadata_by_contract (
+INSERT INTO erc721_total_supply (
     -- block --
     block_num,
     block_hash,
     timestamp,
     -- event --
+    contract,
     total_supply
 )
 VALUES (
@@ -482,6 +483,23 @@ VALUES (
     toDateTime(0, 'UTC'),
     '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb',
     10000
+);
+
+INSERT INTO erc721_base_uri (
+    -- block --
+    block_num,
+    block_hash,
+    timestamp,
+    -- event --
+    contract,
+    base_uri
+)
+VALUES (
+    3914495,
+    '',
+    toDateTime(0, 'UTC'),
+    '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb',
+    'https://wrappedpunks.com:3000/api/punks/metadata/'
 );
 
 CREATE TABLE IF NOT EXISTS erc721_owners (
