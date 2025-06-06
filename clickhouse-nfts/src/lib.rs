@@ -1,3 +1,4 @@
+mod cryptopunks;
 mod enums;
 mod erc1155;
 mod erc1155_metadata;
@@ -20,6 +21,7 @@ pub fn db_out(
     erc1155_metadata_events: evm::erc1155::metadata::v1::Events,
     seaport_events: evm::seaport::v1::Events,
     erc721_cryptopunks_events: evm::erc721::v1::Events,
+    cryptopunks_events: evm::cryptopunks::v1::Events,
 ) -> Result<DatabaseChanges, substreams::errors::Error> {
     let mut tables = Tables::new();
 
@@ -30,6 +32,7 @@ pub fn db_out(
     erc1155::process_erc1155(&mut tables, &clock, erc1155_events);
     erc1155_metadata::process_erc1155_metadata(&mut tables, &clock, erc1155_metadata_events);
     seaport::process_seaport(&mut tables, &clock, seaport_events);
+    cryptopunks::process_cryptopunks(&mut tables, &clock, cryptopunks_events);
 
     Ok(tables.to_database_changes())
 }
