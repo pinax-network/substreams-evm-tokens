@@ -43,7 +43,7 @@ pub fn process_cryptopunks(tables: &mut substreams_database_change::tables::Tabl
             .set("to", bytes_to_hex(&event.to_address))
             .set("punk_index", &event.punk_index)
             .set("value_is_null", &event.value.is_none().to_string())
-            .set("value", &event.value.unwrap().to_string());
+            .set("value", &event.value.unwrap_or_default().to_string());
 
         set_log(&clock, index, event.tx_hash, event.contract, event.ordinal, event.caller, row);
         index += 1;
