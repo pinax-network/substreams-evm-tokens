@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS punk_assigns (
 
     -- event --
     `to`                 FixedString(42),
-    punk_index           UInt64,
+    punk_index           UInt256,
 
     -- indexes (transaction) --
     INDEX idx_tx_hash            (tx_hash)                  TYPE bloom_filter GRANULARITY 4,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS punk_transfers (
     -- event --
     `from`               FixedString(42),
     `to`                 FixedString(42),
-    punk_index           UInt64,
+    punk_index           UInt256,
 
     -- indexes (transaction) --
     INDEX idx_tx_hash            (tx_hash)                  TYPE bloom_filter GRANULARITY 4,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS punk_bought (
     -- event --
     `from`               FixedString(42),
     `to`                 FixedString(42),
-    punk_index           UInt64,
+    punk_index           UInt256,
     value                UInt256,
     value_is_null        Bool,
 
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS punk_bid_entered (
 
     -- event --
     `from`               FixedString(42),
-    punk_index           UInt64,
+    punk_index           UInt256,
     value                UInt256,
 
     -- indexes (transaction) --
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS punk_no_longer_for_sale (
     contract             FixedString(42) COMMENT 'contract address',
 
     -- event --
-    punk_index           UInt64,
+    punk_index           UInt256,
 
     -- indexes (transaction) --
     INDEX idx_tx_hash            (tx_hash)                  TYPE bloom_filter GRANULARITY 4,
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS punk_offered (
 
     -- event --
     `to`                 FixedString(42),
-    punk_index           UInt64,
+    punk_index           UInt256,
     min_value            UInt256,
 
     -- indexes (transaction) --
