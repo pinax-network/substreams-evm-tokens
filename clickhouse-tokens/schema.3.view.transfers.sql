@@ -66,8 +66,8 @@ SELECT
     -- event --
     `from`,
     `to`,
-    value AS amount,
-    value / pow(10, decimals) AS value,
+    t.value AS amount,
+    t.value / pow(10, decimals) AS value,
 
     -- ERC20 metadata --
     decimals,
@@ -103,11 +103,11 @@ SELECT
     -- event --
     `from`,
     `to`,
-    value AS amount,
-    value / pow(10, decimals) AS value,
+    t.value AS amount,
+    t.value / pow(10, decimals) AS value,
 
     -- ERC20 metadata --
     decimals,
     symbol,
     name
-FROM native_transfers;
+FROM native_transfers AS t;
