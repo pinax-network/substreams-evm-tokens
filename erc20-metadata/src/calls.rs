@@ -9,16 +9,15 @@ use substreams_ethereum::rpc::RpcBatch;
 // Returns the token collection name.
 pub fn batch_name<'a>(contracts: &'a [&Address], chunk_size: usize) -> HashMap<&'a Address, String> {
     let mut results: HashMap<&'a Address, String> = HashMap::new();
-    for chunks in contracts.chunks(chunk_size / 2) {
-        let batch = chunks.iter().fold(RpcBatch::new(), |batch, address| {
-            batch
-                .add(erc20::functions::Name {}, address.to_vec())
-                .add(sai::functions::Name {}, address.to_vec())
-        });
+    for chunks in contracts.chunks(chunk_size) {
+        let batch = chunks
+            .iter()
+            .fold(RpcBatch::new(), |batch, address| batch.add(erc20::functions::Name {}, address.to_vec()));
+        substreams::log::info!("Executing erc20::functions::Name RpcBatch for {} addresses", chunks.len());
         let responses = batch.execute().expect("failed to execute erc20::functions::Name RpcBatch").responses;
         for (i, address) in chunks.iter().enumerate() {
             // erc20::Name
-            if let Some(name) = RpcBatch::decode::<String, erc20::functions::Name>(&responses[i * 2]) {
+            if let Some(name) = RpcBatch::decode::<String, erc20::functions::Name>(&responses[i]) {
                 // Handle empty
                 if let Some(name) = parse_string(&name) {
                     results.insert(address, name);
@@ -31,8 +30,8 @@ pub fn batch_name<'a>(contracts: &'a [&Address], chunk_size: usize) -> HashMap<&
             }
 
             // sai::Name
-            if let Some(bytes32) = RpcBatch::decode::<[u8; 32], sai::functions::Name>(&responses[i * 2 + 1]) {
-                let name = bytes32_to_string(&bytes32.to_vec());
+            if let Some(bytes32) = RpcBatch::decode::<[u8; 32], sai::functions::Name>(&responses[i]) {
+                let name = bytes32_to_string(&bytes32);
 
                 // Handle empty name
                 if name.is_empty() {
@@ -51,16 +50,14 @@ pub fn batch_name<'a>(contracts: &'a [&Address], chunk_size: usize) -> HashMap<&
 
 pub fn batch_symbol<'a>(contracts: &'a [&Address], chunk_size: usize) -> HashMap<&'a Address, String> {
     let mut results: HashMap<&'a Address, String> = HashMap::new();
-    for chunks in contracts.chunks(chunk_size / 2) {
-        let batch = chunks.iter().fold(RpcBatch::new(), |batch, address| {
-            batch
-                .add(erc20::functions::Symbol {}, address.to_vec())
-                .add(sai::functions::Symbol {}, address.to_vec())
-        });
+    for chunks in contracts.chunks(chunk_size) {
+        let batch = chunks
+            .iter()
+            .fold(RpcBatch::new(), |batch, address| batch.add(erc20::functions::Symbol {}, address.to_vec()));
         let responses = batch.execute().expect("failed to execute erc20::functions::Symbol RpcBatch").responses;
         for (i, address) in chunks.iter().enumerate() {
             // erc20::Symbol
-            if let Some(symbol) = RpcBatch::decode::<String, erc20::functions::Symbol>(&responses[i * 2]) {
+            if let Some(symbol) = RpcBatch::decode::<String, erc20::functions::Symbol>(&responses[i]) {
                 // Handle empty symbol
                 if let Some(symbol) = parse_string(&symbol) {
                     results.insert(address, symbol);
@@ -73,8 +70,8 @@ pub fn batch_symbol<'a>(contracts: &'a [&Address], chunk_size: usize) -> HashMap
             }
 
             // sai::Symbol
-            if let Some(symbol_32) = RpcBatch::decode::<[u8; 32], sai::functions::Symbol>(&responses[i * 2 + 1]) {
-                let symbol = bytes32_to_string(&symbol_32.to_vec());
+            if let Some(symbol_32) = RpcBatch::decode::<[u8; 32], sai::functions::Symbol>(&responses[i]) {
+                let symbol = bytes32_to_string(&symbol_32);
 
                 // Handle empty symbol
                 if let Some(symbol) = parse_string(&symbol) {
