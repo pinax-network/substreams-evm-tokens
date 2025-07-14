@@ -12,8 +12,7 @@ imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # ERC-20 Metadata
-  erc20_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.1/evm-erc20-metadata-v0.1.1.spkg
-  erc20_metadata_functions: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-erc20-metadata-functions-v0.1.0.spkg
+  erc20_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc20-metadata-v0.2.1/evm-erc20-metadata-v0.2.1.spkg
 
   # Uniswaps
   uniswap_v2: https://github.com/pinax-network/substreams-evm-tokens/releases/download/uniswaps-v0.1.3/evm-uniswap-v2-v0.1.3.spkg
@@ -34,7 +33,6 @@ modules:
       - map: uniswap_v3:map_events
       - map: uniswap_v4:map_events
       - map: erc20_metadata:map_events
-      - map: erc20_metadata_functions:map_events
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 

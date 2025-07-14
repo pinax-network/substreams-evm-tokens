@@ -39,7 +39,7 @@ INSERT INTO verified_tokens (network, contract, description, type) VALUES
     ('polygon', lower('0x9c9e5fd8bbc25984b178fdce6117defa39d2db39'), 'BUSD (Binance-Peg BUSD Token)', 'USD'),
     ('polygon', lower('0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'), 'DAI', 'USD'),
     ('unichain', lower('0x078d782b760474a361dda0af3839290b0ef57ad6'), 'USDC', 'USD'),
-    ('unichain', lower('0x9151434b16b9763660705744891fA906F660EcC5'), 'USDT0 Tether USD', 'USD')
+    ('unichain', lower('0x9151434b16b9763660705744891fA906F660EcC5'), 'USDT0 Tether USD', 'USD'),
     ('avalanche', lower('0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'), 'USDT (Tether USD)', 'USD'),
     ('avalanche', lower('0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'), 'USDC (Circle: USDC Token)', 'USD');
 
@@ -67,8 +67,8 @@ INSERT INTO verified_tokens (network, contract, description, type) VALUES
     ('base', lower('0x4200000000000000000000000000000000000006'), 'WETH (Wrapped Ether)', 'ETH'),
     ('optimism', lower('0x4200000000000000000000000000000000000006'), 'WETH (Wrapped Ether)', 'ETH'),
     ('unichain', lower('0x4200000000000000000000000000000000000006'), 'WETH (Wrapped Ether)', 'ETH'),
-    ('avalanche', lower('0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'), 'WAVAX (Wrapped AVAX)', 'AVAX')
-    ('avalanche', lower('0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB'), 'WETH.e (Avalanche Bridge)', 'ETH')
+    ('avalanche', lower('0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'), 'WAVAX (Wrapped AVAX)', 'AVAX'),
+    ('avalanche', lower('0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB'), 'WETH.e (Avalanche Bridge)', 'ETH'),
     ('avalanche', lower('0x152b9d0FdC40C096757F570A51E494bd4b943E50'), 'BTC.b (Avalanche Bridge)', 'BTC');
 
 
@@ -1430,7 +1430,7 @@ ENGINE = AggregatingMergeTree
 ORDER BY (pool, timestamp);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
--- REFRESH EVERY 1 HOUR OFFSET 5 MINUTE APPEND
+REFRESH EVERY 10 MINUTE APPEND
 TO ohlc_prices
 AS
 WITH
@@ -1481,6 +1481,82 @@ LEFT JOIN erc20_metadata AS m0 ON m0.address = p.token0
 LEFT JOIN erc20_metadata AS m1 ON m1.address = p.token1
 GROUP BY pool, timestamp;
 
+
+-- OHLC prices by token contract including Uniswap V2 & V3 with faster quantile computation --
+CREATE TABLE IF NOT EXISTS ohlc_prices_by_contract (
+   timestamp            DateTime(0, 'UTC') COMMENT 'beginning of the bar',
+
+   -- token --
+   token                LowCardinality(FixedString(42)) COMMENT 'token address',
+
+   -- pool --
+   pool                 String COMMENT 'pool address',
+
+   -- swaps --
+   open                Float64,
+   high                Float64,
+   low                 Float64,
+   close               Float64,
+
+   -- volume --
+   volume              UInt256,
+
+   -- universal --
+   uaw                  UInt64,
+   transactions         UInt64
+)
+ENGINE = AggregatingMergeTree
+PRIMARY KEY (token, pool, timestamp)
+ORDER BY (token, pool, timestamp);
+
+-- Swaps --
+CREATE MATERIALIZED VIEW IF NOT EXISTS ohlc_prices_by_contract_mv
+REFRESH EVERY 10 MINUTE APPEND
+TO ohlc_prices_by_contract
+AS
+WITH tokens AS (
+    SELECT
+        token,
+        pool,
+        p.token0 == t.token AS is_first_token
+    FROM (
+        SELECT DISTINCT token0 AS token FROM pools
+        UNION DISTINCT
+        SELECT DISTINCT token1 AS token FROM pools
+    ) AS t
+    JOIN pools AS p ON p.token0 = t.token OR p.token1 = t.token
+),
+ranked_pools AS (
+   SELECT
+        timestamp,
+        token,
+        pool,
+        if(is_first_token, argMinMerge(o.open0), 1/argMinMerge(o.open0)) AS open,
+        if(is_first_token, quantileDeterministicMerge(0.95)(o.quantile0), 1/quantileDeterministicMerge(0.05)(o.quantile0)) AS high,
+        if(is_first_token, quantileDeterministicMerge(0.05)(o.quantile0), 1/quantileDeterministicMerge(0.95)(o.quantile0)) AS low,
+        if(is_first_token, argMaxMerge(o.close0), 1/argMaxMerge(o.close0)) AS close,
+        if(is_first_token, sum(o.gross_volume1), sum(o.gross_volume0)) AS volume,
+        uniqMerge(o.uaw) AS uaw,
+        sum(o.transactions) AS transactions,
+        row_number() OVER (PARTITION BY token, timestamp ORDER BY uniqMerge(o.uaw) + sum(o.transactions) DESC) AS rank
+    FROM ohlc_prices AS o
+    JOIN tokens ON o.pool = tokens.pool
+    GROUP BY token, is_first_token, pool, timestamp
+)
+SELECT
+    timestamp,
+    token,
+    pool,
+    open,
+    high,
+    low,
+    close,
+    volume,
+    uaw,
+    transactions
+FROM ranked_pools
+WHERE rank <= 20
+ORDER BY token, pool, rank DESC;
 
 -- Pool activity summary table (Volume, UAW, Transactions) for each pool --
 CREATE TABLE IF NOT EXISTS pool_activity_summary (
@@ -1545,7 +1621,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (pool);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pool_activity_summary
--- REFRESH EVERY 1 HOUR OFFSET 10 MINUTE APPEND
+REFRESH EVERY 10 MINUTE APPEND
 TO pool_activity_summary
 AS
 SELECT

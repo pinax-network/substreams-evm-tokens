@@ -37,7 +37,7 @@ INSERT INTO verified_tokens (network, contract, description, type) VALUES
     ('polygon', lower('0x9c9e5fd8bbc25984b178fdce6117defa39d2db39'), 'BUSD (Binance-Peg BUSD Token)', 'USD'),
     ('polygon', lower('0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'), 'DAI', 'USD'),
     ('unichain', lower('0x078d782b760474a361dda0af3839290b0ef57ad6'), 'USDC', 'USD'),
-    ('unichain', lower('0x9151434b16b9763660705744891fA906F660EcC5'), 'USDT0 Tether USD', 'USD')
+    ('unichain', lower('0x9151434b16b9763660705744891fA906F660EcC5'), 'USDT0 Tether USD', 'USD'),
     ('avalanche', lower('0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'), 'USDT (Tether USD)', 'USD'),
     ('avalanche', lower('0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'), 'USDC (Circle: USDC Token)', 'USD');
 
@@ -65,6 +65,6 @@ INSERT INTO verified_tokens (network, contract, description, type) VALUES
     ('base', lower('0x4200000000000000000000000000000000000006'), 'WETH (Wrapped Ether)', 'ETH'),
     ('optimism', lower('0x4200000000000000000000000000000000000006'), 'WETH (Wrapped Ether)', 'ETH'),
     ('unichain', lower('0x4200000000000000000000000000000000000006'), 'WETH (Wrapped Ether)', 'ETH'),
-    ('avalanche', lower('0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'), 'WAVAX (Wrapped AVAX)', 'AVAX')
-    ('avalanche', lower('0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB'), 'WETH.e (Avalanche Bridge)', 'ETH')
+    ('avalanche', lower('0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'), 'WAVAX (Wrapped AVAX)', 'AVAX'),
+    ('avalanche', lower('0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB'), 'WETH.e (Avalanche Bridge)', 'ETH'),
     ('avalanche', lower('0x152b9d0FdC40C096757F570A51E494bd4b943E50'), 'BTC.b (Avalanche Bridge)', 'BTC');
