@@ -115,3 +115,38 @@ SELECT
     symbol,
     name
 FROM native_transfers AS t;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_native_transfers_fees
+TO transfers AS
+WITH
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' AS contract,
+    18 AS decimals,
+    'Native' AS symbol,
+    'Native' AS name
+SELECT
+    -- block --
+    timestamp,
+    block_hash,
+    block_num,
+
+    -- ordering --
+    `index`,
+    global_sequence,
+
+    -- transaction --
+    tx_hash,
+
+    -- log --
+    contract,
+
+    -- event --
+    `from`,
+    `to`,
+    t.value AS amount,
+    t.value / pow(10, decimals) AS value,
+
+    -- ERC20 metadata --
+    decimals,
+    symbol,
+    name
+FROM native_transfers_from_fees AS t;
