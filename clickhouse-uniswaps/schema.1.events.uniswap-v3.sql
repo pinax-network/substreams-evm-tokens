@@ -31,20 +31,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_swap (
    liquidity            UInt128 COMMENT 'UniswapV3Pool liquidity',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE set(64) GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_sender            (sender)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_recipient         (recipient)         TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_amount0           (amount0)           TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1           (amount1)           TYPE minmax       GRANULARITY 4,
-   INDEX idx_sqrt_price_x96    (sqrt_price_x96)    TYPE minmax       GRANULARITY 4,
-   INDEX idx_tick              (tick)              TYPE minmax       GRANULARITY 4,
-   INDEX idx_liquidity         (liquidity)         TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Initialize --
@@ -74,12 +63,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_initialize (
    tick                 Int32 COMMENT 'UniswapV3Pool tick',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter    GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter    GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_sqrt_price_x96    (sqrt_price_x96)    TYPE minmax          GRANULARITY 4,
-   INDEX idx_tick              (tick)              TYPE minmax          GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter    GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(global_sequence_reverse) -- first event only --
 ORDER BY (address);
@@ -94,6 +78,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_pool_created (
    -- ordering --
    `index`              UInt64, -- relative index
    global_sequence      UInt64, -- latest global sequence (block_num << 32 + index)
+   global_sequence_reverse  UInt64 MATERIALIZED toUInt64(-1) - global_sequence,
 
    -- transaction --
    tx_hash              FixedString(66),
@@ -113,16 +98,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_pool_created (
    fee                  UInt32 COMMENT 'UniswapV3Pool fee (e.g., 3000 represents 0.30%)',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_token0            (token0)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_token1            (token1)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_tick_spacing      (tick_spacing)      TYPE minmax       GRANULARITY 4,
-   INDEX idx_fee               (fee)               TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = ReplacingMergeTree(global_sequence_reverse) -- first event only --
 ORDER BY (address, pool);
 
 -- Uniswap::V3::Pool:Mint --
@@ -156,20 +134,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_mint (
    amount1              UInt256 COMMENT 'How much token1 was required for the minted liquidity',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_sender            (sender)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_owner             (owner)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_tick_lower        (tick_lower)        TYPE minmax       GRANULARITY 4,
-   INDEX idx_tick_upper        (tick_upper)        TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount            (amount)            TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount0           (amount0)           TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1           (amount1)           TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Collect --
@@ -202,19 +169,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_collect (
    amount1              UInt128 COMMENT 'The amount of token1 collected from the position',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_owner             (owner)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_recipient         (recipient)         TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_tick_lower        (tick_lower)        TYPE minmax       GRANULARITY 4,
-   INDEX idx_tick_upper        (tick_upper)        TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount0           (amount0)           TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1           (amount1)           TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Burn --
@@ -247,19 +204,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_burn (
    amount1              UInt256 COMMENT 'How much token1 was removed from the position',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_owner             (owner)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_tick_lower        (tick_lower)        TYPE minmax       GRANULARITY 4,
-   INDEX idx_tick_upper        (tick_upper)        TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount            (amount)            TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount0           (amount0)           TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1           (amount1)           TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:Flash --
@@ -292,19 +239,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_flash (
    paid1                UInt256 COMMENT 'The amount of token1 paid back to the pool',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_sender            (sender)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_recipient         (recipient)         TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_amount0           (amount0)           TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1           (amount1)           TYPE minmax       GRANULARITY 4,
-   INDEX idx_paid0             (paid0)             TYPE minmax       GRANULARITY 4,
-   INDEX idx_paid1             (paid1)             TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:IncreaseObservationCardinalityNext --
@@ -333,15 +270,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_increase_observation_cardinality_next (
    observation_cardinality_next_new  UInt16 COMMENT 'The updated value of the next observation cardinality',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_observation_cardinality_next_old  (observation_cardinality_next_old)  TYPE minmax       GRANULARITY 4,
-   INDEX idx_observation_cardinality_next_new  (observation_cardinality_next_new)  TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:SetFeeProtocol --
@@ -372,17 +303,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_set_fee_protocol (
    fee_protocol1_new     UInt8 COMMENT 'The updated fee protocol for token1',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_fee_protocol0_old  (fee_protocol0_old) TYPE minmax       GRANULARITY 4,
-   INDEX idx_fee_protocol1_old  (fee_protocol1_old) TYPE minmax       GRANULARITY 4,
-   INDEX idx_fee_protocol0_new  (fee_protocol0_new) TYPE minmax       GRANULARITY 4,
-   INDEX idx_fee_protocol1_new  (fee_protocol1_new) TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Pool:CollectProtocol --
@@ -413,17 +336,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_collect_protocol (
    amount1              UInt128 COMMENT 'The amount of token1 collected from the protocol fees',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_sender            (sender)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_recipient         (recipient)         TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_amount0           (amount0)           TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1           (amount1)           TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Factory:OwnerChanged --
@@ -453,15 +368,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_owner_changed (
    new_owner            FixedString(42) COMMENT 'The owner after the owner was changed',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_old_owner         (old_owner)         TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_new_owner         (new_owner)         TYPE bloom_filter GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V3::Factory:FeeAmountEnabled --
@@ -491,13 +400,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v3_fee_amount_enabled (
    tick_spacing         Int32 COMMENT 'The tick spacing that was enabled for pool creation',
 
    -- indexes --
-   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller            (caller)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address           (address)           TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_fee               (fee)               TYPE minmax       GRANULARITY 4,
-   INDEX idx_tick_spacing      (tick_spacing)      TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash           (tx_hash)           TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);

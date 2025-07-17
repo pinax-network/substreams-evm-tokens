@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS ohlc_prices_by_contract (
    uaw                  UInt64,
    transactions         UInt64
 )
-ENGINE = AggregatingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (token, pool, timestamp)
 ORDER BY (token, pool, timestamp);
 

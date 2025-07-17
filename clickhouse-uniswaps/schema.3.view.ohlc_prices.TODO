@@ -52,11 +52,6 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     INDEX idx_net_flow0         (net_flow0)                 TYPE minmax         GRANULARITY 4,
     INDEX idx_net_flow1         (net_flow1)                 TYPE minmax         GRANULARITY 4,
     INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 4,
-
-    -- indexes (canonical pair) --
-    INDEX idx_canonical_pair    (canonical0, canonical1)    TYPE set(64)        GRANULARITY 4,
-    INDEX idx_canonical_pair0   (canonical0)                TYPE set(64)        GRANULARITY 4,
-    INDEX idx_canonical_pair1   (canonical1)                TYPE set(64)        GRANULARITY 4
 )
 ENGINE = AggregatingMergeTree
 ORDER BY (pool, timestamp);
@@ -108,7 +103,4 @@ SELECT
     uniqState(s.tx_from)                AS uaw,
     count()                             AS transactions
 FROM swaps AS s
-LEFT JOIN pools AS p USING (pool)
-LEFT JOIN erc20_metadata AS m0 ON m0.address = p.token0
-LEFT JOIN erc20_metadata AS m1 ON m1.address = p.token1
 GROUP BY pool, timestamp;

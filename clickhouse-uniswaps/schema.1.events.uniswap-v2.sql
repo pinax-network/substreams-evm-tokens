@@ -31,17 +31,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_swap (
    `to`                 FixedString(42) COMMENT 'UniswapV2Pair recipient address',
 
    -- indexes --
-   INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller           (caller)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address          (address)            TYPE set(64) GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_sender           (sender)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_to               (`to`)               TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_amount0_in       (amount0_in)         TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount0_out      (amount0_out)        TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1_in       (amount1_in)         TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1_out      (amount1_out)        TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, `index`);
@@ -56,6 +46,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_pair_created (
    -- ordering --
    `index`              UInt64, -- relative index
    global_sequence      UInt64, -- latest global sequence (block_num << 32 + index)
+   global_sequence_reverse  UInt64 MATERIALIZED toUInt64(-1) - global_sequence,
 
    -- transaction --
    tx_hash              FixedString(66),
@@ -74,13 +65,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_pair_created (
    all_pairs_length     UInt64 COMMENT 'Total number of pairs created by factory',
 
    -- indexes --
-   INDEX idx_block_num        (block_num)          TYPE minmax GRANULARITY 4,
-   INDEX idx_timestamp        (timestamp)          TYPE minmax GRANULARITY 4,
-   INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_token0           (token0)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_token1           (token1)             TYPE bloom_filter GRANULARITY 4
+   INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = ReplacingMergeTree(global_sequence_reverse) -- first event only --
 ORDER BY (address, pair);
 
 -- Uniswap::V2::Pair:Sync --
@@ -109,13 +96,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_sync  (
    reserve1             UInt256 COMMENT 'UniswapV2Pair token1 reserve',
 
    -- indexes --
-   INDEX idx_tx_hash            (tx_hash)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller             (caller)              TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address            (address)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_reserve0_minmax    (reserve0)            TYPE minmax       GRANULARITY 4,
-   INDEX idx_reserve1_minmax    (reserve1)            TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash            (tx_hash)             TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Mint --
@@ -145,16 +128,9 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_mint (
    amount1              UInt256,
 
    -- indexes --
-   INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller           (caller)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address          (address)            TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_sender           (sender)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_amount0          (amount0)            TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1          (amount1)            TYPE minmax       GRANULARITY 4
+   INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);
 
 -- Uniswap::V2::Pair:Burn --
@@ -185,15 +161,7 @@ CREATE TABLE IF NOT EXISTS uniswap_v2_burn (
    `to`                 FixedString(42) COMMENT 'to address',
 
    -- indexes --
-   INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_caller           (caller)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_address          (address)            TYPE bloom_filter GRANULARITY 4,
-
-   -- indexes (event) --
-   INDEX idx_sender           (sender)             TYPE bloom_filter GRANULARITY 4,
-   INDEX idx_amount0          (amount0)            TYPE minmax       GRANULARITY 4,
-   INDEX idx_amount1          (amount1)            TYPE minmax       GRANULARITY 4,
-   INDEX idx_to               (`to`)               TYPE bloom_filter GRANULARITY 4
+   INDEX idx_tx_hash          (tx_hash)            TYPE bloom_filter GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 ORDER BY (timestamp, block_num, `index`);

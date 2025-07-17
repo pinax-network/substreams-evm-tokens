@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS pool_activity_summary (
     -- indexes --
     INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 4,
     INDEX idx_protocol          (protocol)          TYPE set(4)         GRANULARITY 4,
-    INDEX idx_token0            (token0)            TYPE set(64)        GRANULARITY 4,
-    INDEX idx_token1            (token1)            TYPE set(64)        GRANULARITY 4,
+    INDEX idx_token0            (token0)            TYPE set(128)        GRANULARITY 4,
+    INDEX idx_token1            (token1)            TYPE set(128)        GRANULARITY 4,
     INDEX idx_factory           (factory)           TYPE set(64)        GRANULARITY 4,
     INDEX idx_fee               (fee)               TYPE minmax         GRANULARITY 4,
 
