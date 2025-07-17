@@ -1,4 +1,4 @@
--- Swaps for Uniswap V2 & V3 --
+-- Swaps for Uniswap V2, V3 & V4--
 CREATE TABLE IF NOT EXISTS swaps (
    -- block --
    block_num               UInt32,
@@ -31,6 +31,10 @@ CREATE TABLE IF NOT EXISTS swaps (
    output_token            FixedString(42),
    output_decimals         UInt8,
 
+   -- computed price --
+   price                   Float64 MATERIALIZED output_amount / pow(10, output_decimals) / input_amount  / pow(10, input_decimals),
+
+   -- protocol --
    protocol                Enum( 'uniswap_v2' = 1, 'uniswap_v3' = 2, 'uniswap_v4' = 3 ),
 
    INDEX idx_tx_hash       (tx_hash)         TYPE bloom_filter GRANULARITY 1, -- unique tx_hash per granule
