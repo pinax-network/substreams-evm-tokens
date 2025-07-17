@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS swaps (
    -- swaps --
    pool                    String, -- log.address or id (for Uniswap V4)
    sender                  FixedString(42),
+   factory                 FixedString(42),
 
    -- input --
    input_amount            Int256,
@@ -32,7 +33,7 @@ CREATE TABLE IF NOT EXISTS swaps (
    output_decimals         UInt8,
 
    -- computed price --
-   price                   Float64 MATERIALIZED output_amount / pow(10, output_decimals) / input_amount  / pow(10, input_decimals),
+   price                   Float64 MATERIALIZED output_amount / input_amount,
 
    -- protocol --
    protocol                Enum( 'uniswap_v2' = 1, 'uniswap_v3' = 2, 'uniswap_v4' = 3 ),
@@ -42,6 +43,7 @@ CREATE TABLE IF NOT EXISTS swaps (
    INDEX idx_tx_to         (tx_to)           TYPE set(256) GRANULARITY 1, -- 200 unique Swap Router to per granule
    INDEX idx_caller        (caller)          TYPE set(256) GRANULARITY 1, -- 200 unique callers per granule
    INDEX idx_sender        (sender)          TYPE set(256) GRANULARITY 1, -- 200 unique senders per granule
+   INDEX idx_factory       (factory)         TYPE set(256) GRANULARITY 1,
    INDEX idx_input_token   (input_token)     TYPE set(256) GRANULARITY 1,
    INDEX idx_input_amount  (input_amount)    TYPE minmax GRANULARITY 1,
    INDEX idx_output_token  (output_token)    TYPE set(256) GRANULARITY 1,
@@ -78,10 +80,11 @@ SELECT
    caller,
 
    -- log --
-   s.address as pool,
    s.ordinal AS ordinal,
 
    -- event --
+   s.address as pool,
+   p.factory AS factory,
    sender,
 
    -- input --
@@ -119,10 +122,11 @@ SELECT
    caller,
 
    -- log --
-   s.address as pool,
    s.ordinal AS ordinal,
 
    -- event --
+   s.address as pool,
+   p.factory AS factory,
    sender,
 
    -- input --
@@ -164,6 +168,7 @@ SELECT
 
    -- event --
    id as pool,
+   p.factory AS factory,
    sender,
 
    -- input --

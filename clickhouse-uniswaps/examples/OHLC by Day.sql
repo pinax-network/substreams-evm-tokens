@@ -1,14 +1,6 @@
 SYSTEM REFRESH VIEW mv_ohlc_prices;
 SYSTEM WAIT VIEW mv_ohlc_prices;   -- block until it finishes
 
--- canonical pair (token0, token1) lexicographic order --
-SELECT *
-FROM ohlc_prices
-PREWHERE (canonical0, canonical1) = (
-      '0x6b175474e89094c44da98b954eedeac495271d0f', -- DAI
-      '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'  -- WETH
-);
-
 -- top 10 pools by uaw and transactions --
 SELECT
     pool,
@@ -16,7 +8,7 @@ SELECT
     symbol0,
     token1,
     symbol1
-FROM ohlc_prices_since_initialize
+FROM ohlc_prices
 ORDER BY uaw + transactions DESC
 LIMIT 10
 
