@@ -85,6 +85,42 @@ SELECT
 FROM native_balance_changes AS b
 GROUP BY address, timestamp;
 
+CREATE MATERIALIZED VIEW mv_historical_native_balances_fees TO historical_balances
+(
+    `block_num` UInt32,
+    `timestamp` DateTime('UTC'),
+    `contract` String,
+    `address` FixedString(42),
+    `decimals` UInt8,
+    `symbol` String,
+    `name` String,
+    `open` AggregateFunction(argMin, Float64, UInt32),
+    `high` Float64,
+    `low` Float64,
+    `close` AggregateFunction(argMax, Float64, UInt32),
+    `uaw` AggregateFunction(uniq, FixedString(42)),
+    `transactions` UInt64
+)
+AS (WITH b.balance / pow(10, 18) AS balance
+SELECT
+    min(block_num) AS block_num,
+    toStartOfHour(timestamp) AS timestamp,
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' AS contract,
+    address,
+    18 AS decimals,
+    'Native' AS symbol,
+    'Native' AS name,
+    argMinState(balance, b.block_num) AS open,
+    max(balance) AS high,
+    min(balance) AS low,
+    argMaxState(balance, b.block_num) AS close,
+    uniqState(address) AS uaw,
+    count() AS transactions
+FROM native_balance_changes_from_gas AS b -- Key update is here
+GROUP BY
+    address,
+    timestamp);
+
 -- Historical balances by contract/address --
 CREATE MATERIALIZED VIEW IF NOT EXISTS historical_balances_by_contract
 ENGINE = AggregatingMergeTree
