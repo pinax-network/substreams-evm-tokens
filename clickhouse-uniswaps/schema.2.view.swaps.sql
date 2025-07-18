@@ -94,8 +94,8 @@ SELECT
 
    -- output --
    if (net0 < 0, -net0, -net1) AS output_amount,
-   if (net0 < 0, p.token1, p.token0) AS output_token,
-   if (net0 < 0, m1.decimals, m0.decimals) AS output_decimals,
+   if (net0 < 0, p.token0, p.token1) AS output_token,
+   if (net0 < 0, m0.decimals, m1.decimals) AS output_decimals,
 
    'uniswap_v2' AS protocol
 FROM uniswap_v2_swap AS s
@@ -130,14 +130,14 @@ SELECT
    sender,
 
    -- input --
-   if (amount0 > 0, amount0, amount1) AS input_amount,
-   if (amount0 > 0, p.token0, p.token1) AS input_token,
-   if (amount0 > 0, m0.decimals, m1.decimals) AS input_decimals,
+   if (s.amount0 > 0, s.amount0, s.amount1) AS input_amount,
+   if (s.amount0 > 0, p.token0, p.token1) AS input_token,
+   if (s.amount0 > 0, m0.decimals, m1.decimals) AS input_decimals,
 
    -- output --
-   if (amount0 < 0, -amount0, -amount1) AS output_amount,
-   if (amount0 < 0, p.token1, p.token0) AS output_token,
-   if (amount0 < 0, m1.decimals, m0.decimals) AS output_decimals,
+   if (s.amount0 < 0, -s.amount0, -s.amount1) AS output_amount,
+   if (s.amount0 < 0, p.token0, p.token1) AS output_token,
+   if (s.amount0 < 0, m0.decimals, m1.decimals) AS output_decimals,
 
    -- pow((toFloat64(sqrt_price_x96) / Q96), 2) AS price, -- https://github.com/pinax-network/substreams-evm-tokens/issues/68
    'uniswap_v3' AS protocol
@@ -171,20 +171,25 @@ SELECT
    p.factory AS factory,
    sender,
 
+   -- === NOTE ===
+   -- Uniswap V4 inverses the input and output amounts compared to V2 and V3.
+   -- This is because the swap is initiated by the recipient, not the sender.
+   -- This means that the input amount is the amount the recipient is providing,
+   -- and the output amount is the amount the recipient is receiving.
+   --
    -- input --
-   if (amount0 > 0, amount0, amount1) AS input_amount,
-   if (amount0 > 0, p.token0, p.token1) AS input_token,
-   if (amount0 > 0, m0.decimals, m1.decimals) AS input_decimals,
+   if (s.amount0 > 0, -s.amount1, -s.amount0) AS input_amount,
+   if (s.amount0 > 0, p.token1, p.token0) AS input_token,
+   if (s.amount0 > 0, m1.decimals, m0.decimals) AS input_decimals,
 
    -- output --
-   if (amount0 < 0, -amount0, -amount1) AS output_amount,
-   if (amount0 < 0, p.token1, p.token0) AS output_token,
-   if (amount0 < 0, m1.decimals, m0.decimals) AS output_decimals,
+   if (s.amount0 < 0, s.amount1, s.amount0) AS output_amount,
+   if (s.amount0 < 0, p.token1, p.token0) AS output_token,
+   if (s.amount0 < 0, m1.decimals, m0.decimals) AS output_decimals,
 
    -- pow((toFloat64(sqrt_price_x96) / Q96), 2) AS price, -- https://github.com/pinax-network/substreams-evm-tokens/issues/68
    'uniswap_v4' AS protocol
 FROM uniswap_v4_swap AS s
 LEFT JOIN pools AS p ON s.id = p.pool
 LEFT JOIN erc20_metadata_initialize AS m0 ON m0.address = p.token0
-LEFT JOIN erc20_metadata_initialize AS m1 ON m1.address = p.token1
-WHERE input_amount > 1 AND output_amount > 1;
+LEFT JOIN erc20_metadata_initialize AS m1 ON m1.address = p.token1;

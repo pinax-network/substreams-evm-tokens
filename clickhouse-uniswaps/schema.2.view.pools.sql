@@ -91,3 +91,27 @@ SELECT
    fee,
    'uniswap_v4' AS protocol
 FROM uniswap_v4_initialize;
+
+-- Insert tokens for testing purposes
+INSERT INTO pools (factory, pool, token0, token1, protocol) VALUES
+   (
+      lower('0x000000000004444c5dc75cb358380d2e3de08a90'),
+      lower('0x72331fcb696b0151904c03584b66dc8365bc63f8a144d89a773384e3a579ca73'),
+      lower('0x0000000000000000000000000000000000000000'),
+      lower('0xdac17f958d2ee523a2206206994597c13d831ec7'),
+      'uniswap_v4'
+   ),
+   (
+      lower('0x1f98431c8ad98523631ae4a59f267346ea31f984'),
+      lower('0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640'),
+      lower('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'),
+      lower('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
+      'uniswap_v3'
+   ),
+   (
+      lower('0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f'),
+      lower('0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852'),
+      lower('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
+      lower('0xdac17f958d2ee523a2206206994597c13d831ec7'),
+      'uniswap_v2'
+   );

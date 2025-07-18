@@ -1,4 +1,4 @@
--- OHLC prices including Uniswaps with faster quantile computation --
+-- OHLCV prices (Open/High/Low/Close/Volume) --
 CREATE TABLE IF NOT EXISTS ohlc_prices (
     timestamp            DateTime(0, 'UTC') COMMENT 'beginning of the bar',
 
@@ -31,16 +31,21 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     transactions         SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window',
 
     -- indexes --
-    INDEX idx_factory           (factory)                   TYPE set(256)        GRANULARITY 1,
-    INDEX idx_token0            (token0)                    TYPE set(256)        GRANULARITY 1,
-    INDEX idx_token1            (token1)                    TYPE set(256)        GRANULARITY 1,
+    INDEX idx_protocol          (protocol)                  TYPE set(4)           GRANULARITY 1,
+    INDEX idx_factory           (factory)                   TYPE set(256)         GRANULARITY 1,
+    INDEX idx_pool              (pool)                      TYPE set(512)         GRANULARITY 1,
+    INDEX idx_token0            (token0)                    TYPE set(1024)        GRANULARITY 1,
+    INDEX idx_token1            (token1)                    TYPE set(1024)        GRANULARITY 1,
 
     -- indexes (volume) --
     INDEX idx_gross_volume0     (gross_volume0)             TYPE minmax         GRANULARITY 1,
     INDEX idx_gross_volume1     (gross_volume1)             TYPE minmax         GRANULARITY 1,
     INDEX idx_net_flow0         (net_flow0)                 TYPE minmax         GRANULARITY 1,
     INDEX idx_net_flow1         (net_flow1)                 TYPE minmax         GRANULARITY 1,
-    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1
+    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1,
+
+    -- projections --
+    -- PROJECTION prj_timestamp ( SELECT timestamp, _part_offset ORDER BY (timestamp) )
 )
 ENGINE = AggregatingMergeTree
 ORDER BY (protocol, factory, pool, token0, token1, decimals0, decimals1, timestamp);
