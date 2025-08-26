@@ -26,3 +26,6 @@ modules:
       type: proto:evm.native.balances.v1.Events
 
 network: mainnet
+
+params:
+  map_events: 25 # CHUNK_SIZE (Batch RPC Calls)

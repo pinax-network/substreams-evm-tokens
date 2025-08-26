@@ -5,11 +5,15 @@ use std::collections::HashSet;
 use substreams::errors::Error;
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::utils::{get_balances, is_failed_transaction, is_gas_balance_change, is_valid_balance_change};
+use crate::{
+    calls::batch_eth_balance_of,
+    utils::{get_balances, is_failed_transaction, is_gas_balance_change, is_valid_balance_change},
+};
 
 #[substreams::handlers::map]
-pub fn map_events(block: Block) -> Result<Events, Error> {
+pub fn map_events(params: String, block: Block) -> Result<Events, Error> {
     let mut events = Events::default();
+    let chunk_size = params.parse::<usize>().expect("Failed to parse chunk_size");
 
     // EXTENDED
     // balance changes at block level
@@ -93,6 +97,15 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
                 }
             }
         }
+    }
+
+    // NATIVE ETH BALANCE OF
+    for (account, balance) in &batch_eth_balance_of(block.number, &accounts.iter().collect::<Vec<_>>(), chunk_size) {
+        events.balances_by_account.push(BalanceByAccount {
+            tx_hash: None,
+            account: account.to_vec(),
+            amount: balance.to_string(),
+        });
     }
     Ok(events)
 }
