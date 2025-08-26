@@ -1,36 +1,28 @@
 use std::collections::HashMap;
 
 use common::Address;
-use substreams::{log, scalar::BigInt, Hex};
-use substreams_ethereum::rpc::eth_get_balance;
-use substreams_ethereum::rpc::RpcBatch;
+use substreams::{pb::substreams::Clock, scalar::BigInt};
+use substreams_ethereum::{
+    pb::eth::rpc::{RpcGetBalanceRequest, RpcGetBalanceRequests},
+    rpc::eth_get_balance,
+};
 
 // Returns the token URI.
-pub fn batch_balance_of<'a>(contract_owners: &'a [(&Address, &Address)], chunk_size: usize) -> HashMap<(&'a Address, &'a Address), BigInt> {
-    let mut results: HashMap<(&Address, &Address), BigInt> = HashMap::with_capacity(contract_owners.len());
+pub fn batch_balance_of<'a>(clock: &Clock, owners: &'a [&Address], chunk_size: usize) -> HashMap<&'a Address, BigInt> {
+    let mut results: HashMap<&Address, BigInt> = HashMap::with_capacity(owners.len());
 
-    for chunk in contract_owners.chunks(chunk_size) {
-        let batch = chunk.iter().fold(RpcBatch::new(), |batch, (contract, owner)| {
-            batch.add(erc20::functions::BalanceOf { account: owner.to_vec() }, contract.to_vec())
+    let mut requests = RpcGetBalanceRequests {
+        requests: Vec::with_capacity(owners.len()),
+    };
+    for owner in owners {
+        requests.requests.push(RpcGetBalanceRequest {
+            address: owner.to_vec(),
+            block: clock.number.to_string(),
         });
-        let responses = batch.execute().expect("failed to execute erc20::functions::BalanceOf batch").responses;
-        for (i, (contract, owner)) in chunk.iter().enumerate() {
-            if let Some(value) = RpcBatch::decode::<BigInt, erc20::functions::BalanceOf>(&responses[i]) {
-                results.insert((contract, owner), value);
-            } else {
-                substreams::log::info!(
-                    "Failed to decode erc20::BalanceOf for contract={:?} owner={:?}",
-                    Hex::encode(contract),
-                    Hex::encode(owner)
-                );
-            }
-        }
     }
-    log::info!(
-        "\nBalances={}\nRpcBatch={}\nMissing={}",
-        contract_owners.len(),
-        contract_owners.chunks(chunk_size).len(),
-        contract_owners.len() - results.len()
-    );
+    let balances = eth_get_balance(&requests);
+    for (i, owner) in owners.iter().enumerate() {
+        results.insert(owner, balances[i]);
+    }
     results
 }
