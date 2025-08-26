@@ -1,5 +1,7 @@
+mod calls;
 mod utils;
 use proto::pb::evm::native::balances::v1::{BalanceByAccount, Events};
+use std::collections::HashSet;
 use substreams::errors::Error;
 use substreams_ethereum::pb::eth::v2::Block;
 
@@ -60,6 +62,34 @@ pub fn map_events(block: Block) -> Result<Events, Error> {
                             amount: new_balance.to_string(),
                         });
                     }
+                }
+            }
+        }
+    }
+
+    // BASE BLOCKS (NOT EXTENDED)
+    // collect all unique accounts from transactions/calls/logs
+    // - trx.from
+    // - trx.to
+    // - log.address
+    // - call.address
+    // - call.caller
+    // - call.address_delegates_to
+    let mut accounts = HashSet::new();
+    if block.detail_level != 0 {
+        for trx in &block.transaction_traces {
+            accounts.insert(trx.from.to_vec());
+            accounts.insert(trx.to.to_vec());
+
+            for call_view in trx.calls() {
+                let call = call_view.call;
+                accounts.insert(call.address.to_vec());
+                accounts.insert(call.caller.to_vec());
+                if let Some(address_delegates_to) = &call.address_delegates_to {
+                    accounts.insert(address_delegates_to.to_vec());
+                }
+                for log in call.logs.iter() {
+                    accounts.insert(log.address.to_vec());
                 }
             }
         }
