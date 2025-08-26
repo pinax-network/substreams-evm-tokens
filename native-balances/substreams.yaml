@@ -21,6 +21,7 @@ modules:
   - name: map_events
     kind: map
     inputs:
+      - params: string
       - source: sf.ethereum.type.v2.Block
     output:
       type: proto:evm.native.balances.v1.Events
