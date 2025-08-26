@@ -80,21 +80,19 @@ pub fn map_events(params: String, block: Block) -> Result<Events, Error> {
     // - call.caller
     // - call.address_delegates_to
     let mut accounts = HashSet::new();
-    if block.detail_level != 0 {
-        for trx in &block.transaction_traces {
-            accounts.insert(trx.from.to_vec());
-            accounts.insert(trx.to.to_vec());
+    for trx in &block.transaction_traces {
+        accounts.insert(trx.from.to_vec());
+        accounts.insert(trx.to.to_vec());
 
-            for call_view in trx.calls() {
-                let call = call_view.call;
-                accounts.insert(call.address.to_vec());
-                accounts.insert(call.caller.to_vec());
-                if let Some(address_delegates_to) = &call.address_delegates_to {
-                    accounts.insert(address_delegates_to.to_vec());
-                }
-                for log in call.logs.iter() {
-                    accounts.insert(log.address.to_vec());
-                }
+        for call_view in trx.calls() {
+            let call = call_view.call;
+            accounts.insert(call.address.to_vec());
+            accounts.insert(call.caller.to_vec());
+            if let Some(address_delegates_to) = &call.address_delegates_to {
+                accounts.insert(address_delegates_to.to_vec());
+            }
+            for log in call.logs.iter() {
+                accounts.insert(log.address.to_vec());
             }
         }
     }
