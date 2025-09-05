@@ -6,11 +6,7 @@ COMMENT 'ERC-20 Transfers events';
 ALTER TABLE erc20_transfers
     ADD COLUMN IF NOT EXISTS `from`               FixedString(42) COMMENT 'sender address',
     ADD COLUMN IF NOT EXISTS `to`                 FixedString(42) COMMENT 'recipient address',
-    ADD COLUMN IF NOT EXISTS value                UInt256 COMMENT 'transfer value'
-    -- indexes (event) --
-    ADD INDEX IF NOT EXISTS idx_from               (`from`)             TYPE bloom_filter GRANULARITY 4,
-    ADD INDEX IF NOT EXISTS idx_to                 (`to`)               TYPE bloom_filter GRANULARITY 4,
-    ADD INDEX IF NOT EXISTS idx_value              (value)              TYPE minmax GRANULARITY 4;
+    ADD COLUMN IF NOT EXISTS value                UInt256 COMMENT 'transfer value';
 
 -- ERC-20 approvals --
 CREATE TABLE IF NOT EXISTS erc20_approvals AS TEMPLATE_LOGS

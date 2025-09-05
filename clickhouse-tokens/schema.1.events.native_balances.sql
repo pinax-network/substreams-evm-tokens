@@ -5,6 +5,6 @@ TTL timestamp + INTERVAL 10 MINUTE DELETE
 COMMENT 'Native Balance Changes';
 
 ALTER TABLE native_balance_changes
+    ADD COLUMN IF NOT EXISTS contract             String MATERIALIZED '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' COMMENT 'token contract address',
     ADD COLUMN IF NOT EXISTS address              String COMMENT 'token holder address',
     ADD COLUMN IF NOT EXISTS balance              UInt256 COMMENT 'token balance';
-
