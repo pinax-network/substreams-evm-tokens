@@ -38,5 +38,5 @@ SELECT
     argMaxState(balance, b.block_num) AS close,
     uniqState(address) AS uaw,
     count() AS transactions
-FROM balances AS b
+FROM balances_state_latest AS b
 GROUP BY address, contract, timestamp;

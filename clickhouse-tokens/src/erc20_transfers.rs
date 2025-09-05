@@ -21,7 +21,7 @@ pub fn process_erc20_transfers(tables: &mut substreams_database_change::tables::
 
 fn process_erc20_transfer(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: erc20::transfers::v1::Transfer, index: u64) {
     let row = tables
-        .create_row("erc20_transfers", common_key(clock, index))
+        .create_row("transfers", common_key(clock, index))
         // -- event --
         .set("from", bytes_to_hex(&event.from))
         .set("to", bytes_to_hex(&event.to))

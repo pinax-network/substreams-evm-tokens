@@ -1,5 +1,5 @@
 -- latest balances by owner/contract --
-CREATE TABLE IF NOT EXISTS balances_state_latest  (
+CREATE TABLE IF NOT EXISTS balances  (
     -- block --
     block_num            UInt32,
     block_hash           FixedString(66),
@@ -58,24 +58,3 @@ ORDER BY (contract, address);
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_balances_by_contract
 TO balances_by_contract AS
 SELECT * FROM balances;
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_native_balances_fees
-TO balances AS
-SELECT
-    -- block --
-    block_num,
-    block_hash,
-    timestamp,
-
-    -- event --
-    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' AS contract,
-    address,
-    b.balance / pow(10, 18) AS balance,
-    b.balance AS balance_raw,
-
-    -- erc20 metadata --
-    18 AS decimals,
-    'Native' AS symbol,
-    'Native' AS name
-
-FROM native_balance_changes_from_gas as b;
