@@ -18,7 +18,7 @@ pub fn process_native_balances(tables: &mut substreams_database_change::tables::
     }
 
     for event in events.extended_balances_by_account_from_gas {
-        process_native_balance_by_account("native_balance_changes_from_gas", tables, clock, event);
+        process_native_balance_by_account("native_balance_changes", tables, clock, event);
     }
 
     for event in events.extended_balances_by_account_from_system_calls {

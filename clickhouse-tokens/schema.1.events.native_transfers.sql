@@ -1,6 +1,7 @@
 -- Native transfers --
-CREATE TABLE IF NOT EXISTS native_transfers AS base_events
-TTL timestamp + INTERVAL 10 MINUTE DELETE;
+CREATE TABLE IF NOT EXISTS native_transfers AS TEMPLATE_TRANSACTIONS
+TTL timestamp + INTERVAL 10 MINUTE DELETE
+COMMENT 'Native Transfers';
 
 ALTER TABLE native_transfers
     ADD COLUMN IF NOT EXISTS `from`               FixedString(42) COMMENT 'sender address',
@@ -10,6 +11,3 @@ ALTER TABLE native_transfers
     ADD INDEX IF NOT EXISTS idx_from               (`from`)             TYPE bloom_filter GRANULARITY 4,
     ADD INDEX IF NOT EXISTS idx_to                 (`to`)               TYPE bloom_filter GRANULARITY 4,
     ADD INDEX IF NOT EXISTS idx_value              (value)              TYPE minmax GRANULARITY 4;
-
--- Exclude gas fees from primary Clickhouse DB --
-CREATE TABLE IF NOT EXISTS native_transfers_from_fees AS native_transfers;

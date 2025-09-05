@@ -1,30 +1,16 @@
 -- ERC-20 Metadata Initialize --
-CREATE TABLE IF NOT EXISTS erc20_metadata_initialize (
-    -- block --
-    block_num            UInt32,
-    block_hash           FixedString(66),
-    timestamp            DateTime(0, 'UTC'),
-
-    -- event --
-    address              FixedString(42),
-    decimals             UInt8,
-    name                 Nullable(String),
-    symbol               Nullable(String)
-)
-ENGINE = ReplacingMergeTree
-ORDER BY (address);
+CREATE TABLE IF NOT EXISTS erc20_metadata_initialize AS TEMPLATE_RPC_CALLS
+COMMENT 'ERC-20 Metadata Initialize';
+ALTER TABLE erc20_metadata_initialize
+    ADD COLUMN IF NOT EXISTS address              String COMMENT 'token contract address',
+    ADD COLUMN IF NOT EXISTS decimals             UInt8 COMMENT 'token decimals',
+    ADD COLUMN IF NOT EXISTS name                 String COMMENT 'token name',
+    ADD COLUMN IF NOT EXISTS symbol               String COMMENT 'token symbol';
 
 -- ERC-20 Metadata Changes --
-CREATE TABLE IF NOT EXISTS erc20_metadata_changes (
-    -- block --
-    block_num            UInt32,
-    block_hash           FixedString(66),
-    timestamp            DateTime(0, 'UTC'),
-
-    -- event --
-    address              FixedString(42),
-    name                 Nullable(String),
-    symbol               Nullable(String)
-)
-ENGINE = ReplacingMergeTree
-ORDER BY (address, block_num);
+CREATE TABLE IF NOT EXISTS erc20_metadata_changes AS TEMPLATE_RPC_CALLS
+COMMENT 'ERC-20 Metadata Changes';
+ALTER TABLE erc20_metadata_changes
+    ADD COLUMN IF NOT EXISTS address              String COMMENT 'token contract address',
+    ADD COLUMN IF NOT EXISTS name                 String COMMENT 'token name',
+    ADD COLUMN IF NOT EXISTS symbol               String COMMENT 'token symbol';

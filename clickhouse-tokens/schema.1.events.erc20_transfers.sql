@@ -1,6 +1,7 @@
 -- ERC-20 transfers --
-CREATE TABLE IF NOT EXISTS erc20_transfers AS log_events
-TTL timestamp + INTERVAL 10 MINUTE DELETE;
+CREATE TABLE IF NOT EXISTS erc20_transfers AS TEMPLATE_LOGS
+TTL timestamp + INTERVAL 10 MINUTE DELETE
+COMMENT 'ERC-20 Transfers events';
 
 ALTER TABLE erc20_transfers
     ADD COLUMN IF NOT EXISTS `from`               FixedString(42) COMMENT 'sender address',
@@ -12,8 +13,8 @@ ALTER TABLE erc20_transfers
     ADD INDEX IF NOT EXISTS idx_value              (value)              TYPE minmax GRANULARITY 4;
 
 -- ERC-20 approvals --
-CREATE TABLE IF NOT EXISTS erc20_approvals AS log_events;
-
+CREATE TABLE IF NOT EXISTS erc20_approvals AS TEMPLATE_LOGS
+COMMENT 'ERC-20 Approvals events';
 ALTER TABLE erc20_approvals
     ADD COLUMN IF NOT EXISTS owner               FixedString(42) COMMENT 'owner address',
     ADD COLUMN IF NOT EXISTS spender             FixedString(42) COMMENT 'spender address',

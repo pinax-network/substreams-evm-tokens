@@ -1,28 +1,10 @@
 -- Native balance by account --
 -- There can only be a single Native balance change per block for a given address  --
-CREATE TABLE IF NOT EXISTS native_balance_changes  (
-    -- block --
-    block_num            UInt32,
-    block_hash           FixedString(66),
-    timestamp            DateTime(0, 'UTC'),
+CREATE TABLE IF NOT EXISTS native_balance_changes AS TEMPLATE_RPC_CALLS
+TTL timestamp + INTERVAL 10 MINUTE DELETE
+COMMENT 'Native Balance Changes';
 
-    -- event --
-    address              FixedString(42),
-    balance              UInt256,
+ALTER TABLE native_balance_changes
+    ADD COLUMN IF NOT EXISTS address              String COMMENT 'token holder address',
+    ADD COLUMN IF NOT EXISTS balance              UInt256 COMMENT 'token balance';
 
-    -- indexes --
-    INDEX idx_block_num          (block_num)           TYPE minmax GRANULARITY 4,
-    INDEX idx_timestamp          (timestamp)           TYPE minmax GRANULARITY 4,
-
-    -- indexes (event) --
-    INDEX idx_address            (address)             TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_balance            (balance)             TYPE minmax GRANULARITY 4
-)
-ENGINE = ReplacingMergeTree
-ORDER BY (address, block_num);
-
--- Exclude gas fees from primary Clickhouse DB --
-CREATE TABLE IF NOT EXISTS native_balance_changes_from_gas AS native_balance_changes
-ENGINE = ReplacingMergeTree
-ORDER BY (address, block_num)
-TTL timestamp + INTERVAL 10 MINUTE DELETE;
