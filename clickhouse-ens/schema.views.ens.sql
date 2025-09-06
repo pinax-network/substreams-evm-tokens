@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS ens (
 
     -- names --
     name                String,
-    registered          DateTime('UTC'),
-    expires             DateTime('UTC'),
+    registered          DateTime('UTC', 0),
+    expires             DateTime('UTC', 0),
 
     -- records --
     records             Array(Tuple(String, String)),

@@ -97,7 +97,7 @@ GROUP BY protocol, factory, pool, token0, token1, decimals0, decimals1, timestam
 -- OHLCV by token --
 CREATE TABLE ohlc_prices_by_contract
 (
-    `timestamp` DateTime('UTC') COMMENT 'beginning of the bar',
+    `timestamp` DateTime('UTC', 0) COMMENT 'beginning of the bar',
     `token` LowCardinality(FixedString(42)) COMMENT 'token address',
     `pool` String COMMENT 'pool address',
     `open` Float64,

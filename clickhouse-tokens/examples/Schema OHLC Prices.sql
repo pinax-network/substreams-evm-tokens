@@ -2,7 +2,7 @@
 -- Store all of the pairs prices computed from the swap events
 CREATE TABLE IF NOT EXISTS pair_prices
 (
-    datetime            DateTime('UTC'),
+    datetime            DateTime('UTC', 0),
     global_sequence     UInt64,
     token0              String,
     symbol0             String,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS ohlc_from_swaps
     token1          String,
     -- Not unique, only cosmetic, use token0 and token1 addresses for uniqueness
     ticker          String,
-    datetime        DateTime('UTC'),
+    datetime        DateTime('UTC', 0),
     -- open/close value determinated not based on timestamp but global sequence since multiple swaps can occur in same block
     -- open will take the earliest (minimum sequence) and close the latest (highest sequence)
     open            AggregateFunction(argMin, Float64, UInt64),

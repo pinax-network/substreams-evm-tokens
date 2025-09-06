@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS TEMPLATE_RPC (
+CREATE TABLE IF NOT EXISTS TEMPLATE_RPC_CALLS (
     -- block --
     block_num            UInt32,
     block_hash           String,
