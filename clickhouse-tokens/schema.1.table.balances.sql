@@ -2,10 +2,10 @@
 -- There can only be a single ERC-20 balance change per block for a given address / contract pair --
 CREATE TABLE IF NOT EXISTS balances AS TEMPLATE_RPC
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (address, contract)
 COMMENT 'ERC-20 & Native balance changes per block for a given address / contract pair';
 
 ALTER TABLE balances
+    MODIFY ORDER BY (address, contract),
     ADD COLUMN IF NOT EXISTS contract       String COMMENT 'token contract address',
     ADD COLUMN IF NOT EXISTS address        String COMMENT 'token holder address',
     ADD COLUMN IF NOT EXISTS balance        UInt256 COMMENT 'token balance';

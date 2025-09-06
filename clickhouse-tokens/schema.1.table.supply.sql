@@ -1,8 +1,9 @@
 -- ERC-20 Total Supply changes --
 -- There can only be a single ERC-20 supply change per block per contract  --
 CREATE TABLE IF NOT EXISTS total_supply AS TEMPLATE_RPC_CALLS
-ORDER BY (contract)
 COMMENT 'ERC-20 Supply Changes';
+
 ALTER TABLE total_supply
+    MODIFY ORDER BY (contract),
     ADD COLUMN IF NOT EXISTS contract             String COMMENT 'token contract address',
     ADD COLUMN IF NOT EXISTS total_supply         UInt256 COMMENT 'token total supply';

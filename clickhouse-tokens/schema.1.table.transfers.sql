@@ -10,6 +10,7 @@ ALTER TABLE transfers
 -- ERC-20 approvals --
 CREATE TABLE IF NOT EXISTS approvals AS TEMPLATE_LOGS
 COMMENT 'ERC-20 Approvals events';
+
 ALTER TABLE approvals
     ADD COLUMN IF NOT EXISTS owner               FixedString(42) COMMENT 'owner address',
     ADD COLUMN IF NOT EXISTS spender             FixedString(42) COMMENT 'spender address',

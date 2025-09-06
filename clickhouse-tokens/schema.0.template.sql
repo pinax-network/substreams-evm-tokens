@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_RPC (
     INDEX idx_timestamp          (timestamp)          TYPE minmax               GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(block_num)
+ORDER BY (timestamp, block_num, block_hash)
 COMMENT 'TEMPLATE for RPC calls';
 
 CREATE TABLE IF NOT EXISTS TEMPLATE_LOGS (
@@ -38,8 +39,8 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_LOGS (
     INDEX idx_log_index          (log_index)          TYPE minmax               GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree
-COMMENT 'TEMPLATE for event logs'
 PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_hash, log_index
-);
+)
+COMMENT 'TEMPLATE for event logs';
