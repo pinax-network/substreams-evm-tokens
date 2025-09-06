@@ -31,10 +31,13 @@ fn process_native_transfer(tables: &mut substreams_database_change::tables::Tabl
     let contract = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
     let row = tables
         .create_row("transfers", log_key(clock, index))
-        // -- ordering --
+        // -- transaction --
+        .set("tx_hash", bytes_to_hex(event.tx_hash()))
+        // -- log --
+        .set("contract", contract)
+        .set("caller", bytes_to_hex(&event.from))
         .set("log_index", index)
         // -- event --
-        .set("contract", contract)
         .set("from", bytes_to_hex(&event.from))
         .set("to", bytes_to_hex(&event.to))
         .set("value", event.value.to_string());

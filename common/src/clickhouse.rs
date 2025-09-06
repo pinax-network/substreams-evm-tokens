@@ -37,6 +37,13 @@ pub fn set_log(clock: &Clock, index: u64, tx_hash: Hash, contract: Address, ordi
     set_clock(&clock, row);
 }
 
+pub fn set_log_v2(clock: &Clock, tx_hash: Hash, contract: Address, caller: Option<Address>, row: &mut Row) {
+    set_bytes(Some(tx_hash), "tx_hash", row);
+    set_bytes(Some(contract), "contract", row);
+    set_bytes(caller, "caller", row);
+    set_clock(&clock, row);
+}
+
 pub fn set_tx_hash(tx_hash: Option<Hash>, row: &mut Row) {
     set_bytes(tx_hash, "tx_hash", row);
 }
