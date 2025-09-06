@@ -42,5 +42,5 @@ fn process_native_transfer(tables: &mut substreams_database_change::tables::Tabl
         .set("to", bytes_to_hex(&event.to))
         .set("value", event.value.to_string());
 
-    set_clock(&clock, row);
+    set_clock(clock, row);
 }
