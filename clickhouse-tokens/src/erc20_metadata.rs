@@ -19,7 +19,7 @@ pub fn process_erc20_metadata_initialize(
     let address = bytes_to_hex(&event.address);
     let key = [("address", address.to_string())];
     let row = tables
-        .create_row("erc20_metadata_initialize", key)
+        .create_row("metadata_initialize", key)
         .set("address", address)
         .set("decimals", event.decimals)
         .set("name", event.name.unwrap_or_default())
@@ -33,7 +33,7 @@ pub fn process_erc20_metadata_changes(tables: &mut substreams_database_change::t
 
     let key = [("address", address.to_string()), ("block_num", clock.number.to_string())];
     let row = tables
-        .create_row("erc20_metadata_changes", key)
+        .create_row("metadata_changes", key)
         .set("address", address.to_string())
         .set("name", event.name.unwrap_or_default())
         .set("symbol", event.symbol.unwrap_or_default());

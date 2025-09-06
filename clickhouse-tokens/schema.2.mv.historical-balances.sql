@@ -20,7 +20,7 @@ ENGINE = AggregatingMergeTree
 ORDER BY (address, contract, timestamp);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_historical_balances
-TO historical_balances
+TO historical_balances_state
 AS
 SELECT
     -- block --
@@ -38,5 +38,14 @@ SELECT
     argMaxState(balance, b.block_num) AS close,
     uniqState(address) AS uaw,
     count() AS transactions
-FROM balances_state_latest AS b
+FROM balances AS b
 GROUP BY address, contract, timestamp;
+
+-- latest balances by contract/address --
+CREATE TABLE IF NOT EXISTS historical_balances_state_by_contract AS historical_balances_state
+ENGINE = AggregatingMergeTree
+ORDER BY (contract, address, timestamp);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_historical_balances_state_by_contract
+TO historical_balances_state_by_contract AS
+SELECT * FROM historical_balances_state;

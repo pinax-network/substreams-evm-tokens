@@ -33,7 +33,7 @@ fn process_erc20_transfer(tables: &mut substreams_database_change::tables::Table
 
 fn process_erc20_approval(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: erc20::transfers::v1::Approval, index: u64) {
     let row = tables
-        .create_row("erc20_approvals", common_key(clock, index))
+        .create_row("approvals", common_key(clock, index))
         // -- event --
         .set("owner", bytes_to_hex(&event.owner))
         .set("spender", bytes_to_hex(&event.spender))

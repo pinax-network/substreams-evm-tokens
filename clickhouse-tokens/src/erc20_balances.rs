@@ -15,7 +15,7 @@ fn process_erc20_balance_by_account(tables: &mut substreams_database_change::tab
     let contract = bytes_to_hex(&event.contract);
     let key = [("contract", contract.to_string()), ("address", address.to_string())];
     let row = tables
-        .create_row("balance_changes", key)
+        .create_row("balances", key)
         // -- event --
         .set("contract", contract.to_string())
         .set("address", address.to_string())
