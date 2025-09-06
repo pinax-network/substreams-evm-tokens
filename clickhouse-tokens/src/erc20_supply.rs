@@ -16,9 +16,8 @@ fn process_erc20_total_supply_by_contracts(
     event: erc20::supply::v1::TotalSupplyByContract,
 ) {
     let contract = bytes_to_hex(&event.contract);
-    let key = [("contract", contract.to_string()), ("block_num", clock.number.to_string())];
     let row = tables
-        .create_row("total_supply", key)
+        .create_row("total_supply", [("contract", contract.to_string())])
         // -- event --
         .set("contract", contract.to_string())
         .set("total_supply", event.total_supply);

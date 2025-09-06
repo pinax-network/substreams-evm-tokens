@@ -26,9 +26,8 @@ pub fn process_native_balances(tables: &mut substreams_database_change::tables::
 fn process_native_balance_by_account(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: native::balances::v1::BalanceByAccount) {
     let address = bytes_to_hex(&event.account);
     let contract = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-    let key = [("contract", contract.to_string()), ("address", address.to_string())];
     let row = tables
-        .create_row("balances", key)
+        .create_row("balances", [("address", address.to_string()), ("contract", contract.to_string())])
         // -- event --
         .set("contract", contract)
         .set("address", address.to_string())

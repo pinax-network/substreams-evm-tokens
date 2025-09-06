@@ -1,12 +1,14 @@
 use common::{
     bytes_to_hex,
-    clickhouse::{common_key, set_clock},
+    clickhouse::{log_key, set_clock},
 };
 use proto::pb::evm::native;
 use substreams::pb::substreams::Clock;
 
 pub fn process_native_transfers(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: native::transfers::v1::Events) {
     let mut index = 0; // relative index for transfers
+
+    // TO-DO: ⚠️ add transaction index / instruction index to have a proper ordering
     for event in events.transfers {
         process_native_transfer(tables, clock, event, index);
         index += 1;
@@ -25,12 +27,12 @@ pub fn process_native_transfers(tables: &mut substreams_database_change::tables:
     }
 }
 
-fn process_native_transfer(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: native::transfers::v1::Transfer, index: u64) {
+fn process_native_transfer(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: native::transfers::v1::Transfer, index: u32) {
     let contract = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
     let row = tables
-        .create_row("transfers", common_key(clock, index))
+        .create_row("transfers", log_key(clock, index))
         // -- ordering --
-        .set("log_index", 0)
+        .set("log_index", index)
         // -- event --
         .set("contract", contract)
         .set("from", bytes_to_hex(&event.from))
