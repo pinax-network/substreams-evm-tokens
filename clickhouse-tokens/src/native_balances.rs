@@ -9,6 +9,8 @@ pub fn process_native_balances(tables: &mut substreams_database_change::tables::
     for event in events.balances_by_account {
         process_native_balance_by_account(tables, clock, event);
     }
+    // WARNING: ⚠️ perhaps these extended balances should not be processed here
+    // https://github.com/pinax-network/substreams-evm-tokens/issues/121
     for event in events.extended_balances_by_account_from_block_rewards {
         process_native_balance_by_account(tables, clock, event);
     }
