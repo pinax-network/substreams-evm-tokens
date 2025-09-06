@@ -4,13 +4,16 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_RPC (
     block_hash           String,
     timestamp            DateTime(0, 'UTC'),
 
+    -- rpc call --
+    contract            String COMMENT 'contract being called',
+
     -- indexes --
     INDEX idx_block_num          (block_num)          TYPE minmax               GRANULARITY 1,
     INDEX idx_block_hash         (block_hash)         TYPE bloom_filter(0.005)  GRANULARITY 1,
     INDEX idx_timestamp          (timestamp)          TYPE minmax               GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (timestamp, block_num, block_hash)
+ORDER BY (contract)
 COMMENT 'TEMPLATE for RPC calls';
 
 CREATE TABLE IF NOT EXISTS TEMPLATE_LOGS (
@@ -41,6 +44,6 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_LOGS (
 ENGINE = ReplacingMergeTree
 PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
-    timestamp, block_hash, log_index
+    timestamp, block_num, block_hash, log_index
 )
 COMMENT 'TEMPLATE for event logs';

@@ -4,6 +4,4 @@ CREATE TABLE IF NOT EXISTS total_supply AS TEMPLATE_RPC_CALLS
 COMMENT 'ERC-20 Supply Changes';
 
 ALTER TABLE total_supply
-    MODIFY ORDER BY (contract),
-    ADD COLUMN IF NOT EXISTS contract             String COMMENT 'token contract address',
     ADD COLUMN IF NOT EXISTS total_supply         UInt256 COMMENT 'token total supply';
