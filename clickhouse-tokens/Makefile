@@ -1,6 +1,6 @@
 ENDPOINT ?= eth.substreams.pinax.network:443
-START_BLOCK ?= 23142793
-STOP_BLOCK ?= 23142794
+START_BLOCK ?= 6803275
+STOP_BLOCK ?= 6803276
 PARALLEL_JOBS ?= 500
 
 .PHONY: build
@@ -17,7 +17,11 @@ noop: build
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml db_out -s $(START_BLOCK) --network eth
+	substreams gui -e $(ENDPOINT) substreams.yaml db_out -s $(START_BLOCK) -t $(STOP_BLOCK)
+
+.PHONY: run
+run: build
+	substreams run -e $(ENDPOINT) substreams.yaml db_out -s $(START_BLOCK) -t $(STOP_BLOCK) --production-mode
 
 .PHONY: prod
 prod: build

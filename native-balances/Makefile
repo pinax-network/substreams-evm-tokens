@@ -1,6 +1,7 @@
-ENDPOINT ?= avalanche.substreams.pinax.network:443
+ENDPOINT ?= eth.substreams.pinax.network:443
 # ENDPOINT ?= avalanche-mainnet.streamingfast.io:443
-START_BLOCK ?= 4500000
+START_BLOCK ?= 6803275
+STOP_BLOCK ?= 6803276
 PARALLEL_JOBS ?= 500
 
 .PHONY: build
@@ -15,9 +16,13 @@ pack: build
 noop: build
 	substreams-sink-noop $(ENDPOINT) substreams.yaml map_events -H "X-Sf-Substreams-Parallel-Jobs: $(PARALLEL_JOBS)" $(START_BLOCK):
 
+.PHONY: run
+run: build
+	substreams run -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) -t $(STOP_BLOCK) --network mainnet
+
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) --network mainnet
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) -t $(STOP_BLOCK) --network mainnet
 
 .PHONY: prod
 prod: build

@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: evm_clickhouse_tokens
-  version: v1.17.0
+  version: v1.17.1
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC-20 & Native transfers & balances for EVM blockchains.
   image: ../image.png
@@ -12,14 +12,14 @@ imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # Native
-  native_balances: https://github.com/pinax-network/substreams-evm-tokens/releases/download/native-balances-v0.2.0/evm-native-balances-v0.2.0.spkg
+  native_balances: https://github.com/pinax-network/substreams-evm-tokens/releases/download/clickhouse-tokens-v1.17.1/evm-native-balances-v0.2.1.spkg
   native_transfers: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-native-transfers-v0.1.0.spkg
 
   # ERC-20
-  erc20_balances_rpc: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.2.0/evm-erc20-balances-rpc-v0.2.1.spkg
+  erc20_balances_rpc: https://github.com/pinax-network/substreams-evm-tokens/releases/download/clickhouse-tokens-v1.17.1/evm-erc20-balances-rpc-v0.2.1.spkg
   erc20_transfers: https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc20-transfers-v0.2.1/evm-erc20-transfers-v0.2.1.spkg
-  erc20_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc20-metadata-v0.2.1/evm-erc20-metadata-v0.2.1.spkg
-  erc20_supply: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.2.0/evm-erc20-supply-v0.2.0.spkg
+  erc20_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/clickhouse-tokens-v1.17.1/evm-erc20-metadata-v0.2.2.spkg
+  erc20_supply: https://github.com/pinax-network/substreams-evm-tokens/releases/download/clickhouse-tokens-v1.17.1/evm-erc20-supply-v0.2.1.spkg
 
 binaries:
   default:

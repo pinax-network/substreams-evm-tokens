@@ -6,21 +6,29 @@ use common::clickhouse::set_clock;
 
 // ❗ ERROR in ordering is missing transaction index / instruction index
 pub fn process_native_balances(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: native::balances::v1::Events) {
-    for event in events.balances_by_account {
-        process_native_balance_by_account(tables, clock, event);
-    }
-    // WARNING: ⚠️ perhaps these extended balances should not be processed here
-    // https://github.com/pinax-network/substreams-evm-tokens/issues/121
+    // NOTE: The order of processing events is crucial to maintain accurate balance states.
+    // Ethereum balance changes occur in several phases within a block and transaction:
+    //
+    // Ref issue: https://github.com/pinax-network/substreams-evm-tokens/issues/126
+    //
+    // 1. Block Rewards → miner/validator credited first.
+    // 2. Tx Gas Prepayment → sender debited upfront.
+    // 3. Execution Phase → calls, transfers, system calls update balances.
+    // 4. Gas Refund + Miner Reward → settlement at the end of the transaction.
+    // 5. RPC eth_getBalance → only observes the final post-state snapshot.
     for event in events.extended_balances_by_account_from_block_rewards {
-        process_native_balance_by_account(tables, clock, event);
-    }
-    for event in events.extended_balances_by_account_from_calls {
         process_native_balance_by_account(tables, clock, event);
     }
     for event in events.extended_balances_by_account_from_gas {
         process_native_balance_by_account(tables, clock, event);
     }
     for event in events.extended_balances_by_account_from_system_calls {
+        process_native_balance_by_account(tables, clock, event);
+    }
+    for event in events.extended_balances_by_account_from_calls {
+        process_native_balance_by_account(tables, clock, event);
+    }
+    for event in events.balances_by_account {
         process_native_balance_by_account(tables, clock, event);
     }
 }
