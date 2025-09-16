@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: evm_erc1155_metadata
-  version: v0.4.1
+  version: v0.4.2
   url: https://github.com/pinax-network/substreams-evm-tokens
   description: ERC1155 token metadata via RPC
   image: ../image.png
