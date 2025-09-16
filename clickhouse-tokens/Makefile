@@ -1,5 +1,6 @@
-ENDPOINT ?= avalanche.substreams.pinax.network:443
-START_BLOCK ?= 44628000
+ENDPOINT ?= eth.substreams.pinax.network:443
+START_BLOCK ?= 23142793
+STOP_BLOCK ?= 23142794
 PARALLEL_JOBS ?= 500
 
 .PHONY: build
@@ -24,7 +25,7 @@ prod: build
 
 .PHONY: dev
 dev: build
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e $(ENDPOINT) $(START_BLOCK): --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1 --infinite-retry --development-mode
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e $(ENDPOINT) $(START_BLOCK):$(STOP_BLOCK) --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1 --infinite-retry --development-mode
 
 .PHONY: setup
 setup: pack

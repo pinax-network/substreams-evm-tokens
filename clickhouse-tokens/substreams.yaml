@@ -16,7 +16,7 @@ imports:
   native_transfers: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.1.0/evm-native-transfers-v0.1.0.spkg
 
   # ERC-20
-  erc20_balances_rpc: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.2.0/evm-erc20-balances-rpc-v0.2.0.spkg
+  erc20_balances_rpc: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.2.0/evm-erc20-balances-rpc-v0.2.1.spkg
   erc20_transfers: https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc20-transfers-v0.2.1/evm-erc20-transfers-v0.2.1.spkg
   erc20_metadata: https://github.com/pinax-network/substreams-evm-tokens/releases/download/erc20-metadata-v0.2.1/evm-erc20-metadata-v0.2.1.spkg
   erc20_supply: https://github.com/pinax-network/substreams-evm-tokens/releases/download/tokens-v0.2.0/evm-erc20-supply-v0.2.0.spkg

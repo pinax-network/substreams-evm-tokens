@@ -1,5 +1,5 @@
 ENDPOINT ?= eth.substreams.pinax.network:443
-START_BLOCK ?= 4749001
+START_BLOCK ?= 23142793
 
 .PHONY: build
 build:
