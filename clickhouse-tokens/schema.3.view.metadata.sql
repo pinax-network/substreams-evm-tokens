@@ -1,5 +1,5 @@
 -- Token metadata view --
-CREATE OR REPLACE VIEW metadata AS
+CREATE OR REPLACE VIEW metadata_view AS
 WITH
   dc AS (SELECT contract, argMax(decimals, block_num) AS decimals FROM metadata_decimals_state_latest GROUP BY contract ),
   nm AS (SELECT contract, argMax(name, block_num) AS name FROM metadata_name_state_latest GROUP BY contract ),
