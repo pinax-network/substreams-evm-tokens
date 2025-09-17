@@ -15,20 +15,20 @@ ORDER BY (contract);
 -- 1) MV: refresh on name changes
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metadata_from_name
 TO metadata AS
-SELECT v.contract as contract, v.name, v.symbol, v.decimals
+SELECT *
 FROM (SELECT DISTINCT contract FROM metadata_name_state_latest) AS changed
-INNER JOIN metadata_view AS v ON v.contract = changed.contract;
+INNER JOIN metadata_view USING (contract);
 
 -- 2) MV: refresh on symbol changes
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metadata_from_symbol
 TO metadata AS
-SELECT v.contract as contract, v.name, v.symbol, v.decimals
+SELECT *
 FROM (SELECT DISTINCT contract FROM metadata_symbol_state_latest) AS changed
-INNER JOIN metadata_view AS v ON v.contract = changed.contract;
+INNER JOIN metadata_view USING (contract);
 
 -- 3) MV: refresh on decimals changes
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metadata_from_decimals
 TO metadata AS
-SELECT v.contract as contract, v.name, v.symbol, v.decimals
+SELECT *
 FROM (SELECT DISTINCT contract FROM metadata_decimals_state_latest) AS changed
-INNER JOIN metadata_view AS v ON v.contract = changed.contract;
+INNER JOIN metadata_view USING (contract);
