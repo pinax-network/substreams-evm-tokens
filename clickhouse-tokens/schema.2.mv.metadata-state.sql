@@ -54,15 +54,3 @@ TO metadata_symbol_state_latest AS
 SELECT contract, block_num, timestamp, block_hash, symbol
 FROM metadata_changes AS c
 WHERE symbol != '';
-
-/* ===========================
-   ONE-TIME INSERT: Native asset
-   =========================== */
-INSERT INTO metadata_decimals_state_latest (contract, decimals, block_num, block_hash, timestamp)
-VALUES ('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 18, toUInt64(0), '', toDateTime(0, 'UTC'));
-
-INSERT INTO metadata_name_state_latest (contract, name, block_num, block_hash, timestamp)
-VALUES ('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'Native', toUInt64(0), '', toDateTime(0, 'UTC'));
-
-INSERT INTO metadata_symbol_state_latest (contract, symbol, block_num, block_hash, timestamp)
-VALUES ('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'Native', toUInt64(0), '', toDateTime(0, 'UTC'));
