@@ -48,8 +48,6 @@ CREATE TABLE IF NOT EXISTS swaps (
    INDEX idx_input_amount  (input_amount)    TYPE minmax GRANULARITY 1,
    INDEX idx_output_token  (output_token)    TYPE set(256) GRANULARITY 1,
    INDEX idx_output_amount (output_amount)   TYPE minmax GRANULARITY 1,
-
-   -- TO-DO: ADD PROJECTION for timestamp/block_num --
    INDEX idx_timestamp    (timestamp)       TYPE minmax GRANULARITY 1,
    INDEX idx_block_num    (block_num)       TYPE minmax GRANULARITY 1
 )

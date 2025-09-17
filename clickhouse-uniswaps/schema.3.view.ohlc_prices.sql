@@ -42,10 +42,7 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     INDEX idx_gross_volume1     (gross_volume1)             TYPE minmax         GRANULARITY 1,
     INDEX idx_net_flow0         (net_flow0)                 TYPE minmax         GRANULARITY 1,
     INDEX idx_net_flow1         (net_flow1)                 TYPE minmax         GRANULARITY 1,
-    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1,
-
-    -- projections --
-    -- PROJECTION prj_timestamp ( SELECT timestamp, _part_offset ORDER BY (timestamp) )
+    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1
 )
 ENGINE = AggregatingMergeTree
 ORDER BY (protocol, factory, pool, token0, token1, decimals0, decimals1, timestamp);

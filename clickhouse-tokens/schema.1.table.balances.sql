@@ -17,14 +17,10 @@ CREATE TABLE IF NOT EXISTS balances (
     INDEX idx_timestamp          (timestamp)          TYPE minmax               GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (address, contract)
+ORDER BY (contract, address)
 COMMENT 'ERC-20 & Native balance changes per block for a given address / contract pair';
 
 -- latest balances by contract/address --
-CREATE TABLE IF NOT EXISTS balances_by_contract AS balances
-ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (contract, address);
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_balances_by_contract
-TO balances_by_contract AS
-SELECT * FROM balances;
+ALTER TABLE balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+ALTER TABLE balances
+    ADD PROJECTION IF NOT EXISTS prj_account (SELECT * ORDER BY (address, contract));
