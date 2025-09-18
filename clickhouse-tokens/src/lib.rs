@@ -25,24 +25,25 @@ pub fn db_out(
 ) -> Result<DatabaseChanges, Error> {
     let mut tables = substreams_database_change::tables::Tables::new();
     clock = update_genesis_clock(clock);
+    let mut index = 0;
 
     // -- ERC20 Metadata --
-    erc20_metadata::process_erc20_metadata(&mut tables, &clock, erc20_metadata);
+    erc20_metadata::process_erc20_metadata(&mut tables, &clock, erc20_metadata, &mut index);
 
     // -- ERC20 Balances --
-    erc20_balances::process_erc20_balances(&mut tables, &clock, erc20_balances_rpc);
+    erc20_balances::process_erc20_balances(&mut tables, &clock, erc20_balances_rpc, &mut index);
 
     // -- ERC20 Transfers --
-    erc20_transfers::process_erc20_transfers(&mut tables, &clock, erc20_transfers);
+    erc20_transfers::process_erc20_transfers(&mut tables, &clock, erc20_transfers, &mut index);
 
     // -- ERC20 Total Supply --
-    erc20_supply::process_erc20_supply(&mut tables, &clock, erc20_supply);
+    erc20_supply::process_erc20_supply(&mut tables, &clock, erc20_supply, &mut index);
 
     // -- Native Balances --
-    native_balances::process_native_balances(&mut tables, &clock, native_balances);
+    native_balances::process_native_balances(&mut tables, &clock, native_balances, &mut index);
 
     // -- Native Transfers --
-    native_transfers::process_native_transfers(&mut tables, &clock, native_transfers);
+    native_transfers::process_native_transfers(&mut tables, &clock, native_transfers, &mut index);
 
     Ok(tables.to_database_changes())
 }

@@ -7,7 +7,7 @@ pub type Address = Vec<u8>;
 pub type Hash = Vec<u8>;
 pub const NULL_ADDRESS: [u8; 20] = hex!("0000000000000000000000000000000000000000");
 pub const NULL_HASH: [u8; 32] = hex!("0000000000000000000000000000000000000000000000000000000000000000");
-pub const NATIVE_ADDRESS: [u8; 20] = hex!("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+pub const NATIVE_ADDRESS: &str = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 pub fn update_genesis_clock(mut clock: Clock) -> Clock {
     // only applies to the first block of the stream
