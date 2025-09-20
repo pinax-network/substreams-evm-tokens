@@ -44,6 +44,34 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_LOGS (
 ENGINE = ReplacingMergeTree
 PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
-    timestamp, block_num, block_hash, tx_hash, log_index
+    timestamp, block_num, block_hash, log_index
+)
+COMMENT 'TEMPLATE for event logs';
+
+CREATE TABLE IF NOT EXISTS TEMPLATE_TRANSACTIONS (
+    -- block --
+    block_num            UInt32,
+    block_hash           String,
+    timestamp            DateTime(0, 'UTC'),
+
+    -- transaction --
+    tx_hash              String COMMENT 'transaction hash',
+
+    -- ordering --
+    transaction_index           UInt32 COMMENT 'transaction index in the block',
+    instruction_index           UInt32 COMMENT 'instruction index in the transaction',
+
+    -- indexes --
+    INDEX idx_block_num          (block_num)          TYPE minmax               GRANULARITY 1,
+    INDEX idx_block_hash         (block_hash)         TYPE bloom_filter(0.005)  GRANULARITY 1,
+    INDEX idx_timestamp          (timestamp)          TYPE minmax               GRANULARITY 1,
+    INDEX idx_tx_hash            (tx_hash)            TYPE bloom_filter(0.005)  GRANULARITY 1,
+    INDEX idx_transaction_index  (transaction_index)  TYPE minmax               GRANULARITY 1,
+    INDEX idx_instruction_index  (instruction_index)  TYPE minmax               GRANULARITY 1
+)
+ENGINE = ReplacingMergeTree
+PARTITION BY toYYYYMM(timestamp)
+ORDER BY (
+    timestamp, block_num, block_hash, tx_hash, transaction_index
 )
 COMMENT 'TEMPLATE for event logs';

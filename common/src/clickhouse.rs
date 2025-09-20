@@ -22,6 +22,16 @@ pub fn log_key(clock: &Clock, log_index: u32) -> [(&'static str, String); 4] {
     ]
 }
 
+pub fn transaction_key(clock: &Clock, tx_index: u32) -> [(&'static str, String); 4] {
+    let seconds = clock.timestamp.as_ref().expect("clock.timestamp is required").seconds;
+    [
+        ("timestamp", seconds.to_string()),
+        ("block_num", clock.number.to_string()),
+        ("block_hash", format!("0x{}", &clock.id)),
+        ("tx_index", tx_index.to_string()),
+    ]
+}
+
 // Helper function to set clock data in a row
 pub fn set_clock(clock: &Clock, row: &mut Row) {
     row.set("block_num", clock.number.to_string())
