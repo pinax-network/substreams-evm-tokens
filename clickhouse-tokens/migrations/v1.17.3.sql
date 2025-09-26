@@ -1,5 +1,12 @@
+-- DELETE MV's --
+DROP TABLE IF EXISTS mv_metadata_from_decimals ON CLUSTER 'tokenapis-b';
+DROP TABLE IF EXISTS mv_metadata_from_name ON CLUSTER 'tokenapis-b';
+DROP TABLE IF EXISTS mv_metadata_from_symbol ON CLUSTER 'tokenapis-b';
+DROP TABLE IF EXISTS metadata ON CLUSTER 'tokenapis-b';
+DROP VIEW IF EXISTS metadata_view ON CLUSTER 'tokenapis-b';
+
 /* DECIMALS */
-CREATE OR REPLACE VIEW metadata_decimals_view AS
+CREATE OR REPLACE VIEW metadata_decimals_view ON CLUSTER 'tokenapis-b' AS
 SELECT
   contract,
   max(block_num) AS block_num,
@@ -9,7 +16,7 @@ FROM metadata_decimals_state_latest AS m
 GROUP BY contract;
 
 /* NAME */
-CREATE OR REPLACE VIEW metadata_name_view AS
+CREATE OR REPLACE VIEW metadata_name_view ON CLUSTER 'tokenapis-b' AS
 SELECT
   contract,
   max(block_num) AS block_num,
@@ -19,7 +26,7 @@ FROM metadata_name_state_latest AS m
 GROUP BY contract;
 
 /* SYMBOL */
-CREATE OR REPLACE VIEW metadata_symbol_view AS
+CREATE OR REPLACE VIEW metadata_symbol_view ON CLUSTER 'tokenapis-b' AS
 SELECT
   contract,
   max(block_num) AS block_num,
@@ -29,7 +36,7 @@ FROM metadata_symbol_state_latest AS m
 GROUP BY contract;
 
 /* COMBINED VIEW */
-CREATE OR REPLACE VIEW metadata_view AS
+CREATE OR REPLACE VIEW metadata_view ON CLUSTER 'tokenapis-b' AS
 WITH
   decimals AS (
     SELECT contract, block_num, timestamp, decimals FROM metadata_decimals_view
