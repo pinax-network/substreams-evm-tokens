@@ -23,7 +23,7 @@
 
 > Ordered by most swaps (only includes DEX with >10K Swaps in 2025)
 
-### ETH
+### ETH Mainnet
 
 | DEX                   | Protocol   | Factory Address                            |
 | --------------------- | ---------- | ------------------------------------------ |
@@ -54,7 +54,7 @@
 | EtherVista            | uniswap_v2 | 0x9a27cb5ae0b2cee0bb71f9a85c0d60f3920757b4 |
 | DooarSwap             | uniswap_v2 | 0x1e895bfe59e3a5103e8b7da3897d1f2391476f3c |
 
-## Arbitrum One
+### Arbitrum One
 
 | DEX          | Protocol   | Factory Address                            |
 | ------------ | ---------- | ------------------------------------------ |
@@ -78,7 +78,7 @@
 | Integral     | uniswap_v2 | 0x717ef162cf831db83c51134734a15d1ebe9e516a |
 | Trader Joe   | uniswap_v2 | 0xae4ec9901c3076d0ddbe76a520f9e90a6227acb7 |
 
-## Polygon
+### Polygon
 
 | DEX             | Protocol   | Factory Address                            |
 | --------------- | ---------- | ------------------------------------------ |
@@ -98,7 +98,7 @@
 | Wault Finance   | uniswap_v2 | 0xa98ea6356a316b44bf710d5f9b6b4ea0081409ef |
 | Elk             | uniswap_v2 | 0xe3bd06c7ac7e1ceb17bdd2e5ba83e40d1515af2a |
 
-## Unichain
+### Unichain
 
 | DEX        | Protocol   | Factory Address                            |
 | ---------- | ---------- | ------------------------------------------ |
@@ -106,7 +106,7 @@
 | Uniswap V3 | uniswap_v3 | 0x1f98400000000000000000000000000000000003 |
 | Uniswap V2 | uniswap_v2 | 0x1f98400000000000000000000000000000000002 |
 
-## BSC
+### BSC
 
 | DEX            | Protocol   | Factory Address                            |
 | -------------- | ---------- | ------------------------------------------ |
@@ -122,7 +122,7 @@
 | Jetswap        | uniswap_v2 | 0xd6715a8be3944ec72738f0bfdc739d48c3c29349 |
 | JulSwap        | uniswap_v2 | 0x3cd1c46068daea5ebb0d3f55f6915b10648062b8 |
 
-## Optimism
+### Optimism
 
 | DEX          | Protocol   | Factory Address                            |
 | ------------ | ---------- | ------------------------------------------ |
@@ -133,7 +133,7 @@
 | Curve        | uniswap_v3 | 0x9c6522117e2ed1fe5bdb72bb0ed5e3f2bde7dbe0 |
 | Beethoven X  | uniswap_v2 | 0x7962223d940e1b099abae8f54cabfb8a3a0887ab |
 
-## Avalanche
+### Avalanche
 
 | DEX                    | Protocol   | Factory Address                            |
 | ---------------------- | ---------- | ------------------------------------------ |
@@ -148,7 +148,7 @@
 | SushiSwap V2           | uniswap_v2 | 0xc35dadb65012ec5796536bd9864ed8773abc74c4 |
 | OliveSwap              | uniswap_v2 | 0x1051e74c859cc1e662c3afa3f170103522a2e70f |
 
-## Base
+### Base
 
 | DEX           | Protocol    | Factory Address                            |
 | ------------- | ----------- | ------------------------------------------ |
