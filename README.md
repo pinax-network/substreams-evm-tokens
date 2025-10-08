@@ -22,6 +22,8 @@
 - [x] Uniswap (V2, V3 & V4)
 
 > Ordered by most swaps (only includes DEX with >10K Swaps in 2025)
+>
+> Ones with * are unverified and might be incorrect.
 
 ### ETH Mainnet
 
@@ -80,23 +82,70 @@
 
 ### Polygon
 
-| DEX             | Protocol   | Factory Address                            |
-| --------------- | ---------- | ------------------------------------------ |
-| Uniswap V3      | uniswap_v3 | 0x1f98431c8ad98523631ae4a59f267346ea31f984 |
-| Quickswap V2    | uniswap_v2 | 0x5757371414417b8c6caad45baef941abc7d3ab32 |
-| Uniswap V4      | uniswap_v4 | 0x67366782805870060151383f4bbff9dab53e5cd6 |
-| SushiSwap V2    | uniswap_v2 | 0xc35dadb65012ec5796536bd9864ed8773abc74c4 |
-| Uniswap V2      | uniswap_v2 | 0x9e5a52f57b3038f1b8eee45f28b3c1967e22799c |
-| Stabl.fi        | uniswap_v3 | 0x91e1b99072f238352f59e58de875691e20dc19c1 |
-| SushiSwap V3    | uniswap_v3 | 0x917933899c6a5f8e37f31e19f92cdbff7e8ff0e2 |
-| ApeSwap V2      | uniswap_v2 | 0xcf083be4164828f00cae704ec15a36d711491284 |
-| SweepnFlip      | uniswap_v2 | 0x16ed649675e6ed9f1480091123409b4b8d228dc1 |
-| DFYN            | uniswap_v2 | 0xe7fb3e833efe5f9c441105eb65ef8b261266423b |
-| Jetswap         | uniswap_v2 | 0x668ad0ed2622c62e24f0d5ab6b6ac1b9d2cd4ac7 |
-| DooarSwap       | uniswap_v2 | 0xbdd46fd173ad1d158578feb5d10573baf8ee89d2 |
-| Polycat Finance | uniswap_v2 | 0x477ce834ae6b7ab003cce4bc4d8697763ff456fa |
-| Wault Finance   | uniswap_v2 | 0xa98ea6356a316b44bf710d5f9b6b4ea0081409ef |
-| Elk             | uniswap_v2 | 0xe3bd06c7ac7e1ceb17bdd2e5ba83e40d1515af2a |
+| DEX               | Protocol   | Factory Address                             |
+| ----------------- | ---------- | ------------------------------------------- |
+| Quickswap V2      | uniswap_v2 | 0x5757371414417b8c6caad45baef941abc7d3ab32  |
+| Uniswap V3        | uniswap_v3 | 0x1f98431c8ad98523631ae4a59f267346ea31f984  |
+| Uniswap V4        | uniswap_v4 | 0x67366782805870060151383f4bbff9dab53e5cd6  |
+| SushiSwap V2      | uniswap_v2 | 0xc35dadb65012ec5796536bd9864ed8773abc74c4  |
+| Uniswap V2        | uniswap_v2 | 0x9e5a52f57b3038f1b8eee45f28b3c1967e22799c  |
+| Stabl.fi          | uniswap_v3 | 0x91e1b99072f238352f59e58de875691e20dc19c1  |
+| SushiSwap V3      | uniswap_v3 | 0x917933899c6a5f8e37f31e19f92cdbff7e8ff0e2  |
+| SweepnFlip        | uniswap_v2 | 0x16ed649675e6ed9f1480091123409b4b8d228dc1  |
+| ApeSwap V2        | uniswap_v2 | 0xcf083be4164828f00cae704ec15a36d711491284  |
+| DFYN              | uniswap_v2 | 0xe7fb3e833efe5f9c441105eb65ef8b261266423b  |
+| Jetswap           | uniswap_v2 | 0x668ad0ed2622c62e24f0d5ab6b6ac1b9d2cd4ac7  |
+| Polycat Finance   | uniswap_v2 | 0x477ce834ae6b7ab003cce4bc4d8697763ff456fa  |
+| Wault Finance     | uniswap_v2 | 0xa98ea6356a316b44bf710d5f9b6b4ea0081409ef  |
+| DooarSwap         | uniswap_v2 | 0xbdd46fd173ad1d158578feb5d10573baf8ee89d2  |
+| ComethSwap *      | uniswap_v2 | 0xd7936316a5e0816e1a59e87efa76a6bd64abd3f7  |
+| Elk               | uniswap_v2 | 0xe3bd06c7ac7e1ceb17bdd2e5ba83e40d1515af2a  |
+| PolyDEX *         | uniswap_v2 | 0xd36aba9ec96523b0a89886c76065852adfe2eb39  |
+| JetSwap Alt *     | uniswap_v2 | 0xeb99f524637b38b18fee3070d114444ed395366d  |
+| Honeyswap *       | uniswap_v2 | 0x03daa61d8007443a6584e3d8f85105096543c19c  |
+| Firebird *        | uniswap_v2 | 0x34de5ce6c9a395db5710119419a7a29baa435c88  |
+| Uniswap V2        | uniswap_v2 | 0xb8900621b03892c2d030e05cb9e01f6474814f6a  |
+| SushiSwap Clone * | uniswap_v2 | 0x7cfb780010e9c861e03bcbc7ac12e013137d47a5  |
+| PolyZap *         | uniswap_v2 | 0xb581d0a3b7ea5cdc029260e989f768ae167ef39b  |
+| Waka Finance *    | uniswap_v2 | 0x54f454d747e037da288db568d4121117eab34e79  |
+| SphynxSwap *      | uniswap_v2 | 0xf502b3d87311863bb0ac3cf3d2729a78438116cf  |
+| Unifi Protocol *  | uniswap_v2 | 0x3ed75aff4094d2aaa38fafca64ef1c152ec1cf20  |
+| Polyroll *        | uniswap_v2 | 0x293f45b6f9751316672da58ae87447d712af85d7  |
+| DarkMatter *      | uniswap_v2 | 0x800b052609c355ca8103e06f022aa30647ead60a  |
+| NarwhalSwap *     | uniswap_v2 | 0xf08ae17c2a2728a788bb1b6c243fe7eb3e5bbadc  |
+| MaticSwap *       | uniswap_v2 | 0x5ede3f4e7203bf1f12d57af1810448e5db20f46c  |
+| PolyBeta *        | uniswap_v3 | 0x5f1dddbf348ac2fbe22a1633e30f99f9ece3dd50a |
+| QuickPerp *       | uniswap_v2 | 0x9679010bf908225f84cd030b4acf7fd4fa13c8f5  |
+| PolyDEX (Alt) *   | uniswap_v2 | 0x624ccf581371f8a4493e6abde46412002555a1b6  |
+| CafeSwap *        | uniswap_v2 | 0x672353e4e674dddd7319a4852e49f6e1d2ac6f18  |
+| FaraDex *         | uniswap_v2 | 0x709e3c6b22993189327a8cfebd572b6cc459fe40  |
+| Gravity Finance * | uniswap_v2 | 0x14fb5abea0578b37d9e1a831bb7e77bd3d7684a6  |
+| Yeti Finance *    | uniswap_v2 | 0x56cfc115e04dfcda3ad47eae1db86f70c1f8d8a5  |
+| Polycash *        | uniswap_v2 | 0x150170a4a4fa8a34dfc407f68cde789e4dffc103  |
+| MM Finance *      | uniswap_v2 | 0x3d077c05c3abce52257e453607209f81d9db01fc  |
+| LynxSwap *        | uniswap_v2 | 0xbe087bed88539d28664c9998fe3f180ea7b9749c  |
+| Jetswap Mini *    | uniswap_v2 | 0x17c1d25d5a2d833c266639de5fbe8896bdbeb234  |
+| PirateSwap *      | uniswap_v2 | 0xcb3fa9d5e301a03d2cc89f4a1669a048db0b4e5b  |
+| PolyAlpha *       | uniswap_v2 | 0x1b44bf43111a26206f9735319a0c438dd1c030b2  |
+| PolyDEX Small *   | uniswap_v2 | 0x6e553d5f028bd747a27e138fa3109570081a23ae  |
+| Nerve Finance *   | uniswap_v2 | 0x3a43c0bccb4edc19fea8e83c80cfc688da93e7c7  |
+| PandaSwap *       | uniswap_v2 | 0x75ed971834b0e176a053ac959d9cf77f0b4c89d0  |
+| Sushi Mini *      | uniswap_v2 | 0x5bdd1cd910e3307582f213b33699e676e61dead9  |
+| PolyLion *        | uniswap_v2 | 0x0b29d7a989d6647e4a56ee9899daf7535ff9620c  |
+| PolyDuck *        | uniswap_v2 | 0x442266042667407329e1729e6bead71424f42021  |
+| MemeSwap *        | uniswap_v2 | 0xd1b2108db64ab9facb36d0bd408f8568ef7683a4  |
+| Bao Finance *     | uniswap_v2 | 0xd76d8c2a7ca0a1609aea0b9b5017b3f7782891bf  |
+| PolyZoo *         | uniswap_v2 | 0x42e635d36913c94a340567761ec8383b9932906a  |
+| PolyNeko *        | uniswap_v3 | 0xc7a590291e07b9fe9e64b86c58fd8fc764308c4a  |
+| Sushi Fork *      | uniswap_v2 | 0x25cc30af6b2957b0ed7ceca026fc204fdbe04e59  |
+| PolyMoon *        | uniswap_v2 | 0x95c6d24c02f1f2cb4c93dbea8e53d95e12bc4d47  |
+| MiniQuick *       | uniswap_v2 | 0x5be44d6c5634161cdadcc2bc35389325aa493e83  |
+| PolyTree *        | uniswap_v2 | 0x3fb1e7d5d9c974141a5b6e5fa4edab0a7aa15c6a  |
+| PolyApes *        | uniswap_v2 | 0x84ceb1675e369c703c76d023c58448ec135bba10  |
+| KoalaSwap *       | uniswap_v2 | 0x745c475cc101ca5580eff6f723976480881bc008  |
+| CoinCollect.      | uniswap_v2 | 0x2bc17223a99b6e2857796a5f64a1ed91067b5657  |
+| PolyQuokka *      | uniswap_v2 | 0x2254a56b3cf286e1419f4d65936fb4916d8b9afe  |
+| PolyPup *         | uniswap_v2 | 0x2541dbea199a22501d75ea141627776bd4eefc80  |
 
 ### Unichain
 
@@ -108,19 +157,25 @@
 
 ### BSC
 
-| DEX            | Protocol   | Factory Address                            |
-| -------------- | ---------- | ------------------------------------------ |
-| PancakeSwap V2 | uniswap_v2 | 0xca143ce32fe78f1f7019d7d551a6402fc5350c73 |
-| PancakeSwap V3 | uniswap_v3 | 0xdb1d10011ad0ff90774d0c6bb92e5c5c8b4461f7 |
-| PancakeSwap V4 | uniswap_v4 | 0x28e2ea090877bf75740558f6bfb36a5ffee9e9df |
-| BakerySwap     | uniswap_v2 | 0xbcfccbde45ce874adcb698cc183debcf17952812 |
-| Biswap         | uniswap_v2 | 0x858e3312ed3a876947ea49d572a7c42de08af7ee |
-| ApeSwap V2     | uniswap_v2 | 0x0841bd0b734e4f5853f0dd8d7ea041c241fb0da6 |
-| MDEX (BSC)     | uniswap_v2 | 0x9a272d734c5a0d7d84e0a892e891a553e8066dce |
-| WaultSwap      | uniswap_v2 | 0x86407bea2078ea5f5eb5a52b2caa963bc1f889da |
-| Babyswap       | uniswap_v2 | 0xc6b7ee49d386bae4fd501f2d2f8d18828f1f6285 |
-| Jetswap        | uniswap_v2 | 0xd6715a8be3944ec72738f0bfdc739d48c3c29349 |
-| JulSwap        | uniswap_v2 | 0x3cd1c46068daea5ebb0d3f55f6915b10648062b8 |
+| DEX                | Protocol   | Factory Address                            |
+| ------------------ | ---------- | ------------------------------------------ |
+| PancakeSwap V2     | uniswap_v2 | 0xca143ce32fe78f1f7019d7d551a6402fc5350c73 |
+| PancakeSwap V3     | uniswap_v3 | 0xdb1d10011ad0ff90774d0c6bb92e5c5c8b4461f7 |
+| PancakeSwap V4     | uniswap_v4 | 0x28e2ea090877bf75740558f6bfb36a5ffee9e9df |
+| PancakeSwap V1     | uniswap_v2 | 0xbcfccbde45ce874adcb698cc183debcf17952812 |
+| Biswap             | uniswap_v2 | 0x858e3312ed3a876947ea49d572a7c42de08af7ee |
+| ApeSwap V2         | uniswap_v2 | 0x0841bd0b734e4f5853f0dd8d7ea041c241fb0da6 |
+| MDEX (BSC)         | uniswap_v2 | 0x9a272d734c5a0d7d84e0a892e891a553e8066dce |
+| BabySwap           | uniswap_v2 | 0x86407bea2078ea5f5eb5a52b2caa963bc1f889da |
+| Nomiswap           | uniswap_v2 | 0xd6715a8be3944ec72738f0bfdc739d48c3c29349 |
+| Nomiswap Stable    | uniswap_v2 | 0xc6b7ee49d386bae4fd501f2d2f8d18828f1f6285 |
+| JulSwap            | uniswap_v2 | 0x3cd1c46068daea5ebb0d3f55f6915b10648062b8 |
+| Algebra (v3-style) | uniswap_v3 | 0x303d55e04391e185afa71796619ffbd7d554f059 |
+| Algebra (v3-style) | uniswap_v3 | 0x2798fde6e53998d7d7d3e34fa2920af07412d6d2 |
+| Algebra (v3-style) | uniswap_v3 | 0x82fa7b2ce2a76c7888a9d3b0a81e0b2ecfd8d40c |
+| WaultSwap          | uniswap_v2 | 0xb42e3fe71b7e0673335b3331b3e1053bd9822570 |
+| BakerySwap         | uniswap_v2 | 0x01bf7c66c6bd861915cdaae475042d3c4bae16a7 |
+| SquadSwap          | uniswap_v2 | 0x918adf1f2c03b244823cd712e010b6e3cd653dba |
 
 ### Optimism
 
