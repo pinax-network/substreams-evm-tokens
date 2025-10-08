@@ -19,10 +19,8 @@
 
 ### DEX protocols
 
-- Uniswap (V2, V3 & V4)
+- [x] Uniswap (V2, V3 & V4)
 
-> Swaps are being reported via **Swap** programs
->
 > Ordered by most swaps (only includes DEX with >10K Swaps in 2025)
 
 ### ETH
