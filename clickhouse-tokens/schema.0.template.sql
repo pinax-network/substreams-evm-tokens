@@ -42,7 +42,6 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_LOGS (
     INDEX idx_log_index          (log_index)          TYPE minmax               GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree
-PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num, block_hash, tx_hash, log_index
 )
