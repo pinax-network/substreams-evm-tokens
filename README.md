@@ -17,22 +17,15 @@
   - [x] Contract Metadata
 - [x] Seaport
 
-## Supported DEXes and AMMs
+### DEX protocols
 
-### Full Support of DEX protocol
+- Uniswap (V2, V3 & V4)
 
-> Includes `amm_pool` field
->
 > Swaps are being reported via **Swap** programs
 >
-> Ordered by most transactions (only includes DEX with >100K Swaps in 2025)
+> Ordered by most swaps (only includes DEX with >10K Swaps in 2025)
 
-| DEX Name | Protocol        | Factory Address |
-|----------|-----------------|-----------------|
-
-## ETH
-
-> Ordered by most transactions (only includes DEX with >10K Swaps in 2025)
+### ETH
 
 | DEX                   | Protocol   | Factory Address                            |
 | --------------------- | ---------- | ------------------------------------------ |
